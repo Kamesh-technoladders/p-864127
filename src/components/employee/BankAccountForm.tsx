@@ -1,88 +1,190 @@
 
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Banknote } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Banknote, Check, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 interface BankAccountFormProps {
   onComplete: (completed: boolean) => void;
 }
 
-interface BankFormData {
-  accountHolderName: string;
-  accountNumber: string;
-  ifscCode: string;
-  bankName: string;
-  branchName: string;
-}
+const bankAccountSchema = z.object({
+  accountHolderName: z
+    .string()
+    .min(3, "Name must be at least 3 characters")
+    .max(50, "Name cannot exceed 50 characters")
+    .regex(/^[A-Za-z\s.]+$/, "Name can only contain letters, spaces, and dots"),
+  accountNumber: z
+    .string()
+    .min(9, "Account number must be at least 9 digits")
+    .max(18, "Account number cannot exceed 18 digits")
+    .regex(/^\d+$/, "Account number can only contain numbers"),
+  ifscCode: z
+    .string()
+    .length(11, "IFSC code must be exactly 11 characters")
+    .regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code format (e.g., SBIN0123456)")
+    .transform(val => val.toUpperCase()),
+  bankName: z
+    .string()
+    .min(3, "Bank name must be at least 3 characters")
+    .max(50, "Bank name cannot exceed 50 characters")
+    .regex(/^[A-Za-z\s.]+$/, "Bank name can only contain letters, spaces, and dots"),
+  branchName: z
+    .string()
+    .min(3, "Branch name must be at least 3 characters")
+    .max(50, "Branch name cannot exceed 50 characters")
+    .regex(/^[A-Za-z0-9\s.-]+$/, "Branch name can only contain letters, numbers, spaces, dots, and dashes"),
+});
+
+type BankFormData = z.infer<typeof bankAccountSchema>;
 
 export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete }) => {
   const { toast } = useToast();
-  const { register, handleSubmit, watch, formState: { errors, isValid } } = useForm<BankFormData>();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isValid }
+  } = useForm<BankFormData>({
+    resolver: zodResolver(bankAccountSchema),
+    mode: "onChange"
+  });
 
   const formValues = watch();
 
   useEffect(() => {
     const isFormComplete = Object.values(formValues).every(value => !!value);
-    onComplete(isFormComplete);
-  }, [formValues, onComplete]);
+    onComplete(isFormComplete && isValid);
+  }, [formValues, isValid, onComplete]);
+
+  const onSubmit = (data: BankFormData) => {
+    toast({
+      title: "Bank Account Details",
+      description: "Bank account details saved successfully!",
+      duration: 3000,
+    });
+  };
 
   return (
-    <div className="flex w-[622px] max-w-full flex-col text-sm font-medium ml-[15px]">
-      <div className="flex items-center gap-2 text-[rgba(48,64,159,1)] font-bold">
-        <Banknote className="h-5 w-5" />
-        <span>Bank Account Details</span>
+    <div className="w-[648px] max-w-full bg-white rounded-lg border border-[#EEEEEE] px-6 py-4">
+      <div className="flex items-center gap-2 text-[#30409F]">
+        <Banknote className="h-6 w-6" />
+        <span className="text-base font-semibold">Bank Account Details</span>
       </div>
-      <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
+      
+      <div className="text-[#505050] text-xs mt-2">
         Enter your bank account information for salary processing.
       </div>
 
-      <form className="space-y-6 mt-6">
-        <div>
-          <Label htmlFor="accountHolderName">Account Holder Name<span className="text-red-500">*</span></Label>
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6">
+        <div className="relative">
+          <Label htmlFor="accountHolderName" className="text-sm font-semibold text-[#303030]">
+            Account Holder Name<span className="text-[#DD0101]">*</span>
+          </Label>
           <Input
             id="accountHolderName"
-            {...register("accountHolderName", { required: true })}
-            className="mt-1"
+            {...register("accountHolderName")}
+            className={cn(
+              "mt-2 h-11 border-[#E4E4E4] rounded-lg placeholder:text-[#8E8E8E]",
+              "hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20",
+              errors.accountHolderName && "border-[#DD0101] hover:border-[#DD0101]/80"
+            )}
           />
+          {errors.accountHolderName && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+              <AlertCircle className="h-3 w-3" />
+              <span>{errors.accountHolderName.message}</span>
+            </div>
+          )}
         </div>
 
-        <div>
-          <Label htmlFor="accountNumber">Account Number<span className="text-red-500">*</span></Label>
+        <div className="relative">
+          <Label htmlFor="accountNumber" className="text-sm font-semibold text-[#303030]">
+            Account Number<span className="text-[#DD0101]">*</span>
+          </Label>
           <Input
             id="accountNumber"
-            {...register("accountNumber", { required: true })}
-            className="mt-1"
+            {...register("accountNumber")}
+            className={cn(
+              "mt-2 h-11 border-[#E4E4E4] rounded-lg placeholder:text-[#8E8E8E]",
+              "hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20",
+              errors.accountNumber && "border-[#DD0101] hover:border-[#DD0101]/80"
+            )}
           />
+          {errors.accountNumber && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+              <AlertCircle className="h-3 w-3" />
+              <span>{errors.accountNumber.message}</span>
+            </div>
+          )}
         </div>
 
-        <div>
-          <Label htmlFor="ifscCode">IFSC Code<span className="text-red-500">*</span></Label>
+        <div className="relative">
+          <Label htmlFor="ifscCode" className="text-sm font-semibold text-[#303030]">
+            IFSC Code<span className="text-[#DD0101]">*</span>
+          </Label>
           <Input
             id="ifscCode"
-            {...register("ifscCode", { required: true })}
-            className="mt-1"
+            {...register("ifscCode")}
+            className={cn(
+              "mt-2 h-11 border-[#E4E4E4] rounded-lg placeholder:text-[#8E8E8E] uppercase",
+              "hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20",
+              errors.ifscCode && "border-[#DD0101] hover:border-[#DD0101]/80"
+            )}
           />
+          {errors.ifscCode && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+              <AlertCircle className="h-3 w-3" />
+              <span>{errors.ifscCode.message}</span>
+            </div>
+          )}
         </div>
 
-        <div>
-          <Label htmlFor="bankName">Bank Name<span className="text-red-500">*</span></Label>
+        <div className="relative">
+          <Label htmlFor="bankName" className="text-sm font-semibold text-[#303030]">
+            Bank Name<span className="text-[#DD0101]">*</span>
+          </Label>
           <Input
             id="bankName"
-            {...register("bankName", { required: true })}
-            className="mt-1"
+            {...register("bankName")}
+            className={cn(
+              "mt-2 h-11 border-[#E4E4E4] rounded-lg placeholder:text-[#8E8E8E]",
+              "hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20",
+              errors.bankName && "border-[#DD0101] hover:border-[#DD0101]/80"
+            )}
           />
+          {errors.bankName && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+              <AlertCircle className="h-3 w-3" />
+              <span>{errors.bankName.message}</span>
+            </div>
+          )}
         </div>
 
-        <div>
-          <Label htmlFor="branchName">Branch Name<span className="text-red-500">*</span></Label>
+        <div className="relative">
+          <Label htmlFor="branchName" className="text-sm font-semibold text-[#303030]">
+            Branch Name<span className="text-[#DD0101]">*</span>
+          </Label>
           <Input
             id="branchName"
-            {...register("branchName", { required: true })}
-            className="mt-1"
+            {...register("branchName")}
+            className={cn(
+              "mt-2 h-11 border-[#E4E4E4] rounded-lg placeholder:text-[#8E8E8E]",
+              "hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20",
+              errors.branchName && "border-[#DD0101] hover:border-[#DD0101]/80"
+            )}
           />
+          {errors.branchName && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+              <AlertCircle className="h-3 w-3" />
+              <span>{errors.branchName.message}</span>
+            </div>
+          )}
         </div>
       </form>
     </div>
