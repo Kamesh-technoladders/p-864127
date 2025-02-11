@@ -130,7 +130,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
     }
   };
 
-  const handleFileUpload = (field: keyof ExperienceData) => (file: File) => {
+  const handleFileUpload = (field: keyof ExperienceData) => async (file: File) => {
     if (!file) return;
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -145,18 +145,25 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
       return;
     }
 
-    if (field === "payslips") {
-      if (formData.payslips.length >= 3) {
-        toast.error("Maximum 3 payslips allowed");
-        return;
-      }
-      setFormData((prev) => ({
-        ...prev,
-        payslips: [...prev.payslips, file],
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, [field]: file }));
-    }
+    // Simulate upload delay for progress bar
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        if (field === "payslips") {
+          if (formData.payslips.length >= 3) {
+            toast.error("Maximum 3 payslips allowed");
+            resolve();
+            return;
+          }
+          setFormData((prev) => ({
+            ...prev,
+            payslips: [...prev.payslips, file],
+          }));
+        } else {
+          setFormData((prev) => ({ ...prev, [field]: file }));
+        }
+        resolve();
+      }, 2000);
+    });
   };
 
   return (
