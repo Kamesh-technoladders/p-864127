@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { UploadField } from "./UploadField";
+import { BankAccountFormProps } from "./types";
 import {
   Select,
   SelectContent,
@@ -16,10 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface BankAccountFormProps {
-  onComplete: (completed: boolean) => void;
-}
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = ["application/pdf", "image/png", "image/jpeg"];
@@ -64,7 +60,7 @@ const bankAccountSchema = z.object({
 
 type BankFormData = z.infer<typeof bankAccountSchema>;
 
-export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete }) => {
+export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete, initialData }) => {
   const { toast } = useToast();
   const {
     register,
@@ -74,14 +70,15 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete }) 
     formState: { errors, isValid }
   } = useForm<BankFormData>({
     resolver: zodResolver(bankAccountSchema),
-    mode: "onChange"
+    mode: "onChange",
+    defaultValues: initialData || {}
   });
 
   const formValues = watch();
 
   useEffect(() => {
     const isFormComplete = Object.values(formValues).every(value => !!value);
-    onComplete(isFormComplete && isValid);
+    onComplete(isFormComplete && isValid, formValues);
   }, [formValues, isValid, onComplete]);
 
   const handleFileUpload = (fieldName: "cancelledCheque" | "passbookCopy") => async (file: File) => {
@@ -312,4 +309,3 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete }) 
     </div>
   );
 };
-
