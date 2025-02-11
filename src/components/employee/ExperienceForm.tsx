@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import { AddExperienceModal, ExperienceData } from "./AddExperienceModal";
+import { toast } from "sonner";
 
 interface Experience extends ExperienceData {
   id: string;
@@ -22,11 +23,16 @@ export const ExperienceForm = () => {
   ]);
 
   const handleAddExperience = (data: ExperienceData) => {
-    const newExperience: Experience = {
-      ...data,
-      id: Date.now().toString(),
-    };
-    setExperiences((prev) => [...prev, newExperience]);
+    try {
+      const newExperience: Experience = {
+        ...data,
+        id: Date.now().toString(),
+      };
+      setExperiences((prev) => [...prev, newExperience]);
+    } catch (error) {
+      console.error("Error adding experience:", error);
+      toast.error("Failed to add experience");
+    }
   };
 
   return (
@@ -115,7 +121,7 @@ export const ExperienceForm = () => {
                   </div>
                   <div className="flex w-full items-stretch gap-5 text-sm text-black font-normal whitespace-nowrap justify-between mt-2">
                     <div className="flex items-stretch gap-[31px]">
-                      {experience.payslips.slice(0, 2).map((_, index) => (
+                      {experience.payslips.slice(0, 3).map((_, index) => (
                         <img
                           key={index}
                           loading="lazy"
@@ -124,9 +130,9 @@ export const ExperienceForm = () => {
                           alt="Document"
                         />
                       ))}
-                      {experience.payslips.length < 3 && (
-                        <div className="my-auto">-</div>
-                      )}
+                      {Array.from({ length: 3 - experience.payslips.length }).map((_, index) => (
+                        <div key={`empty-${index}`} className="my-auto">-</div>
+                      ))}
                     </div>
                     <img
                       loading="lazy"
