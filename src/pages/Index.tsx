@@ -9,7 +9,7 @@ import { PersonalDetailsForm } from "@/components/employee/PersonalDetailsForm";
 import { BankAccountForm } from "@/components/employee/BankAccountForm";
 import { FormProgress, FormData, calculateProgress, getProgressMessage } from "@/utils/progressCalculator";
 import { toast } from "sonner";
-import { Experience } from "@/components/employee/types";
+import { Experience, PersonalDetailsFormProps, EducationFormProps, BankAccountFormProps } from "@/components/employee/types";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("personal");
@@ -76,7 +76,7 @@ const Index = () => {
       case "personal":
         return (
           <PersonalDetailsForm
-            onComplete={(completed, data) => {
+            onComplete={(completed: boolean, data?: any) => {
               updateSectionProgress("personal", completed);
               if (completed && data) {
                 updateFormData("personal", data);
@@ -89,7 +89,7 @@ const Index = () => {
         return (
           <>
             <EducationForm
-              onComplete={(completed, data) => {
+              onComplete={(completed: boolean, data?: any) => {
                 updateSectionProgress("education", completed);
                 if (completed && data) {
                   updateFormData("education", data);
@@ -99,7 +99,7 @@ const Index = () => {
             />
             <div className="shrink-0 h-px mt-[29px] border-[rgba(239,242,255,1)] border-solid border-2" />
             <ExperienceForm
-              onComplete={(completed, data) => {
+              onComplete={(completed: boolean, data?: Experience[]) => {
                 updateSectionProgress("experience", completed);
                 if (completed && data) {
                   updateFormData("experience", data);
@@ -112,7 +112,7 @@ const Index = () => {
       case "bank":
         return (
           <BankAccountForm
-            onComplete={(completed, data) => {
+            onComplete={(completed: boolean, data?: any) => {
               updateSectionProgress("bank", completed);
               if (completed && data) {
                 updateFormData("bank", data);
