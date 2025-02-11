@@ -6,17 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { UploadField } from "./UploadField";
 import { toast } from "sonner";
-
-interface AddExperienceModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (experience: ExperienceData) => void;
-  initialData?: ExperienceData | null;
-}
+import { ExperienceForm } from "./experience/ExperienceForm";
+import { DocumentUploads } from "./experience/DocumentUploads";
+import { FormActions } from "./experience/FormActions";
 
 export interface ExperienceData {
   jobTitle: string;
@@ -28,6 +21,13 @@ export interface ExperienceData {
   offerLetter?: File;
   separationLetter?: File;
   payslips: File[];
+}
+
+interface AddExperienceModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (experience: ExperienceData) => void;
+  initialData?: ExperienceData | null;
 }
 
 export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
@@ -105,7 +105,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -133,14 +133,12 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
   const handleFileUpload = (field: keyof ExperienceData) => (file: File) => {
     if (!file) return;
 
-    // Validate file size (5MB limit)
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     if (file.size > MAX_FILE_SIZE) {
       toast.error("File size should not exceed 5MB");
       return;
     }
 
-    // Validate file type
     const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Only PDF, JPG, and PNG files are allowed");
@@ -170,131 +168,15 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-semibold text-[rgba(48,48,48,1)]">
-                Job Title
-                <span className="text-[rgba(221,1,1,1)]">*</span>
-              </label>
-              <Input
-                required
-                name="jobTitle"
-                value={formData.jobTitle}
-                onChange={handleInputChange}
-                placeholder="Enter job title"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-[rgba(48,48,48,1)]">
-                Company Name
-                <span className="text-[rgba(221,1,1,1)]">*</span>
-              </label>
-              <Input
-                required
-                name="company"
-                value={formData.company}
-                onChange={handleInputChange}
-                placeholder="Enter company name"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-[rgba(48,48,48,1)]">
-                Location
-                <span className="text-[rgba(221,1,1,1)]">*</span>
-              </label>
-              <Input
-                required
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                placeholder="Enter location"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-[rgba(48,48,48,1)]">
-                Employment Type
-                <span className="text-[rgba(221,1,1,1)]">*</span>
-              </label>
-              <Input
-                required
-                name="employmentType"
-                value={formData.employmentType}
-                onChange={handleInputChange}
-                placeholder="Select employment type"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-[rgba(48,48,48,1)]">
-                Start Date
-                <span className="text-[rgba(221,1,1,1)]">*</span>
-              </label>
-              <Input
-                required
-                type="date"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleInputChange}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-[rgba(48,48,48,1)]">
-                End Date
-                <span className="text-[rgba(221,1,1,1)]">*</span>
-              </label>
-              <Input
-                required
-                type="date"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleInputChange}
-                className="mt-1"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <UploadField
-              label="Offer Letter"
-              required
-              onUpload={handleFileUpload("offerLetter")}
-              value={formData.offerLetter?.name}
-            />
-            <UploadField
-              label="Separation Letter"
-              required
-              onUpload={handleFileUpload("separationLetter")}
-              value={formData.separationLetter?.name}
-            />
-            <UploadField
-              label="Payslip"
-              required
-              onUpload={handleFileUpload("payslips")}
-              value={formData.payslips.length > 0 ? `${formData.payslips.length} file(s) selected` : undefined}
-            />
-          </div>
-
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              onClick={onClose}
-              className="bg-[rgba(221,1,1,0.1)] text-[rgba(221,1,1,1)]"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              className="bg-[rgba(221,1,1,1)]"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Saving..." : "Save"}
-            </Button>
-          </div>
+          <ExperienceForm
+            formData={formData}
+            handleInputChange={handleInputChange}
+          />
+          <DocumentUploads
+            formData={formData}
+            handleFileUpload={handleFileUpload}
+          />
+          <FormActions onClose={onClose} isSubmitting={isSubmitting} />
         </form>
       </DialogContent>
     </Dialog>
