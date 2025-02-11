@@ -7,10 +7,7 @@ import { BasicInfoSection } from "./personal-details/BasicInfoSection";
 import { AddressSection } from "./personal-details/AddressSection";
 import { EmergencyContactsSection } from "./personal-details/EmergencyContactsSection";
 import { FamilyDetailsSection } from "./personal-details/FamilyDetailsSection";
-
-interface PersonalDetailsFormProps {
-  onComplete: (completed: boolean) => void;
-}
+import { PersonalDetailsFormProps } from "./types";
 
 interface EmergencyContact {
   relationship: string;
@@ -25,7 +22,7 @@ interface FamilyMember {
   phone: string;
 }
 
-export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete }) => {
+export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete, initialData }) => {
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([
     { relationship: "", name: "", phone: "" }
   ]);
@@ -33,11 +30,13 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
     { relationship: "", name: "", occupation: "", phone: "" }
   ]);
 
-  const form = useForm();
+  const form = useForm({
+    defaultValues: initialData || {}
+  });
 
   const handleSubmit = form.handleSubmit((data) => {
     console.log('Form submitted:', { data, emergencyContacts, familyDetails });
-    onComplete(true);
+    onComplete(true, data);
   });
 
   return (

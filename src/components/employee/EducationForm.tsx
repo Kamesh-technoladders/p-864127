@@ -1,15 +1,19 @@
 
 import React, { useState, useEffect } from "react";
 import { UploadField } from "./UploadField";
+import { EducationFormProps } from "./types";
 
-interface EducationFormProps {
-  onComplete: (completed: boolean) => void;
-}
-
-export const EducationForm: React.FC<EducationFormProps> = ({ onComplete }) => {
+export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initialData }) => {
   const [ssc, setSsc] = useState<File | null>(null);
   const [hsc, setHsc] = useState<File | null>(null);
   const [degree, setDegree] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (initialData) {
+      // Handle initial data if needed
+      // For example, if initialData contains file information
+    }
+  }, [initialData]);
 
   useEffect(() => {
     onComplete(!!ssc && !!hsc && !!degree);
