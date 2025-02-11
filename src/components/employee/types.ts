@@ -17,19 +17,28 @@ export interface FormComponentProps<T = any> {
   initialData?: T | null;
 }
 
-export interface PersonalDetailsFormProps extends FormComponentProps {
-  onComplete: (completed: boolean, data?: any) => void;
+export interface PersonalDetailsData {
+  // Add specific personal details fields here if needed
+  [key: string]: any;
 }
 
-export interface EducationFormProps extends FormComponentProps {
-  onComplete: (completed: boolean, data?: any) => void;
+export interface EducationData {
+  // Add specific education fields here if needed
+  [key: string]: any;
 }
+
+export interface BankAccountData {
+  // Add specific bank account fields here if needed
+  [key: string]: any;
+}
+
+export interface PersonalDetailsFormProps extends FormComponentProps<PersonalDetailsData> {}
+
+export interface EducationFormProps extends FormComponentProps<EducationData> {}
 
 export interface ExperienceFormProps {
   onComplete: (completed: boolean, data?: Experience[]) => void;
   experiences?: Experience[];
 }
 
-export interface BankAccountFormProps extends FormComponentProps {
-  onComplete: (completed: boolean, data?: any) => void;
-}
+export interface BankAccountFormProps extends FormComponentProps<BankAccountData> {}

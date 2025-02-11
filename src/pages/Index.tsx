@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { NavigationHeader } from "@/components/employee/NavigationHeader";
 import { ProgressBar } from "@/components/employee/ProgressBar";
@@ -9,7 +8,15 @@ import { PersonalDetailsForm } from "@/components/employee/PersonalDetailsForm";
 import { BankAccountForm } from "@/components/employee/BankAccountForm";
 import { FormProgress, FormData, calculateProgress, getProgressMessage } from "@/utils/progressCalculator";
 import { toast } from "sonner";
-import { Experience, PersonalDetailsFormProps, EducationFormProps, BankAccountFormProps } from "@/components/employee/types";
+import { 
+  Experience, 
+  PersonalDetailsFormProps, 
+  EducationFormProps, 
+  BankAccountFormProps,
+  PersonalDetailsData,
+  EducationData,
+  BankAccountData
+} from "@/components/employee/types";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("personal");
@@ -21,10 +28,10 @@ const Index = () => {
   });
 
   const [formData, setFormData] = useState<FormData>({
-    personal: null,
-    education: null,
+    personal: null as PersonalDetailsData | null,
+    education: null as EducationData | null,
     experience: [] as Experience[],
-    bank: null,
+    bank: null as BankAccountData | null,
   });
 
   const updateSectionProgress = (section: keyof FormProgress, completed: boolean) => {
@@ -76,7 +83,7 @@ const Index = () => {
       case "personal":
         return (
           <PersonalDetailsForm
-            onComplete={(completed: boolean, data?: any) => {
+            onComplete={(completed: boolean, data?: PersonalDetailsData) => {
               updateSectionProgress("personal", completed);
               if (completed && data) {
                 updateFormData("personal", data);
@@ -89,7 +96,7 @@ const Index = () => {
         return (
           <>
             <EducationForm
-              onComplete={(completed: boolean, data?: any) => {
+              onComplete={(completed: boolean, data?: EducationData) => {
                 updateSectionProgress("education", completed);
                 if (completed && data) {
                   updateFormData("education", data);
@@ -112,7 +119,7 @@ const Index = () => {
       case "bank":
         return (
           <BankAccountForm
-            onComplete={(completed: boolean, data?: any) => {
+            onComplete={(completed: boolean, data?: BankAccountData) => {
               updateSectionProgress("bank", completed);
               if (completed && data) {
                 updateFormData("bank", data);
