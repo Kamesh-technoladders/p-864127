@@ -11,48 +11,18 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-interface PersonalDetailsFormData {
-  employeeId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  countryCode: string;
-  dateOfBirth: string;
-  gender: "male" | "female";
-  bloodGroup: string;
-  maritalStatus: "married" | "unmarried";
-  aadharNumber: string;
-  panNumber: string;
-  esicNumber: string;
-  uanNumber: string;
-  presentAddress: {
-    addressLine1: string;
-    country: string;
-    state: string;
-    city: string;
-    zipCode: string;
-  };
-  permanentAddress: {
-    addressLine1: string;
-    country: string;
-    state: string;
-    city: string;
-    zipCode: string;
-  };
-  copyPresentAddress: boolean;
+interface PersonalDetailsFormProps {
+  onComplete: (completed: boolean) => void;
 }
 
-const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
-
-export const PersonalDetailsForm = () => {
+export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete }) => {
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [aadharFile, setAadharFile] = useState<File | null>(null);
   const [uanFile, setUanFile] = useState<File | null>(null);
   const [emergencyContacts, setEmergencyContacts] = useState([{ relationship: "", name: "", phone: "" }]);
   const [familyDetails, setFamilyDetails] = useState([{ relationship: "", name: "", occupation: "", phone: "" }]);
 
-  const form = useForm<PersonalDetailsFormData>();
+  const form = useForm();
 
   const handleUpload = async (file: File, type: string) => {
     switch (type) {
@@ -85,32 +55,37 @@ export const PersonalDetailsForm = () => {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1024px] mx-auto px-6 py-8">
+    <div className="flex w-[622px] max-w-full flex-col text-sm font-medium ml-[15px]">
       <Form {...form}>
-        <form className="space-y-8">
-          <div className="space-y-6">
-            <h2 className="text-xl font-bold text-[#1A1F2C]">Basic Info</h2>
-            
-            <FormField
-              control={form.control}
-              name="employeeId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[#1A1F2C] font-semibold">
-                    Employee ID<span className="text-[#DD0101]">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input 
-                      {...field}
-                      className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
-                      placeholder="Enter employee ID"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+        <form className="space-y-6">
+          <div>
+            <div className="text-[rgba(48,64,159,1)] font-bold">Basic Info</div>
+            <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
+              Add your personal information here.
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="mt-6">
+              <FormField
+                control={form.control}
+                name="employeeId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#1A1F2C] font-semibold">
+                      Employee ID<span className="text-[#DD0101]">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field}
+                        className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
+                        placeholder="Enter employee ID"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-6 mt-6">
               <FormField
                 control={form.control}
                 name="firstName"
@@ -150,7 +125,7 @@ export const PersonalDetailsForm = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-6 mt-6">
               <FormField
                 control={form.control}
                 name="email"
@@ -203,7 +178,7 @@ export const PersonalDetailsForm = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-6 mt-6">
               <FormField
                 control={form.control}
                 name="dateOfBirth"
@@ -278,35 +253,37 @@ export const PersonalDetailsForm = () => {
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="maritalStatus"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[#1A1F2C] font-semibold">
-                    Marital Status<span className="text-[#DD0101]">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex gap-4"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="married" id="married" />
-                        <Label htmlFor="married">Married</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="unmarried" id="unmarried" />
-                        <Label htmlFor="unmarried">Unmarried</Label>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            <div className="mt-6">
+              <FormField
+                control={form.control}
+                name="maritalStatus"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#1A1F2C] font-semibold">
+                      Marital Status<span className="text-[#DD0101]">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex gap-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="married" id="married" />
+                          <Label htmlFor="married">Married</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="unmarried" id="unmarried" />
+                          <Label htmlFor="unmarried">Unmarried</Label>
+                        </div>
+                      </RadioGroup>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 mt-6">
               <UploadField 
                 label="Profile Picture" 
                 required 
@@ -315,7 +292,7 @@ export const PersonalDetailsForm = () => {
                 value={profilePhoto?.name}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="aadharNumber"
@@ -363,7 +340,7 @@ export const PersonalDetailsForm = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="esicNumber"
@@ -412,10 +389,13 @@ export const PersonalDetailsForm = () => {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <h2 className="text-xl font-bold text-[#1A1F2C]">Contact Info</h2>
+          <div>
+            <div className="text-[rgba(48,64,159,1)] font-bold">Contact Info</div>
+            <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
+              Add your address details here.
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-8 mt-6">
               <div className="space-y-4">
                 <h3 className="font-semibold text-[#1A1F2C]">Present Address</h3>
                 <FormField
@@ -665,176 +645,198 @@ export const PersonalDetailsForm = () => {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <h2 className="text-xl font-bold text-[#1A1F2C]">Emergency Contact</h2>
-            
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Relationship</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Phone Number</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {emergencyContacts.map((contact, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Select
-                        value={contact.relationship}
-                        onValueChange={(value) => {
-                          const newContacts = [...emergencyContacts];
-                          newContacts[index].relationship = value;
-                          setEmergencyContacts(newContacts);
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select relationship" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="spouse">Spouse</SelectItem>
-                          <SelectItem value="parent">Parent</SelectItem>
-                          <SelectItem value="sibling">Sibling</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        value={contact.name}
-                        onChange={(e) => {
-                          const newContacts = [...emergencyContacts];
-                          newContacts[index].name = e.target.value;
-                          setEmergencyContacts(newContacts);
-                        }}
-                        placeholder="Enter name"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        value={contact.phone}
-                        onChange={(e) => {
-                          const newContacts = [...emergencyContacts];
-                          newContacts[index].phone = e.target.value;
-                          setEmergencyContacts(newContacts);
-                        }}
-                        placeholder="Enter phone number"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeEmergencyContact(index)}
-                      >
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div>
+            <div className="text-[rgba(48,64,159,1)] font-bold">Emergency Contact</div>
+            <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
+              Add emergency contact details here.
+            </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="text-[#DD0101] border-[#DD0101]"
-              onClick={addEmergencyContact}
-            >
-              Add Contact
-            </Button>
+            <div className="mt-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Relationship</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Phone Number</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {emergencyContacts.map((contact, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Select
+                          value={contact.relationship}
+                          onValueChange={(value) => {
+                            const newContacts = [...emergencyContacts];
+                            newContacts[index].relationship = value;
+                            setEmergencyContacts(newContacts);
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select relationship" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="spouse">Spouse</SelectItem>
+                            <SelectItem value="parent">Parent</SelectItem>
+                            <SelectItem value="sibling">Sibling</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          value={contact.name}
+                          onChange={(e) => {
+                            const newContacts = [...emergencyContacts];
+                            newContacts[index].name = e.target.value;
+                            setEmergencyContacts(newContacts);
+                          }}
+                          placeholder="Enter name"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          value={contact.phone}
+                          onChange={(e) => {
+                            const newContacts = [...emergencyContacts];
+                            newContacts[index].phone = e.target.value;
+                            setEmergencyContacts(newContacts);
+                          }}
+                          placeholder="Enter phone number"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeEmergencyContact(index)}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="text-[#DD0101] border-[#DD0101] mt-4"
+                onClick={addEmergencyContact}
+              >
+                <img
+                  loading="lazy"
+                  src="https://cdn.builder.io/api/v1/image/assets/94b97c43fd3a409f8a2658d3c3f998e3/94ba00a354d444e81c8d49b7bd51add7537c14e2c575d31fbdfae2aad48e7d91?placeholderIfAbsent=true"
+                  className="aspect-[1] object-contain w-4 shrink-0 mr-2"
+                  alt="Add icon"
+                />
+                Add Contact
+              </Button>
+            </div>
           </div>
 
-          <div className="space-y-6">
-            <h2 className="text-xl font-bold text-[#1A1F2C]">Family Details</h2>
-            
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Relationship</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Occupation</TableHead>
-                  <TableHead>Phone Number</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {familyDetails.map((member, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Select
-                        value={member.relationship}
-                        onValueChange={(value) => {
-                          const newMembers = [...familyDetails];
-                          newMembers[index].relationship = value;
-                          setFamilyDetails(newMembers);
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select relationship" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="spouse">Spouse</SelectItem>
-                          <SelectItem value="child">Child</SelectItem>
-                          <SelectItem value="parent">Parent</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        value={member.name}
-                        onChange={(e) => {
-                          const newMembers = [...familyDetails];
-                          newMembers[index].name = e.target.value;
-                          setFamilyDetails(newMembers);
-                        }}
-                        placeholder="Enter name"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        value={member.occupation}
-                        onChange={(e) => {
-                          const newMembers = [...familyDetails];
-                          newMembers[index].occupation = e.target.value;
-                          setFamilyDetails(newMembers);
-                        }}
-                        placeholder="Enter occupation"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        value={member.phone}
-                        onChange={(e) => {
-                          const newMembers = [...familyDetails];
-                          newMembers[index].phone = e.target.value;
-                          setFamilyDetails(newMembers);
-                        }}
-                        placeholder="Enter phone number"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeFamilyMember(index)}
-                      >
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div>
+            <div className="text-[rgba(48,64,159,1)] font-bold">Family Details</div>
+            <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
+              Add your family member details here.
+            </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="text-[#DD0101] border-[#DD0101]"
-              onClick={addFamilyMember}
-            >
-              Add Family Member
-            </Button>
+            <div className="mt-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Relationship</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Occupation</TableHead>
+                    <TableHead>Phone Number</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {familyDetails.map((member, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Select
+                          value={member.relationship}
+                          onValueChange={(value) => {
+                            const newMembers = [...familyDetails];
+                            newMembers[index].relationship = value;
+                            setFamilyDetails(newMembers);
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select relationship" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="spouse">Spouse</SelectItem>
+                            <SelectItem value="child">Child</SelectItem>
+                            <SelectItem value="parent">Parent</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          value={member.name}
+                          onChange={(e) => {
+                            const newMembers = [...familyDetails];
+                            newMembers[index].name = e.target.value;
+                            setFamilyDetails(newMembers);
+                          }}
+                          placeholder="Enter name"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          value={member.occupation}
+                          onChange={(e) => {
+                            const newMembers = [...familyDetails];
+                            newMembers[index].occupation = e.target.value;
+                            setFamilyDetails(newMembers);
+                          }}
+                          placeholder="Enter occupation"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          value={member.phone}
+                          onChange={(e) => {
+                            const newMembers = [...familyDetails];
+                            newMembers[index].phone = e.target.value;
+                            setFamilyDetails(newMembers);
+                          }}
+                          placeholder="Enter phone number"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFamilyMember(index)}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="text-[#DD0101] border-[#DD0101] mt-4"
+                onClick={addFamilyMember}
+              >
+                <img
+                  loading="lazy"
+                  src="https://cdn.builder.io/api/v1/image/assets/94b97c43fd3a409f8a2658d3c3f998e3/94ba00a354d444e81c8d49b7bd51add7537c14e2c575d31fbdfae2aad48e7d91?placeholderIfAbsent=true"
+                  className="aspect-[1] object-contain w-4 shrink-0 mr-2"
+                  alt="Add icon"
+                />
+                Add Family Member
+              </Button>
+            </div>
           </div>
 
           <div className="flex justify-end pt-6">
