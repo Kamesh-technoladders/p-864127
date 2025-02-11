@@ -1,12 +1,32 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { UploadField } from "./UploadField";
 
-export const DocumentsForm = () => {
-  const handleUpload = async (file: File) => {
-    // Simulated upload progress
-    return new Promise<void>((resolve) => {
+interface DocumentsFormProps {
+  onComplete: (completed: boolean) => void;
+}
+
+export const DocumentsForm: React.FC<DocumentsFormProps> = ({ onComplete }) => {
+  const [resume, setResume] = useState<File | null>(null);
+  const [identityProof, setIdentityProof] = useState<File | null>(null);
+
+  useEffect(() => {
+    onComplete(!!resume && !!identityProof);
+  }, [resume, identityProof, onComplete]);
+
+  const handleResumeUpload = async (file: File) => {
+    await new Promise<void>((resolve) => {
       setTimeout(() => {
+        setResume(file);
+        resolve();
+      }, 2000);
+    });
+  };
+
+  const handleIdentityUpload = async (file: File) => {
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        setIdentityProof(file);
         resolve();
       }, 2000);
     });
@@ -23,8 +43,9 @@ export const DocumentsForm = () => {
         <UploadField 
           label="Resume/CV" 
           required 
-          onUpload={handleUpload}
+          onUpload={handleResumeUpload}
           showProgress
+          value={resume?.name}
         />
       </div>
 
@@ -32,8 +53,9 @@ export const DocumentsForm = () => {
         <UploadField 
           label="Identity Proof" 
           required 
-          onUpload={handleUpload}
+          onUpload={handleIdentityUpload}
           showProgress
+          value={identityProof?.name}
         />
       </div>
     </div>

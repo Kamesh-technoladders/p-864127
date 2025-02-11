@@ -1,13 +1,42 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { UploadField } from "./UploadField";
 
-export const EducationForm = () => {
-  const handleUpload = async (file: File) => {
-    // Simulate upload process
-    return new Promise<void>((resolve) => {
-      console.log("Uploading file:", file);
+interface EducationFormProps {
+  onComplete: (completed: boolean) => void;
+}
+
+export const EducationForm: React.FC<EducationFormProps> = ({ onComplete }) => {
+  const [ssc, setSsc] = useState<File | null>(null);
+  const [hsc, setHsc] = useState<File | null>(null);
+  const [degree, setDegree] = useState<File | null>(null);
+
+  useEffect(() => {
+    onComplete(!!ssc && !!hsc && !!degree);
+  }, [ssc, hsc, degree, onComplete]);
+
+  const handleSscUpload = async (file: File) => {
+    await new Promise<void>((resolve) => {
       setTimeout(() => {
+        setSsc(file);
+        resolve();
+      }, 2000);
+    });
+  };
+
+  const handleHscUpload = async (file: File) => {
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        setHsc(file);
+        resolve();
+      }, 2000);
+    });
+  };
+
+  const handleDegreeUpload = async (file: File) => {
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        setDegree(file);
         resolve();
       }, 2000);
     });
@@ -24,8 +53,9 @@ export const EducationForm = () => {
         <UploadField 
           label="SSC" 
           required 
-          onUpload={handleUpload}
-          showProgress 
+          onUpload={handleSscUpload}
+          showProgress
+          value={ssc?.name}
         />
       </div>
 
@@ -33,8 +63,9 @@ export const EducationForm = () => {
         <UploadField 
           label="HSC/Diploma" 
           required 
-          onUpload={handleUpload}
+          onUpload={handleHscUpload}
           showProgress
+          value={hsc?.name}
         />
       </div>
 
@@ -42,8 +73,9 @@ export const EducationForm = () => {
         <UploadField 
           label="Degree" 
           required 
-          onUpload={handleUpload}
+          onUpload={handleDegreeUpload}
           showProgress
+          value={degree?.name}
         />
       </div>
 
@@ -59,4 +91,3 @@ export const EducationForm = () => {
     </div>
   );
 };
-

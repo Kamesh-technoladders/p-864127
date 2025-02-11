@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavigationHeader } from "@/components/employee/NavigationHeader";
 import { ProgressBar } from "@/components/employee/ProgressBar";
 import { TabNavigation } from "@/components/employee/TabNavigation";
@@ -7,9 +7,22 @@ import { EducationForm } from "@/components/employee/EducationForm";
 import { ExperienceForm } from "@/components/employee/ExperienceForm";
 import { PersonalDetailsForm } from "@/components/employee/PersonalDetailsForm";
 import { DocumentsForm } from "@/components/employee/DocumentsForm";
+import { FormProgress, calculateProgress, getProgressMessage } from "@/utils/progressCalculator";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("personal");
+  const [formProgress, setFormProgress] = useState<FormProgress>({
+    personal: false,
+    education: false,
+    documents: false,
+  });
+
+  const updateSectionProgress = (section: keyof FormProgress, completed: boolean) => {
+    setFormProgress((prev) => ({
+      ...prev,
+      [section]: completed,
+    }));
+  };
 
   const tabs = [
     { id: "personal", label: "Personal Details", isActive: activeTab === "personal" },
@@ -21,21 +34,34 @@ const Index = () => {
   const renderActiveTabContent = () => {
     switch (activeTab) {
       case "personal":
-        return <PersonalDetailsForm />;
+        return (
+          <PersonalDetailsForm
+            onComplete={(completed) => updateSectionProgress("personal", completed)}
+          />
+        );
       case "education":
         return (
           <>
-            <EducationForm />
+            <EducationForm
+              onComplete={(completed) => updateSectionProgress("education", completed)}
+            />
             <div className="shrink-0 h-px mt-[29px] border-[rgba(239,242,255,1)] border-solid border-2" />
             <ExperienceForm />
           </>
         );
       case "documents":
-        return <DocumentsForm />;
+        return (
+          <DocumentsForm
+            onComplete={(completed) => updateSectionProgress("documents", completed)}
+          />
+        );
       default:
         return null;
     }
   };
+
+  const progress = calculateProgress(formProgress);
+  const progressMessage = getProgressMessage(formProgress);
 
   return (
     <div className="bg-[rgba(242,242,245,1)] flex flex-col overflow-hidden items-stretch min-h-screen">
@@ -63,9 +89,9 @@ const Index = () => {
           </div>
 
           <ProgressBar
-            percentage={25}
-            title="25% Completed"
-            subtitle="Update your profile information to release offer letter."
+            percentage={progress}
+            title={`${progress}% Completed`}
+            subtitle={progressMessage}
           />
 
           <section className="bg-white border flex w-full flex-col items-stretch mt-5 pb-6 rounded-lg border-[rgba(238,238,238,1)] border-solid">

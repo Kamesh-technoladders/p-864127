@@ -1,12 +1,22 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { UploadField } from "./UploadField";
 
-export const PersonalDetailsForm = () => {
+interface PersonalDetailsFormProps {
+  onComplete: (completed: boolean) => void;
+}
+
+export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete }) => {
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+
+  useEffect(() => {
+    onComplete(!!profilePhoto);
+  }, [profilePhoto, onComplete]);
+
   const handleUpload = async (file: File) => {
-    // Simulated upload progress
-    return new Promise<void>((resolve) => {
+    await new Promise<void>((resolve) => {
       setTimeout(() => {
+        setProfilePhoto(file);
         resolve();
       }, 2000);
     });
@@ -25,6 +35,7 @@ export const PersonalDetailsForm = () => {
           required 
           onUpload={handleUpload} 
           showProgress
+          value={profilePhoto?.name}
         />
       </div>
     </div>
