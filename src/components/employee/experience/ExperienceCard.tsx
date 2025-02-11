@@ -1,12 +1,5 @@
-
 import React from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Pencil, Trash2, MoreVertical } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Experience } from "../types";
 
 interface ExperienceCardProps {
@@ -58,27 +51,22 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
             <DocumentDisplay experience={experience} />
             <div className="flex flex-col items-stretch grow shrink-0 basis-0 w-fit">
               <PayslipsDisplay payslips={experience.payslips} />
-              <DropdownMenu>
-                <DropdownMenuTrigger className="focus:outline-none ml-auto">
-                  <MoreVertical className="h-5 w-5 text-gray-500 hover:text-gray-700" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem
-                    onClick={() => onEdit(experience)}
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    <Pencil className="h-4 w-4" />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => onDelete(experience)}
-                    className="flex items-center gap-2 cursor-pointer text-red-600"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center gap-2 mt-4 justify-end">
+                <button
+                  onClick={() => onEdit(experience)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  aria-label="Edit experience"
+                >
+                  <Pencil className="h-5 w-5 text-gray-600 hover:text-gray-800" />
+                </button>
+                <button
+                  onClick={() => onDelete(experience)}
+                  className="p-2 hover:bg-red-50 rounded-full transition-colors"
+                  aria-label="Delete experience"
+                >
+                  <Trash2 className="h-5 w-5 text-red-600 hover:text-red-700" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
