@@ -1,19 +1,41 @@
+
 import React, { useState } from "react";
 import { NavigationHeader } from "@/components/employee/NavigationHeader";
 import { ProgressBar } from "@/components/employee/ProgressBar";
 import { TabNavigation } from "@/components/employee/TabNavigation";
 import { EducationForm } from "@/components/employee/EducationForm";
 import { ExperienceForm } from "@/components/employee/ExperienceForm";
+import { PersonalDetailsForm } from "@/components/employee/PersonalDetailsForm";
+import { DocumentsForm } from "@/components/employee/DocumentsForm";
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("education");
+  const [activeTab, setActiveTab] = useState("personal");
 
   const tabs = [
-    { id: "personal", label: "Personal Details" },
-    { id: "education", label: "Education & Experience", isActive: true },
-    { id: "documents", label: "Documents" },
-    { id: "bank", label: "Bank Account Details" },
+    { id: "personal", label: "Personal Details", isActive: activeTab === "personal" },
+    { id: "education", label: "Education & Experience", isActive: activeTab === "education" },
+    { id: "documents", label: "Documents", isActive: activeTab === "documents" },
+    { id: "bank", label: "Bank Account Details", isActive: activeTab === "bank" },
   ];
+
+  const renderActiveTabContent = () => {
+    switch (activeTab) {
+      case "personal":
+        return <PersonalDetailsForm />;
+      case "education":
+        return (
+          <>
+            <EducationForm />
+            <div className="shrink-0 h-px mt-[29px] border-[rgba(239,242,255,1)] border-solid border-2" />
+            <ExperienceForm />
+          </>
+        );
+      case "documents":
+        return <DocumentsForm />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="bg-[rgba(242,242,245,1)] flex flex-col overflow-hidden items-stretch min-h-screen">
@@ -49,11 +71,7 @@ const Index = () => {
           <section className="bg-white border flex w-full flex-col items-stretch mt-5 pb-6 rounded-lg border-[rgba(238,238,238,1)] border-solid">
             <TabNavigation tabs={tabs} onTabChange={setActiveTab} />
 
-            <EducationForm />
-
-            <div className="shrink-0 h-px mt-[29px] border-[rgba(239,242,255,1)] border-solid border-2" />
-
-            <ExperienceForm />
+            {renderActiveTabContent()}
 
             <div className="shrink-0 h-px mt-[29px] border-[rgba(239,242,255,1)] border-solid border-2" />
 
