@@ -29,26 +29,29 @@ export const DocumentsSection: React.FC<DocumentsSectionProps> = ({
     <div className="space-y-6 mt-6">
       {/* Profile Picture Row */}
       <div className="flex items-start gap-4">
-        <FormField
-          control={form.control}
-          name="profileName"
-          render={({ field }) => (
-            <FormItem className="w-[300px]">
-              <FormLabel className="text-[#1A1F2C] font-semibold">
-                Profile Name<span className="text-[#DD0101]">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input 
-                  {...field}
-                  className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
-                  placeholder="Enter your profile name"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <div className="w-[300px]">
+          <FormLabel className="block text-[#1A1F2C] font-semibold mb-2">
+            Profile Name<span className="text-[#DD0101]">*</span>
+          </FormLabel>
+          <FormField
+            control={form.control}
+            name="profileName"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input 
+                    {...field}
+                    className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
+                    placeholder="Enter your profile name"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="w-[300px]">
+          <div className="mb-2 invisible">Spacer</div>
           <UploadField 
             label="Profile Picture" 
             required 
@@ -61,26 +64,29 @@ export const DocumentsSection: React.FC<DocumentsSectionProps> = ({
 
       {/* Aadhar Row */}
       <div className="flex items-start gap-4">
-        <FormField
-          control={form.control}
-          name="aadharNumber"
-          render={({ field }) => (
-            <FormItem className="w-[300px]">
-              <FormLabel className="text-[#1A1F2C] font-semibold">
-                Aadhar Number<span className="text-[#DD0101]">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input 
-                  {...field}
-                  className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
-                  placeholder="Enter 12-digit Aadhar number"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <div className="w-[300px]">
+          <FormLabel className="block text-[#1A1F2C] font-semibold mb-2">
+            Aadhar Number<span className="text-[#DD0101]">*</span>
+          </FormLabel>
+          <FormField
+            control={form.control}
+            name="aadharNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input 
+                    {...field}
+                    className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
+                    placeholder="Enter 12-digit Aadhar number"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="w-[300px]">
+          <div className="mb-2 invisible">Spacer</div>
           <UploadField 
             label="Upload Aadhar" 
             required 
@@ -92,26 +98,29 @@ export const DocumentsSection: React.FC<DocumentsSectionProps> = ({
 
       {/* PAN Row */}
       <div className="flex items-start gap-4">
-        <FormField
-          control={form.control}
-          name="panNumber"
-          render={({ field }) => (
-            <FormItem className="w-[300px]">
-              <FormLabel className="text-[#1A1F2C] font-semibold">
-                PAN Number<span className="text-[#DD0101]">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input 
-                  {...field}
-                  className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
-                  placeholder="Enter PAN number (ABCDE1234F)"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <div className="w-[300px]">
+          <FormLabel className="block text-[#1A1F2C] font-semibold mb-2">
+            PAN Number<span className="text-[#DD0101]">*</span>
+          </FormLabel>
+          <FormField
+            control={form.control}
+            name="panNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input 
+                    {...field}
+                    className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
+                    placeholder="Enter PAN number (ABCDE1234F)"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="w-[300px]">
+          <div className="mb-2 invisible">Spacer</div>
           <UploadField 
             label="Upload PAN" 
             required 
@@ -123,26 +132,29 @@ export const DocumentsSection: React.FC<DocumentsSectionProps> = ({
 
       {/* ESIC Row */}
       <div className="flex items-start gap-4">
-        <FormField
-          control={form.control}
-          name="esicNumber"
-          render={({ field }) => (
-            <FormItem className="w-[300px]">
-              <FormLabel className="text-[#1A1F2C] font-semibold">
-                ESIC Number
-              </FormLabel>
-              <FormControl>
-                <Input 
-                  {...field}
-                  className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
-                  placeholder="Enter 17-digit ESIC number"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <div className="w-[300px]">
+          <FormLabel className="block text-[#1A1F2C] font-semibold mb-2">
+            ESIC Number
+          </FormLabel>
+          <FormField
+            control={form.control}
+            name="esicNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input 
+                    {...field}
+                    className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
+                    placeholder="Enter 17-digit ESIC number"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="w-[300px]">
+          <div className="mb-2 invisible">Spacer</div>
           <UploadField 
             label="Upload ESIC" 
             onUpload={(file) => handleUpload(file, "esic")}
@@ -153,26 +165,29 @@ export const DocumentsSection: React.FC<DocumentsSectionProps> = ({
 
       {/* UAN Row */}
       <div className="flex items-start gap-4">
-        <FormField
-          control={form.control}
-          name="uanNumber"
-          render={({ field }) => (
-            <FormItem className="w-[300px]">
-              <FormLabel className="text-[#1A1F2C] font-semibold">
-                UAN Number
-              </FormLabel>
-              <FormControl>
-                <Input 
-                  {...field}
-                  className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
-                  placeholder="Enter 12-digit UAN number"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <div className="w-[300px]">
+          <FormLabel className="block text-[#1A1F2C] font-semibold mb-2">
+            UAN Number
+          </FormLabel>
+          <FormField
+            control={form.control}
+            name="uanNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input 
+                    {...field}
+                    className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
+                    placeholder="Enter 12-digit UAN number"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="w-[300px]">
+          <div className="mb-2 invisible">Spacer</div>
           <UploadField 
             label="Upload UAN" 
             onUpload={(file) => handleUpload(file, "uan")}
