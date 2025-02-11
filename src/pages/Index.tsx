@@ -9,6 +9,7 @@ import { PersonalDetailsForm } from "@/components/employee/PersonalDetailsForm";
 import { BankAccountForm } from "@/components/employee/BankAccountForm";
 import { FormProgress, FormData, calculateProgress, getProgressMessage } from "@/utils/progressCalculator";
 import { toast } from "sonner";
+import { Experience } from "@/components/employee/types";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("personal");
@@ -22,7 +23,7 @@ const Index = () => {
   const [formData, setFormData] = useState<FormData>({
     personal: null,
     education: null,
-    experience: [],
+    experience: [] as Experience[],
     bank: null,
   });
 
@@ -41,19 +42,16 @@ const Index = () => {
   };
 
   const handleSaveAndNext = () => {
-    // Save current section data
     if (!formProgress[activeTab as keyof FormProgress]) {
       toast.error("Please complete all required fields before proceeding");
       return;
     }
 
-    // Move to next tab
     const tabOrder = ["personal", "education", "bank"];
     const currentIndex = tabOrder.indexOf(activeTab);
     if (currentIndex < tabOrder.length - 1) {
       setActiveTab(tabOrder[currentIndex + 1]);
     } else {
-      // Submit all form data
       console.log("Submitting form data:", formData);
       toast.success("All forms completed successfully!");
     }
@@ -192,4 +190,3 @@ const Index = () => {
 };
 
 export default Index;
-

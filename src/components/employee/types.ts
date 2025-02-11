@@ -1,3 +1,4 @@
+
 export interface Experience {
   id: string;
   jobTitle: string;
@@ -15,3 +16,9 @@ export interface FormComponentProps<T = any> {
   onComplete: (completed: boolean, data?: T) => void;
   initialData?: T | null;
 }
+
+export interface ExperienceFormProps {
+  onComplete: (completed: boolean, data?: Experience[]) => void;
+  experiences?: Experience[];
+}
+
