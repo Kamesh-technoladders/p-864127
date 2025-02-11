@@ -2,27 +2,9 @@
 import React, { useState } from "react";
 import { AddExperienceModal, ExperienceData } from "./AddExperienceModal";
 import { toast } from "sonner";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, MoreVertical } from "lucide-react";
-
-interface Experience extends ExperienceData {
-  id: string;
-}
+import { Experience } from "./types";
+import { ExperienceCard } from "./experience/ExperienceCard";
+import { DeleteConfirmationDialog } from "./experience/DeleteConfirmationDialog";
 
 export const ExperienceForm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -104,126 +86,12 @@ export const ExperienceForm = () => {
       </div>
 
       {experiences.map((experience) => (
-        <div
+        <ExperienceCard
           key={experience.id}
-          className="bg-[rgba(242,242,245,1)] border self-stretch w-full mt-6 px-[15px] py-3 rounded-lg border-[rgba(238,238,238,1)] border-solid"
-        >
-          <div className="gap-5 flex max-md:flex-col max-md:items-stretch">
-            <div className="w-[33%] max-md:w-full max-md:ml-0">
-              <div className="flex grow flex-col text-sm text-black font-normal">
-                <div className="text-base font-semibold">
-                  {experience.jobTitle} - {experience.employmentType}
-                </div>
-                <div className="text-[rgba(48,48,48,1)] font-semibold mt-2">
-                  {experience.company} - {experience.location}
-                </div>
-                <div className="text-[rgba(80,80,80,1)] mt-1.5">
-                  {new Date(experience.startDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    year: "numeric",
-                  })}{" "}
-                  -{" "}
-                  {new Date(experience.endDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </div>
-                {!experience.offerLetter && (
-                  <div className="mt-5">
-                    *Payslip not available reason goes here.
-                  </div>
-                )}
-                {!experience.separationLetter && (
-                  <div className="self-stretch mt-1">
-                    *Separation letter not available reason goes here.
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="w-[67%] ml-5 max-md:w-full max-md:ml-0">
-              <div className="flex items-stretch gap-[40px_58px] self-stretch flex-wrap my-auto">
-                <div className="flex flex-col items-stretch">
-                  <div className="flex items-stretch gap-5 text-xs text-[rgba(48,48,48,1)] font-semibold justify-between">
-                    <div>Offer Letter</div>
-                    <div>Separation Letter</div>
-                  </div>
-                  <div className="flex items-stretch gap-[40px_45px] text-sm text-black font-normal whitespace-nowrap mt-2">
-                    {experience.offerLetter ? (
-                      <img
-                        loading="lazy"
-                        srcSet="https://cdn.builder.io/api/v1/image/assets/94b97c43fd3a409f8a2658d3c3f998e3/67621ce3f4058a33953fd3e1890863f67564d77b3fa7afeac1f9a73e808404c8?placeholderIfAbsent=true&width=100 100w"
-                        className="aspect-[1] object-contain w-[50px] shrink-0"
-                        alt="Document"
-                      />
-                    ) : (
-                      <div className="my-auto">-</div>
-                    )}
-                    {experience.separationLetter ? (
-                      <img
-                        loading="lazy"
-                        srcSet="https://cdn.builder.io/api/v1/image/assets/94b97c43fd3a409f8a2658d3c3f998e3/67621ce3f4058a33953fd3e1890863f67564d77b3fa7afeac1f9a73e808404c8?placeholderIfAbsent=true&width=100 100w"
-                        className="aspect-[1] object-contain w-[50px] shrink-0"
-                        alt="Document"
-                      />
-                    ) : (
-                      <div className="my-auto">-</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-stretch grow shrink-0 basis-0 w-fit">
-                  <div className="flex items-stretch gap-[30px] text-xs text-[rgba(48,48,48,1)] font-semibold">
-                    <div>Payslip 1</div>
-                    <div>Payslip 2</div>
-                    <div>Payslip 3</div>
-                  </div>
-                  <div className="flex w-full items-stretch gap-5 text-sm text-black font-normal whitespace-nowrap justify-between mt-2">
-                    <div className="flex items-stretch gap-[31px]">
-                      {experience.payslips.slice(0, 3).map((_, index) => (
-                        <img
-                          key={index}
-                          loading="lazy"
-                          srcSet="https://cdn.builder.io/api/v1/image/assets/94b97c43fd3a409f8a2658d3c3f998e3/67621ce3f4058a33953fd3e1890863f67564d77b3fa7afeac1f9a73e808404c8?placeholderIfAbsent=true&width=100 100w"
-                          className="aspect-[1] object-contain w-[50px] shrink-0"
-                          alt="Document"
-                        />
-                      ))}
-                      {Array.from({
-                        length: 3 - (experience.payslips?.length || 0),
-                      }).map((_, index) => (
-                        <div key={`empty-${index}`} className="my-auto">
-                          -
-                        </div>
-                      ))}
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="focus:outline-none">
-                        <MoreVertical className="h-5 w-5 text-gray-500 hover:text-gray-700" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={() => handleEdit(experience)}
-                          className="flex items-center gap-2 cursor-pointer"
-                        >
-                          <Pencil className="h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(experience)}
-                          className="flex items-center gap-2 cursor-pointer text-red-600"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          experience={experience}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       ))}
 
       <button
@@ -252,36 +120,14 @@ export const ExperienceForm = () => {
         initialData={selectedExperience}
       />
 
-      <AlertDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Experience</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this experience? This action cannot
-              be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                setIsDeleteDialogOpen(false);
-                setSelectedExperience(null);
-              }}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => {
+          setIsDeleteDialogOpen(false);
+          setSelectedExperience(null);
+        }}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };
