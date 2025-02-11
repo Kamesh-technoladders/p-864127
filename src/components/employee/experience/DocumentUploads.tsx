@@ -5,7 +5,7 @@ import { ExperienceData } from "../AddExperienceModal";
 
 interface DocumentUploadsProps {
   formData: ExperienceData;
-  handleFileUpload: (field: keyof ExperienceData) => (file: File) => void;
+  handleFileUpload: (field: keyof ExperienceData) => (file: File) => Promise<void>;
 }
 
 export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
@@ -19,12 +19,14 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
         required
         onUpload={handleFileUpload("offerLetter")}
         value={formData.offerLetter?.name}
+        showProgress
       />
       <UploadField
         label="Separation Letter"
         required
         onUpload={handleFileUpload("separationLetter")}
         value={formData.separationLetter?.name}
+        showProgress
       />
       <UploadField
         label="Payslip"
@@ -35,7 +37,9 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
             ? `${formData.payslips.length} file(s) selected`
             : undefined
         }
+        showProgress
       />
     </div>
   );
 };
+

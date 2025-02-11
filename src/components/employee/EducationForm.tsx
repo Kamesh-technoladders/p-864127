@@ -1,9 +1,16 @@
+
 import React from "react";
 import { UploadField } from "./UploadField";
 
 export const EducationForm = () => {
-  const handleUpload = (file: File) => {
-    console.log("Uploaded file:", file);
+  const handleUpload = async (file: File) => {
+    // Simulate upload process
+    return new Promise<void>((resolve) => {
+      console.log("Uploading file:", file);
+      setTimeout(() => {
+        resolve();
+      }, 2000);
+    });
   };
 
   return (
@@ -14,15 +21,30 @@ export const EducationForm = () => {
       </div>
 
       <div className="mt-6">
-        <UploadField label="SSC" required onUpload={handleUpload} />
+        <UploadField 
+          label="SSC" 
+          required 
+          onUpload={handleUpload}
+          showProgress 
+        />
       </div>
 
       <div className="mt-6">
-        <UploadField label="HSC/Diploma" required onUpload={handleUpload} />
+        <UploadField 
+          label="HSC/Diploma" 
+          required 
+          onUpload={handleUpload}
+          showProgress
+        />
       </div>
 
       <div className="mt-6">
-        <UploadField label="Degree" required onUpload={handleUpload} />
+        <UploadField 
+          label="Degree" 
+          required 
+          onUpload={handleUpload}
+          showProgress
+        />
       </div>
 
       <button className="flex items-stretch gap-2 text-[rgba(221,1,1,1)] mt-[29px]">
@@ -37,3 +59,4 @@ export const EducationForm = () => {
     </div>
   );
 };
+
