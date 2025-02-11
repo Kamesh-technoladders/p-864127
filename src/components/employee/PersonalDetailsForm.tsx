@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { BasicInfoSection } from "./personal-details/BasicInfoSection";
 import { AddressSection } from "./personal-details/AddressSection";
-import { DocumentsSection } from "./personal-details/DocumentsSection";
 import { EmergencyContactsSection } from "./personal-details/EmergencyContactsSection";
 import { FamilyDetailsSection } from "./personal-details/FamilyDetailsSection";
 
@@ -27,11 +26,6 @@ interface FamilyMember {
 }
 
 export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete }) => {
-  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
-  const [aadharFile, setAadharFile] = useState<File | null>(null);
-  const [panFile, setPanFile] = useState<File | null>(null);
-  const [esicFile, setEsicFile] = useState<File | null>(null);
-  const [uanFile, setUanFile] = useState<File | null>(null);
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([
     { relationship: "", name: "", phone: "" }
   ]);
@@ -40,26 +34,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
   ]);
 
   const form = useForm();
-
-  const handleUpload = async (file: File, type: string) => {
-    switch (type) {
-      case "profile":
-        setProfilePhoto(file);
-        break;
-      case "aadhar":
-        setAadharFile(file);
-        break;
-      case "pan":
-        setPanFile(file);
-        break;
-      case "esic":
-        setEsicFile(file);
-        break;
-      case "uan":
-        setUanFile(file);
-        break;
-    }
-  };
 
   const handleSubmit = form.handleSubmit((data) => {
     console.log('Form submitted:', { data, emergencyContacts, familyDetails });
@@ -73,16 +47,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
           <BasicInfoSection form={form} />
           
           <AddressSection form={form} />
-          
-          <DocumentsSection
-            form={form}
-            handleUpload={handleUpload}
-            profilePhoto={profilePhoto}
-            aadharFile={aadharFile}
-            panFile={panFile}
-            esicFile={esicFile}
-            uanFile={uanFile}
-          />
 
           <EmergencyContactsSection
             contacts={emergencyContacts}

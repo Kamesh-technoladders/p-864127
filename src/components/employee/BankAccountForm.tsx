@@ -1,7 +1,7 @@
 
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { banknote } from "lucide-react";
+import { Banknote } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
@@ -32,7 +32,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete }) 
   return (
     <div className="flex w-[622px] max-w-full flex-col text-sm font-medium ml-[15px]">
       <div className="flex items-center gap-2 text-[rgba(48,64,159,1)] font-bold">
-        <banknote className="h-5 w-5" />
+        <Banknote className="h-5 w-5" />
         <span>Bank Account Details</span>
       </div>
       <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
