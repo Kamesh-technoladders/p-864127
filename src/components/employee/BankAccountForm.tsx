@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { UploadField } from "./UploadField";
 import {
   Select,
   SelectContent,
@@ -19,6 +20,9 @@ import {
 interface BankAccountFormProps {
   onComplete: (completed: boolean) => void;
 }
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_FILE_TYPES = ["application/pdf", "image/png", "image/jpeg"];
 
 const bankAccountSchema = z.object({
   accountHolderName: z
@@ -54,10 +58,8 @@ const bankAccountSchema = z.object({
     .min(10, "Phone number must be 10 digits")
     .max(10, "Phone number must be 10 digits")
     .regex(/^\d+$/, "Phone number can only contain numbers"),
-  bankEmail: z
-    .string()
-    .email("Invalid email address")
-    .max(50, "Email cannot exceed 50 characters"),
+  cancelledCheque: z.any().optional(),
+  passbookCopy: z.any().optional(),
 });
 
 type BankFormData = z.infer<typeof bankAccountSchema>;
@@ -81,6 +83,34 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete }) 
     const isFormComplete = Object.values(formValues).every(value => !!value);
     onComplete(isFormComplete && isValid);
   }, [formValues, isValid, onComplete]);
+
+  const handleFileUpload = (fieldName: "cancelledCheque" | "passbookCopy") => async (file: File) => {
+    if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF or image file (PNG, JPG)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "File too large",
+        description: "File size should not exceed 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Here you would typically upload the file to your server
+    // For now, we'll just update the form state
+    setValue(fieldName, file);
+    toast({
+      title: "File uploaded",
+      description: "Document uploaded successfully!",
+    });
+  };
 
   const onSubmit = (data: BankFormData) => {
     toast({
@@ -259,28 +289,27 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete }) 
           )}
         </div>
 
-        <div className="relative">
-          <Label htmlFor="bankEmail" className="text-sm font-semibold text-[#303030]">
-            Bank Email<span className="text-[#DD0101]">*</span>
-          </Label>
-          <Input
-            id="bankEmail"
-            {...register("bankEmail")}
-            type="email"
-            className={cn(
-              "mt-2 h-11 border-[#E4E4E4] rounded-lg placeholder:text-[#8E8E8E]",
-              "hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20",
-              errors.bankEmail && "border-[#DD0101] hover:border-[#DD0101]/80"
-            )}
-          />
-          {errors.bankEmail && (
-            <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
-              <AlertCircle className="h-3 w-3" />
-              <span>{errors.bankEmail.message}</span>
-            </div>
-          )}
+        <div className="col-span-2">
+          <div className="space-y-4">
+            <UploadField
+              label="Cancelled Cheque"
+              required
+              onUpload={handleFileUpload("cancelledCheque")}
+              value={formValues.cancelledCheque?.name}
+              showProgress
+            />
+            
+            <UploadField
+              label="Bank Passbook/Statement"
+              required
+              onUpload={handleFileUpload("passbookCopy")}
+              value={formValues.passbookCopy?.name}
+              showProgress
+            />
+          </div>
         </div>
       </form>
     </div>
   );
 };
+
