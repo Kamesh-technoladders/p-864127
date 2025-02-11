@@ -2,34 +2,23 @@
 import React, { useState } from "react";
 import { AddExperienceModal, ExperienceData } from "./AddExperienceModal";
 import { toast } from "sonner";
-import { Experience } from "./types";
+import { Experience, ExperienceFormProps } from "./types";
 import { ExperienceCard } from "./experience/ExperienceCard";
 import { DeleteConfirmationDialog } from "./experience/DeleteConfirmationDialog";
 
-export const ExperienceForm = () => {
+export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, experiences = [] }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExperience, setSelectedExperience] = useState<Experience | null>(
     null
   );
-  const [experiences, setExperiences] = useState<Experience[]>([
-    {
-      id: "1",
-      jobTitle: "Software Developer",
-      company: "Wipro Limited",
-      location: "Bengaluru, India",
-      employmentType: "Full Time",
-      startDate: "2018-07-01",
-      endDate: "2020-11-30",
-      payslips: [],
-    },
-  ]);
+  const [experiencesList, setExperiencesList] = useState<Experience[]>(experiences);
 
   const handleAddExperience = (data: ExperienceData) => {
     try {
       if (selectedExperience) {
         // Edit mode
-        setExperiences((prev) =>
+        setExperiencesList((prev) =>
           prev.map((exp) =>
             exp.id === selectedExperience.id ? { ...data, id: exp.id } : exp
           )
@@ -41,10 +30,11 @@ export const ExperienceForm = () => {
           ...data,
           id: Date.now().toString(),
         };
-        setExperiences((prev) => [...prev, newExperience]);
+        setExperiencesList((prev) => [...prev, newExperience]);
         toast.success("Experience added successfully");
       }
       setSelectedExperience(null);
+      onComplete(true, experiencesList);
     } catch (error) {
       console.error("Error handling experience:", error);
       toast.error(
@@ -67,12 +57,13 @@ export const ExperienceForm = () => {
 
   const confirmDelete = () => {
     if (selectedExperience) {
-      setExperiences((prev) =>
+      setExperiencesList((prev) =>
         prev.filter((exp) => exp.id !== selectedExperience.id)
       );
       toast.success("Experience deleted successfully");
       setIsDeleteDialogOpen(false);
       setSelectedExperience(null);
+      onComplete(true, experiencesList);
     }
   };
 
@@ -85,7 +76,7 @@ export const ExperienceForm = () => {
         Add your previous working experience and internship details.
       </div>
 
-      {experiences.map((experience) => (
+      {experiencesList.map((experience) => (
         <ExperienceCard
           key={experience.id}
           experience={experience}
