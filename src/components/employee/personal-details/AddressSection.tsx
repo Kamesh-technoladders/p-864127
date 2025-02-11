@@ -133,4 +133,19 @@ export const AddressSection: React.FC<AddressSectionProps> = ({ form }) => {
           </div>
         </div>
 
-        <div className="space
+        <div className="space-y-4">
+          <h3 className="font-semibold text-[#1A1F2C]">Permanent Address</h3>
+          <div className="flex items-center space-x-2">
+            <Checkbox id="sameAsPresent" />
+            <label
+              htmlFor="sameAsPresent"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Same as present address
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
