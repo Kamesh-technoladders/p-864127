@@ -2,7 +2,15 @@
 export interface FormProgress {
   personal: boolean;
   education: boolean;
+  experience: boolean;
   bank: boolean;
+}
+
+export interface FormData {
+  personal: any;
+  education: any;
+  experience: any[];
+  bank: any;
 }
 
 export const calculateProgress = (progress: FormProgress): number => {
@@ -19,7 +27,9 @@ export const getProgressMessage = (progress: FormProgress): string => {
         case "personal":
           return "Personal Details";
         case "education":
-          return "Education & Experience";
+          return "Education";
+        case "experience":
+          return "Experience";
         case "bank":
           return "Bank Account Details";
         default:
@@ -33,3 +43,4 @@ export const getProgressMessage = (progress: FormProgress): string => {
   }
   return "All sections completed! You can proceed.";
 };
+

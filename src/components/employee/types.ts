@@ -1,4 +1,3 @@
-
 export interface Experience {
   id: string;
   jobTitle: string;
@@ -10,4 +9,9 @@ export interface Experience {
   offerLetter?: File;
   separationLetter?: File;
   payslips: File[];
+}
+
+export interface FormComponentProps<T = any> {
+  onComplete: (completed: boolean, data?: T) => void;
+  initialData?: T | null;
 }

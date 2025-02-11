@@ -7,14 +7,23 @@ import { EducationForm } from "@/components/employee/EducationForm";
 import { ExperienceForm } from "@/components/employee/ExperienceForm";
 import { PersonalDetailsForm } from "@/components/employee/PersonalDetailsForm";
 import { BankAccountForm } from "@/components/employee/BankAccountForm";
-import { FormProgress, calculateProgress, getProgressMessage } from "@/utils/progressCalculator";
+import { FormProgress, FormData, calculateProgress, getProgressMessage } from "@/utils/progressCalculator";
+import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("personal");
   const [formProgress, setFormProgress] = useState<FormProgress>({
     personal: false,
     education: false,
+    experience: false,
     bank: false,
+  });
+
+  const [formData, setFormData] = useState<FormData>({
+    personal: null,
+    education: null,
+    experience: [],
+    bank: null,
   });
 
   const updateSectionProgress = (section: keyof FormProgress, completed: boolean) => {
@@ -22,6 +31,40 @@ const Index = () => {
       ...prev,
       [section]: completed,
     }));
+  };
+
+  const updateFormData = (section: keyof FormData, data: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: data,
+    }));
+  };
+
+  const handleSaveAndNext = () => {
+    // Save current section data
+    if (!formProgress[activeTab as keyof FormProgress]) {
+      toast.error("Please complete all required fields before proceeding");
+      return;
+    }
+
+    // Move to next tab
+    const tabOrder = ["personal", "education", "bank"];
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (currentIndex < tabOrder.length - 1) {
+      setActiveTab(tabOrder[currentIndex + 1]);
+    } else {
+      // Submit all form data
+      console.log("Submitting form data:", formData);
+      toast.success("All forms completed successfully!");
+    }
+  };
+
+  const handleBack = () => {
+    const tabOrder = ["personal", "education", "bank"];
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabOrder[currentIndex - 1]);
+    }
   };
 
   const tabs = [
@@ -35,23 +78,49 @@ const Index = () => {
       case "personal":
         return (
           <PersonalDetailsForm
-            onComplete={(completed) => updateSectionProgress("personal", completed)}
+            onComplete={(completed, data) => {
+              updateSectionProgress("personal", completed);
+              if (completed && data) {
+                updateFormData("personal", data);
+              }
+            }}
+            initialData={formData.personal}
           />
         );
       case "education":
         return (
           <>
             <EducationForm
-              onComplete={(completed) => updateSectionProgress("education", completed)}
+              onComplete={(completed, data) => {
+                updateSectionProgress("education", completed);
+                if (completed && data) {
+                  updateFormData("education", data);
+                }
+              }}
+              initialData={formData.education}
             />
             <div className="shrink-0 h-px mt-[29px] border-[rgba(239,242,255,1)] border-solid border-2" />
-            <ExperienceForm />
+            <ExperienceForm
+              onComplete={(completed, data) => {
+                updateSectionProgress("experience", completed);
+                if (completed && data) {
+                  updateFormData("experience", data);
+                }
+              }}
+              experiences={formData.experience}
+            />
           </>
         );
       case "bank":
         return (
           <BankAccountForm
-            onComplete={(completed) => updateSectionProgress("bank", completed)}
+            onComplete={(completed, data) => {
+              updateSectionProgress("bank", completed);
+              if (completed && data) {
+                updateFormData("bank", data);
+              }
+            }}
+            initialData={formData.bank}
           />
         );
       default:
@@ -101,10 +170,17 @@ const Index = () => {
             <div className="shrink-0 h-px mt-[29px] border-[rgba(239,242,255,1)] border-solid border-2" />
 
             <div className="flex w-[211px] max-w-full items-stretch gap-4 text-base mr-6 mt-6 max-md:mr-2.5">
-              <button className="self-stretch bg-[rgba(221,1,1,0.1)] gap-2 text-[rgba(221,1,1,1)] font-semibold whitespace-nowrap px-4 py-3 rounded-lg">
+              <button 
+                onClick={handleBack}
+                disabled={activeTab === "personal"}
+                className="self-stretch bg-[rgba(221,1,1,0.1)] gap-2 text-[rgba(221,1,1,1)] font-semibold whitespace-nowrap px-4 py-3 rounded-lg disabled:opacity-50"
+              >
                 Back
               </button>
-              <button className="self-stretch bg-[rgba(221,1,1,1)] gap-2 text-white font-bold px-4 py-3 rounded-lg">
+              <button 
+                onClick={handleSaveAndNext}
+                className="self-stretch bg-[rgba(221,1,1,1)] gap-2 text-white font-bold px-4 py-3 rounded-lg"
+              >
                 Save & Next
               </button>
             </div>
@@ -116,3 +192,4 @@ const Index = () => {
 };
 
 export default Index;
+
