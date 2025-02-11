@@ -2,7 +2,7 @@
 export interface FormProgress {
   personal: boolean;
   education: boolean;
-  documents: boolean;
+  bank: boolean;
 }
 
 export const calculateProgress = (progress: FormProgress): number => {
@@ -14,7 +14,18 @@ export const calculateProgress = (progress: FormProgress): number => {
 export const getProgressMessage = (progress: FormProgress): string => {
   const remaining = Object.entries(progress)
     .filter(([_, completed]) => !completed)
-    .map(([section]) => section.charAt(0).toUpperCase() + section.slice(1))
+    .map(([section]) => {
+      switch (section) {
+        case "personal":
+          return "Personal Details";
+        case "education":
+          return "Education & Experience";
+        case "bank":
+          return "Bank Account Details";
+        default:
+          return section.charAt(0).toUpperCase() + section.slice(1);
+      }
+    })
     .join(", ");
 
   if (remaining) {

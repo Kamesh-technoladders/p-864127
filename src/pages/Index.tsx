@@ -1,12 +1,12 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { NavigationHeader } from "@/components/employee/NavigationHeader";
 import { ProgressBar } from "@/components/employee/ProgressBar";
 import { TabNavigation } from "@/components/employee/TabNavigation";
 import { EducationForm } from "@/components/employee/EducationForm";
 import { ExperienceForm } from "@/components/employee/ExperienceForm";
 import { PersonalDetailsForm } from "@/components/employee/PersonalDetailsForm";
-import { DocumentsForm } from "@/components/employee/DocumentsForm";
+import { BankAccountForm } from "@/components/employee/BankAccountForm";
 import { FormProgress, calculateProgress, getProgressMessage } from "@/utils/progressCalculator";
 
 const Index = () => {
@@ -14,7 +14,7 @@ const Index = () => {
   const [formProgress, setFormProgress] = useState<FormProgress>({
     personal: false,
     education: false,
-    documents: false,
+    bank: false,
   });
 
   const updateSectionProgress = (section: keyof FormProgress, completed: boolean) => {
@@ -27,7 +27,6 @@ const Index = () => {
   const tabs = [
     { id: "personal", label: "Personal Details", isActive: activeTab === "personal" },
     { id: "education", label: "Education & Experience", isActive: activeTab === "education" },
-    { id: "documents", label: "Documents", isActive: activeTab === "documents" },
     { id: "bank", label: "Bank Account Details", isActive: activeTab === "bank" },
   ];
 
@@ -49,10 +48,10 @@ const Index = () => {
             <ExperienceForm />
           </>
         );
-      case "documents":
+      case "bank":
         return (
-          <DocumentsForm
-            onComplete={(completed) => updateSectionProgress("documents", completed)}
+          <BankAccountForm
+            onComplete={(completed) => updateSectionProgress("bank", completed)}
           />
         );
       default:
