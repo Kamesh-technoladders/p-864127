@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
+// Add blood groups array
+const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+
 interface PersonalDetailsFormProps {
   onComplete: (completed: boolean) => void;
 }
