@@ -3,11 +3,18 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Banknote, Check, AlertCircle } from "lucide-react";
+import { Banknote, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BankAccountFormProps {
   onComplete: (completed: boolean) => void;
@@ -39,6 +46,18 @@ const bankAccountSchema = z.object({
     .min(3, "Branch name must be at least 3 characters")
     .max(50, "Branch name cannot exceed 50 characters")
     .regex(/^[A-Za-z0-9\s.-]+$/, "Branch name can only contain letters, numbers, spaces, dots, and dashes"),
+  accountType: z.enum(["savings", "current"], {
+    required_error: "Please select an account type",
+  }),
+  bankPhone: z
+    .string()
+    .min(10, "Phone number must be 10 digits")
+    .max(10, "Phone number must be 10 digits")
+    .regex(/^\d+$/, "Phone number can only contain numbers"),
+  bankEmail: z
+    .string()
+    .email("Invalid email address")
+    .max(50, "Email cannot exceed 50 characters"),
 });
 
 type BankFormData = z.infer<typeof bankAccountSchema>;
@@ -49,6 +68,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete }) 
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isValid }
   } = useForm<BankFormData>({
     resolver: zodResolver(bankAccountSchema),
@@ -183,6 +203,80 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete }) 
             <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
               <AlertCircle className="h-3 w-3" />
               <span>{errors.branchName.message}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="relative">
+          <Label htmlFor="accountType" className="text-sm font-semibold text-[#303030]">
+            Account Type<span className="text-[#DD0101]">*</span>
+          </Label>
+          <Select
+            onValueChange={(value) => setValue("accountType", value as "savings" | "current")}
+          >
+            <SelectTrigger
+              id="accountType"
+              className={cn(
+                "mt-2 h-11 border-[#E4E4E4] rounded-lg",
+                "hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20",
+                errors.accountType && "border-[#DD0101] hover:border-[#DD0101]/80"
+              )}
+            >
+              <SelectValue placeholder="Select account type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="savings">Savings</SelectItem>
+              <SelectItem value="current">Current</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.accountType && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+              <AlertCircle className="h-3 w-3" />
+              <span>{errors.accountType.message}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="relative">
+          <Label htmlFor="bankPhone" className="text-sm font-semibold text-[#303030]">
+            Bank Phone Number<span className="text-[#DD0101]">*</span>
+          </Label>
+          <Input
+            id="bankPhone"
+            {...register("bankPhone")}
+            type="tel"
+            className={cn(
+              "mt-2 h-11 border-[#E4E4E4] rounded-lg placeholder:text-[#8E8E8E]",
+              "hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20",
+              errors.bankPhone && "border-[#DD0101] hover:border-[#DD0101]/80"
+            )}
+          />
+          {errors.bankPhone && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+              <AlertCircle className="h-3 w-3" />
+              <span>{errors.bankPhone.message}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="relative">
+          <Label htmlFor="bankEmail" className="text-sm font-semibold text-[#303030]">
+            Bank Email<span className="text-[#DD0101]">*</span>
+          </Label>
+          <Input
+            id="bankEmail"
+            {...register("bankEmail")}
+            type="email"
+            className={cn(
+              "mt-2 h-11 border-[#E4E4E4] rounded-lg placeholder:text-[#8E8E8E]",
+              "hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20",
+              errors.bankEmail && "border-[#DD0101] hover:border-[#DD0101]/80"
+            )}
+          />
+          {errors.bankEmail && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+              <AlertCircle className="h-3 w-3" />
+              <span>{errors.bankEmail.message}</span>
             </div>
           )}
         </div>
