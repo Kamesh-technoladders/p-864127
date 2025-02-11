@@ -29,7 +29,25 @@ export const DocumentsSection: React.FC<DocumentsSectionProps> = ({
     <div className="space-y-6 mt-6">
       {/* Profile Picture Row */}
       <div className="flex items-start gap-4">
-        <div className="flex-1" /> {/* Empty space for alignment */}
+        <FormField
+          control={form.control}
+          name="profileName"
+          render={({ field }) => (
+            <FormItem className="w-[300px]">
+              <FormLabel className="text-[#1A1F2C] font-semibold">
+                Profile Name<span className="text-[#DD0101]">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input 
+                  {...field}
+                  className="h-12 border-[#C8C8C9] focus:border-[#9b87f5]"
+                  placeholder="Enter your profile name"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="w-[300px]">
           <UploadField 
             label="Profile Picture" 
@@ -47,7 +65,7 @@ export const DocumentsSection: React.FC<DocumentsSectionProps> = ({
           control={form.control}
           name="aadharNumber"
           render={({ field }) => (
-            <FormItem className="flex-1">
+            <FormItem className="w-[300px]">
               <FormLabel className="text-[#1A1F2C] font-semibold">
                 Aadhar Number<span className="text-[#DD0101]">*</span>
               </FormLabel>
@@ -78,7 +96,7 @@ export const DocumentsSection: React.FC<DocumentsSectionProps> = ({
           control={form.control}
           name="panNumber"
           render={({ field }) => (
-            <FormItem className="flex-1">
+            <FormItem className="w-[300px]">
               <FormLabel className="text-[#1A1F2C] font-semibold">
                 PAN Number<span className="text-[#DD0101]">*</span>
               </FormLabel>
@@ -109,7 +127,7 @@ export const DocumentsSection: React.FC<DocumentsSectionProps> = ({
           control={form.control}
           name="esicNumber"
           render={({ field }) => (
-            <FormItem className="flex-1">
+            <FormItem className="w-[300px]">
               <FormLabel className="text-[#1A1F2C] font-semibold">
                 ESIC Number
               </FormLabel>
@@ -139,7 +157,7 @@ export const DocumentsSection: React.FC<DocumentsSectionProps> = ({
           control={form.control}
           name="uanNumber"
           render={({ field }) => (
-            <FormItem className="flex-1">
+            <FormItem className="w-[300px]">
               <FormLabel className="text-[#1A1F2C] font-semibold">
                 UAN Number
               </FormLabel>
