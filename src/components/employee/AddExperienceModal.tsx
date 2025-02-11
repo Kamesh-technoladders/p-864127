@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +15,7 @@ interface AddExperienceModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (experience: ExperienceData) => void;
+  initialData?: ExperienceData | null;
 }
 
 export interface ExperienceData {
@@ -33,6 +34,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
   isOpen,
   onClose,
   onSave,
+  initialData,
 }) => {
   const [formData, setFormData] = useState<ExperienceData>({
     jobTitle: "",
@@ -45,6 +47,22 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    } else {
+      setFormData({
+        jobTitle: "",
+        company: "",
+        location: "",
+        employmentType: "Full Time",
+        startDate: "",
+        endDate: "",
+        payslips: [],
+      });
+    }
+  }, [initialData, isOpen]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -95,7 +113,6 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
     setIsSubmitting(true);
     try {
       onSave(formData);
-      toast.success("Experience added successfully");
       onClose();
       setFormData({
         jobTitle: "",
@@ -107,7 +124,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
         payslips: [],
       });
     } catch (error) {
-      toast.error("Failed to add experience");
+      toast.error("Failed to save experience");
     } finally {
       setIsSubmitting(false);
     }
@@ -148,7 +165,9 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold">Add Experience</DialogTitle>
+          <DialogTitle className="text-lg font-bold">
+            {initialData ? "Edit Experience" : "Add Experience"}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">

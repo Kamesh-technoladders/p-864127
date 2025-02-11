@@ -1,5 +1,6 @@
 
-import React from "react";
+import React, { useState } from "react";
+import { LoaderCircle } from "lucide-react";
 
 interface UploadFieldProps {
   label: string;
@@ -14,10 +15,17 @@ export const UploadField: React.FC<UploadFieldProps> = ({
   required,
   onUpload,
 }) => {
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      onUpload(file);
+      setIsUploading(true);
+      try {
+        await onUpload(file);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -35,7 +43,14 @@ export const UploadField: React.FC<UploadFieldProps> = ({
             className="absolute h-full w-full object-cover inset-0"
             alt=""
           />
-          {value || label}
+          {isUploading ? (
+            <div className="flex items-center gap-2">
+              <LoaderCircle className="animate-spin h-4 w-4" />
+              <span>Uploading...</span>
+            </div>
+          ) : (
+            value || label
+          )}
         </div>
         <label className="text-[rgba(225,1,2,1)] font-semibold cursor-pointer">
           + Upload File
@@ -44,6 +59,7 @@ export const UploadField: React.FC<UploadFieldProps> = ({
             className="hidden"
             onChange={handleFileChange}
             accept=".pdf,.png,.jpg,.jpeg"
+            disabled={isUploading}
           />
         </label>
         <div className="text-[rgba(102,102,102,1)]">

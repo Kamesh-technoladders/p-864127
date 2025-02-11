@@ -2,6 +2,23 @@
 import React, { useState } from "react";
 import { AddExperienceModal, ExperienceData } from "./AddExperienceModal";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Pencil, Trash2, MoreVertical } from "lucide-react";
 
 interface Experience extends ExperienceData {
   id: string;
@@ -9,6 +26,10 @@ interface Experience extends ExperienceData {
 
 export const ExperienceForm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedExperience, setSelectedExperience] = useState<Experience | null>(
+    null
+  );
   const [experiences, setExperiences] = useState<Experience[]>([
     {
       id: "1",
@@ -24,14 +45,52 @@ export const ExperienceForm = () => {
 
   const handleAddExperience = (data: ExperienceData) => {
     try {
-      const newExperience: Experience = {
-        ...data,
-        id: Date.now().toString(),
-      };
-      setExperiences((prev) => [...prev, newExperience]);
+      if (selectedExperience) {
+        // Edit mode
+        setExperiences((prev) =>
+          prev.map((exp) =>
+            exp.id === selectedExperience.id ? { ...data, id: exp.id } : exp
+          )
+        );
+        toast.success("Experience updated successfully");
+      } else {
+        // Add mode
+        const newExperience: Experience = {
+          ...data,
+          id: Date.now().toString(),
+        };
+        setExperiences((prev) => [...prev, newExperience]);
+        toast.success("Experience added successfully");
+      }
+      setSelectedExperience(null);
     } catch (error) {
-      console.error("Error adding experience:", error);
-      toast.error("Failed to add experience");
+      console.error("Error handling experience:", error);
+      toast.error(
+        selectedExperience
+          ? "Failed to update experience"
+          : "Failed to add experience"
+      );
+    }
+  };
+
+  const handleEdit = (experience: Experience) => {
+    setSelectedExperience(experience);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (experience: Experience) => {
+    setSelectedExperience(experience);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedExperience) {
+      setExperiences((prev) =>
+        prev.filter((exp) => exp.id !== selectedExperience.id)
+      );
+      toast.success("Experience deleted successfully");
+      setIsDeleteDialogOpen(false);
+      setSelectedExperience(null);
     }
   };
 
@@ -130,16 +189,35 @@ export const ExperienceForm = () => {
                           alt="Document"
                         />
                       ))}
-                      {Array.from({ length: 3 - experience.payslips.length }).map((_, index) => (
-                        <div key={`empty-${index}`} className="my-auto">-</div>
+                      {Array.from({
+                        length: 3 - (experience.payslips?.length || 0),
+                      }).map((_, index) => (
+                        <div key={`empty-${index}`} className="my-auto">
+                          -
+                        </div>
                       ))}
                     </div>
-                    <img
-                      loading="lazy"
-                      src="https://cdn.builder.io/api/v1/image/assets/94b97c43fd3a409f8a2658d3c3f998e3/5f840485d2774e38314ae735d0eb7199567aa5ff6cdef2d04a2bc563cee46918?placeholderIfAbsent=true"
-                      className="aspect-[3] object-contain w-12 shrink-0 mt-[5px]"
-                      alt="More options"
-                    />
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="focus:outline-none">
+                        <MoreVertical className="h-5 w-5 text-gray-500 hover:text-gray-700" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          onClick={() => handleEdit(experience)}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
+                          <Pencil className="h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(experience)}
+                          className="flex items-center gap-2 cursor-pointer text-red-600"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               </div>
@@ -149,7 +227,10 @@ export const ExperienceForm = () => {
       ))}
 
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          setSelectedExperience(null);
+          setIsModalOpen(true);
+        }}
         className="flex items-stretch gap-2 text-sm text-[rgba(221,1,1,1)] font-medium mt-3.5"
       >
         <img
@@ -163,9 +244,44 @@ export const ExperienceForm = () => {
 
       <AddExperienceModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedExperience(null);
+        }}
         onSave={handleAddExperience}
+        initialData={selectedExperience}
       />
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Experience</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this experience? This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setIsDeleteDialogOpen(false);
+                setSelectedExperience(null);
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
