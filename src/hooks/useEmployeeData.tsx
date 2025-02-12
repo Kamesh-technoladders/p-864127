@@ -3,12 +3,17 @@ import { useState, useCallback } from "react";
 import { employeeService } from "@/services/employee/employee.service";
 import { toast } from "sonner";
 
-export const useEmployeeData = (employeeId: string) => {
+export const useEmployeeData = (employeeId: string | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
   const [employeeData, setEmployeeData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchEmployeeData = useCallback(async () => {
+    if (!employeeId) {
+      setError("No employee ID provided");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
@@ -28,6 +33,11 @@ export const useEmployeeData = (employeeId: string) => {
 
   const updateEmployee = useCallback(
     async (section: string, data: any) => {
+      if (!employeeId) {
+        toast.error("No employee ID provided");
+        return;
+      }
+
       try {
         await employeeService.updateEmployee(employeeId, {
           [section]: data,

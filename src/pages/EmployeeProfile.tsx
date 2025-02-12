@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
@@ -14,15 +15,29 @@ import { CalendarCard } from "@/components/employee/profile/cards/CalendarCard";
 import { Button } from "@/components/ui/button";
 
 const EmployeeProfile = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const { isLoading, employeeData, error, fetchEmployeeData } = useEmployeeData(id || '');
+  const { isLoading, employeeData, error, fetchEmployeeData } = useEmployeeData(id);
 
   React.useEffect(() => {
     if (id) {
       fetchEmployeeData();
     }
   }, [id, fetchEmployeeData]);
+
+  if (!id) {
+    return (
+      <DashboardLayout>
+        <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">No Employee Selected</h2>
+            <p className="text-gray-500">Please select an employee to view their profile.</p>
+          </div>
+          <Button onClick={() => navigate("/")}>Return to Dashboard</Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (isLoading) {
     return (
