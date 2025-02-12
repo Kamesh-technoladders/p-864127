@@ -1,6 +1,5 @@
-
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { ChevronRight, Laptop, MoreHorizontal, Loader2 } from "lucide-react";
@@ -12,10 +11,12 @@ import { TimeTrackerCard } from "@/components/employee/profile/cards/TimeTracker
 import { OnboardingTasksCard } from "@/components/employee/profile/cards/OnboardingTasksCard";
 import { OnboardingProgressCard } from "@/components/employee/profile/cards/OnboardingProgressCard";
 import { CalendarCard } from "@/components/employee/profile/cards/CalendarCard";
+import { Button } from "@/components/ui/button";
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id: string }>();
-  const { isLoading, employeeData, fetchEmployeeData } = useEmployeeData(id || '');
+  const navigate = useNavigate();
+  const { isLoading, employeeData, error, fetchEmployeeData } = useEmployeeData(id || '');
 
   React.useEffect(() => {
     if (id) {
@@ -33,14 +34,17 @@ const EmployeeProfile = () => {
     );
   }
 
-  if (!employeeData) {
+  if (error || !employeeData) {
     return (
       <DashboardLayout>
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex flex-col items-center justify-center gap-4">
           <div className="text-center">
-            <h2 className="text-xl font-semibold mb-2">Employee Not Found</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              {error || "Employee Not Found"}
+            </h2>
             <p className="text-gray-500">The requested employee could not be found.</p>
           </div>
+          <Button onClick={() => navigate("/")}>Return to Dashboard</Button>
         </div>
       </DashboardLayout>
     );

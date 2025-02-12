@@ -6,15 +6,21 @@ import { toast } from "sonner";
 export const useEmployeeData = (employeeId: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [employeeData, setEmployeeData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchEmployeeData = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const data = await employeeService.getEmployee(employeeId);
       setEmployeeData(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching employee data:", error);
-      toast.error("Failed to fetch employee data");
+      const errorMessage = error.message === 'Invalid employee ID format' 
+        ? 'Invalid employee ID format. Please use a valid UUID.'
+        : 'Failed to fetch employee data';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -40,6 +46,7 @@ export const useEmployeeData = (employeeId: string) => {
   return {
     isLoading,
     employeeData,
+    error,
     fetchEmployeeData,
     updateEmployee,
   };

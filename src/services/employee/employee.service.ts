@@ -6,6 +6,11 @@ import { experienceService } from "./experience.service";
 import { educationService } from "./education.service";
 import { supabase } from "@/integrations/supabase/client";
 
+const isValidUUID = (uuid: string) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+};
+
 export const employeeService = {
   async createEmployee(data: EmployeeData) {
     try {
@@ -64,6 +69,10 @@ export const employeeService = {
 
   async getEmployee(employeeId: string) {
     try {
+      if (!isValidUUID(employeeId)) {
+        throw new Error('Invalid employee ID format');
+      }
+
       const { data: employee, error: employeeError } = await supabase
         .from('employees')
         .select(`
