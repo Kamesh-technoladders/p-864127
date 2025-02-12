@@ -11,6 +11,7 @@ export const useEmployeeForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formProgress, setFormProgress] = useState<FormProgress>({
     personal: false,
+    employment: false,
     education: false,
     experience: false,
     bank: false,
@@ -18,6 +19,7 @@ export const useEmployeeForm = () => {
 
   const [formData, setFormData] = useState<FormData>({
     personal: null,
+    employment: null,
     education: null,
     experience: [],
     bank: null,
@@ -63,14 +65,14 @@ export const useEmployeeForm = () => {
       return;
     }
 
-    const tabOrder = ["personal", "education", "bank"];
+    const tabOrder = ["personal", "employment", "education", "bank"];
     const currentIndex = tabOrder.indexOf(activeTab);
     
     if (currentIndex < tabOrder.length - 1) {
       setActiveTab(tabOrder[currentIndex + 1]);
     } else {
       // Check if all required sections are completed
-      const requiredSections = ["personal", "bank"];
+      const requiredSections = ["personal", "employment", "bank"];
       const isRequiredCompleted = requiredSections.every(section => 
         formProgress[section as keyof FormProgress]
       );
@@ -81,6 +83,7 @@ export const useEmployeeForm = () => {
           console.log('Submitting form data:', formData);
           await employeeService.createEmployee({
             personal: formData.personal!,
+            employment: formData.employment!,
             education: formData.education,
             experience: formData.experience || [],
             bank: formData.bank!,
