@@ -23,7 +23,7 @@ export const FormContent: React.FC<FormContentProps> = ({
   handleSaveAndNext,
 }) => {
   // The employeeId will come from formData.personal when needed
-  const employeeId = formData.personal?.employeeId;
+  const employeeId = formData.personal?.employeeId || "";
 
   switch (activeTab) {
     case "personal":
@@ -50,7 +50,7 @@ export const FormContent: React.FC<FormContentProps> = ({
             }
           }}
           initialData={formData.employment}
-          employeeId={employeeId || ""}
+          employeeId={employeeId}
         />
       );
     case "education":
@@ -63,7 +63,7 @@ export const FormContent: React.FC<FormContentProps> = ({
             }
           }}
           initialData={formData.education}
-          employeeId={employeeId || ""}
+          employeeId={employeeId}
         />
       );
     case "bank":
@@ -76,7 +76,7 @@ export const FormContent: React.FC<FormContentProps> = ({
             }
           }}
           initialData={formData.bank}
-          employeeId={employeeId || ""}
+          employeeId={employeeId}
         />
       );
     default:
