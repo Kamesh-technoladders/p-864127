@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
 import { 
@@ -22,20 +22,29 @@ import { toast } from "sonner";
 import { QuickActions } from "@/components/employee/profile/QuickActions";
 import { InfoCard } from "@/components/employee/profile/InfoCard";
 import { LoadingState, ErrorState } from "@/components/employee/profile/ProfileStates";
+import { EmploymentDetailsModal } from "@/components/employee/profile/modals/EmploymentDetailsModal";
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const { isLoading, employeeData, error, fetchEmployeeData } = useEmployeeData(id);
-
-  React.useEffect(() => {
-    if (id) {
-      fetchEmployeeData();
-    }
-  }, [id, fetchEmployeeData]);
+  const { isLoading, employeeData, error, fetchEmployeeData, updateEmployee } = useEmployeeData(id);
+  const [isEmploymentModalOpen, setIsEmploymentModalOpen] = useState(false);
 
   const handleEdit = (section: string) => {
-    toast.info(`Editing ${section} details`);
+    if (section === "employment") {
+      setIsEmploymentModalOpen(true);
+    } else {
+      toast.info(`Editing ${section} details`);
+    }
+  };
+
+  const handleUpdateEmployment = async (data: any) => {
+    try {
+      await updateEmployee("employment", data);
+      await fetchEmployeeData();
+    } catch (error) {
+      throw error;
+    }
   };
 
   const calculateYearsOfExperience = (joinedDate: string) => {
@@ -95,7 +104,6 @@ const EmployeeProfile = () => {
             title="Personal Information" 
             icon={UserCircle}
             onEdit={() => handleEdit("personal")}
-            expandable
           >
             <div className="space-y-4 p-2">
               <div className="space-y-2">
@@ -132,7 +140,6 @@ const EmployeeProfile = () => {
             title="Employment Details" 
             icon={Briefcase}
             onEdit={() => handleEdit("employment")}
-            expandable
           >
             <div className="space-y-4 p-2">
               <div className="space-y-2">
@@ -149,19 +156,6 @@ const EmployeeProfile = () => {
                   <span>Software Engineer</span>
                 </div>
               </div>
-              <div className="pt-4 border-t border-gray-100">
-                <h4 className="text-sm font-medium mb-2">Employment History</h4>
-                <div className="space-y-3">
-                  <div className="text-sm">
-                    <div className="font-medium">Senior Developer</div>
-                    <div className="text-gray-500">Jan 2023 - Present</div>
-                  </div>
-                  <div className="text-sm">
-                    <div className="font-medium">Developer</div>
-                    <div className="text-gray-500">Jan 2022 - Dec 2022</div>
-                  </div>
-                </div>
-              </div>
             </div>
           </InfoCard>
 
@@ -169,7 +163,6 @@ const EmployeeProfile = () => {
             title="Education & Experience" 
             icon={GraduationCap}
             onEdit={() => handleEdit("education")}
-            expandable
           >
             <div className="space-y-4 p-2">
               <div className="space-y-2">
@@ -202,7 +195,6 @@ const EmployeeProfile = () => {
             title="Bank Information" 
             icon={CreditCard}
             onEdit={() => handleEdit("bank")}
-            expandable
           >
             <div className="space-y-4 p-2">
               <div className="space-y-2">
@@ -251,6 +243,33 @@ const EmployeeProfile = () => {
             <CalendarCard />
           </div>
         </div>
+
+        <EmploymentDetailsModal
+          isOpen={isEmploymentModalOpen}
+          onClose={() => setIsEmploymentModalOpen(false)}
+          employeeId={employeeData?.id || ''}
+          initialData={{
+            employeeId: employeeData?.employee_id || '',
+            department: 'Engineering',
+            position: 'Software Engineer',
+            joinedDate: employeeData?.created_at || '',
+            employmentHistory: [
+              {
+                title: 'Senior Developer',
+                date: 'Jan 2023',
+                description: 'Promoted to Senior Developer role',
+                type: 'promotion'
+              },
+              {
+                title: 'Developer',
+                date: 'Jan 2022',
+                description: 'Joined as Developer',
+                type: 'join'
+              }
+            ]
+          }}
+          onUpdate={handleUpdateEmployment}
+        />
       </div>
     </DashboardLayout>
   );
