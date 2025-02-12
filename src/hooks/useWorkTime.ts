@@ -32,7 +32,7 @@ export const useWorkTime = (employeeId: string) => {
           .eq('status', 'running')
           .order('start_time', { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
 
