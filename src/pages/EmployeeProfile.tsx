@@ -1,5 +1,5 @@
-
 import React from "react";
+import { useParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -16,8 +16,10 @@ import {
   Target,
   Check,
   Clock,
-  MoreHorizontal
+  MoreHorizontal,
+  Loader2
 } from "lucide-react";
+import { useEmployeeData } from "@/hooks/useEmployeeData";
 
 const TaskItem = ({ time, title, completed }: { time: string; title: string; completed: boolean }) => (
   <div className="flex items-center gap-3 py-2.5">
@@ -32,10 +34,43 @@ const TaskItem = ({ time, title, completed }: { time: string; title: string; com
 );
 
 const EmployeeProfile = () => {
+  const { id } = useParams<{ id: string }>();
+  const { isLoading, employeeData, fetchEmployeeData } = useEmployeeData(id || '');
+
+  React.useEffect(() => {
+    if (id) {
+      fetchEmployeeData();
+    }
+  }, [id, fetchEmployeeData]);
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!employeeData) {
+    return (
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">Employee Not Found</h2>
+            <p className="text-gray-500">The requested employee could not be found.</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const fullName = `${employeeData.first_name} ${employeeData.last_name}`;
+
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gradient-to-b from-white to-[#FFF9E7] p-8">
-        {/* Profile Header with Glassy Effect */}
         <div className="relative w-full h-[200px] rounded-xl overflow-hidden mb-8 backdrop-blur-sm">
           <div className="absolute inset-0 bg-gradient-to-r from-[#ee9ca7]/90 to-[#ffdde1]/90" />
           <div className="absolute inset-0 bg-white/10 backdrop-filter backdrop-blur-[2px]" />
@@ -46,28 +81,29 @@ const EmployeeProfile = () => {
                   <div className="w-full h-full bg-gray-300" />
                 </div>
                 <div className="absolute -top-2 -right-2 bg-brand-accent text-brand-primary px-2 py-1 rounded-lg text-sm font-medium shadow-sm backdrop-blur-sm">
-                  $1,200
+                  ID: {employeeData.employee_id}
                 </div>
               </div>
               <div className="mb-2 bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm">
-                <h1 className="text-2xl font-bold text-white">Lara Piterson</h1>
-                <p className="text-white/80">UX/UI Designer</p>
+                <h1 className="text-2xl font-bold text-white">{fullName}</h1>
+                <p className="text-white/80">{employeeData.email}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Stats Bar with Glass Effect */}
         <div className="grid grid-cols-3 gap-6 mb-8">
-          {["Employee Count", "Hirings", "Projects"].map((title, index) => (
+          {[
+            { title: "Joined Date", value: new Date(employeeData.created_at).toLocaleDateString(), icon: <Users className="w-5 h-5" /> },
+            { title: "Gender", value: employeeData.gender || "Not specified", icon: <Briefcase className="w-5 h-5" /> },
+            { title: "Blood Group", value: employeeData.blood_group || "Not specified", icon: <Target className="w-5 h-5" /> }
+          ].map(({ title, value, icon }, index) => (
             <Card key={title} className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm border border-white/20">
               <div className="flex items-center gap-3">
-                {index === 0 && <Users className="w-5 h-5" />}
-                {index === 1 && <Briefcase className="w-5 h-5" />}
-                {index === 2 && <Target className="w-5 h-5" />}
+                {icon}
                 <div>
                   <div className="text-sm text-gray-500">{title}</div>
-                  <div className="text-xl font-bold">{[78, 56, 203][index]}</div>
+                  <div className="text-xl font-bold">{value}</div>
                 </div>
               </div>
             </Card>
@@ -75,7 +111,6 @@ const EmployeeProfile = () => {
         </div>
 
         <div className="grid grid-cols-12 gap-6">
-          {/* Left Sidebar - 1/4 width */}
           <div className="col-span-3 space-y-6">
             <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
               <div className="flex justify-between items-center mb-4">
@@ -109,9 +144,7 @@ const EmployeeProfile = () => {
             </Card>
           </div>
 
-          {/* Main Content - 3/4 width */}
           <div className="col-span-6 space-y-6">
-            {/* Progress Card */}
             <Card className="p-6 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium">Work Time this Week</h3>
@@ -135,7 +168,6 @@ const EmployeeProfile = () => {
               </div>
             </Card>
 
-            {/* Time Tracker Card */}
             <Card className="p-6 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
               <div className="flex flex-col items-center justify-center mb-6">
                 <h3 className="font-medium mb-4">Time Tracker</h3>
@@ -161,7 +193,6 @@ const EmployeeProfile = () => {
               </div>
             </Card>
 
-            {/* Onboarding Tasks Card */}
             <Card className="p-6 bg-[#1C1C1C] text-white hover:shadow-xl transition-shadow">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-medium">Onboarding Tasks (2/8)</h3>
@@ -175,7 +206,6 @@ const EmployeeProfile = () => {
               </div>
             </Card>
 
-            {/* Onboarding Progress Card */}
             <Card className="p-6 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-medium">Onboarding Progress</h3>
@@ -202,7 +232,6 @@ const EmployeeProfile = () => {
             </Card>
           </div>
 
-          {/* Calendar Section */}
           <div className="col-span-3">
             <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
               <div className="flex justify-between items-center mb-4">
