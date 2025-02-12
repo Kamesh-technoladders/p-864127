@@ -8,7 +8,7 @@ interface ModalContentProps {
 
 export const ModalContent: React.FC<ModalContentProps> = ({ children }) => {
   return (
-    <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white/90 backdrop-blur-lg border border-white/20 shadow-2xl">
+    <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white border shadow-md">
       {children}
     </DialogContent>
   );

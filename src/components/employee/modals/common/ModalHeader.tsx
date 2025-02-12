@@ -37,7 +37,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
             {title}
           </h2>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 -ml-10">
           {!isEditing ? (
             <Button
               variant="ghost"
