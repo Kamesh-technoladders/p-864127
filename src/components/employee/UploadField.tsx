@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { LoaderCircle, FileText, X } from "lucide-react";
+import { LoaderCircle, FileText, X, AlertCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface UploadedFile {
@@ -17,6 +17,7 @@ interface UploadFieldProps {
   showProgress?: boolean;
   currentFile?: UploadedFile | null;
   onRemove?: () => void;
+  error?: string;
 }
 
 export const UploadField: React.FC<UploadFieldProps> = ({
@@ -27,6 +28,7 @@ export const UploadField: React.FC<UploadFieldProps> = ({
   showProgress = false,
   currentFile,
   onRemove,
+  error,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -127,6 +129,12 @@ export const UploadField: React.FC<UploadFieldProps> = ({
           <div className="w-full">
             <Progress value={progress} className="h-2" />
             <div className="text-xs text-gray-500 mt-1 text-right">{progress}%</div>
+          </div>
+        )}
+        {error && (
+          <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+            <AlertCircle className="h-3 w-3" />
+            <span>{error}</span>
           </div>
         )}
       </div>

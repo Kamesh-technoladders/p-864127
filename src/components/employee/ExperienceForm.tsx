@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { AlertCircle } from "lucide-react";
 import { AddExperienceModal, ExperienceData } from "./AddExperienceModal";
 import { toast } from "sonner";
 import { Experience, ExperienceFormProps } from "./types";
