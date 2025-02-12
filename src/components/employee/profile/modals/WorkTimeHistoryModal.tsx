@@ -106,10 +106,13 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
     const totalOvertimeMinutes = dayEntries.reduce((acc, entry) => 
       acc + (entry.overtime_minutes || 0), 0);
 
-    const targetMinutes = 7 * 60; // 7 hours in minutes
+    const targetMinutes = 8 * 60; // 8 hours in minutes (updated from 7)
     const remainingMinutes = Math.max(0, targetMinutes - totalWorkMinutes);
+    
+    // Calculate if overtime should be shown (only after 9 hours total)
+    const shouldShowOvertime = (totalWorkMinutes + totalBreakMinutes) >= (9 * 60); // 9 hours in minutes
 
-    return { totalWorkMinutes, totalBreakMinutes, totalOvertimeMinutes, remainingMinutes };
+    return { totalWorkMinutes, totalBreakMinutes, totalOvertimeMinutes, remainingMinutes, shouldShowOvertime };
   };
 
   const groupedEntries = groupEntriesByDate(entries);
@@ -123,13 +126,17 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
               <Clock className="w-5 h-5" />
               Work Time History
             </DialogTitle>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Show Overtime</span>
-              <Switch
-                checked={showOvertime}
-                onCheckedChange={setShowOvertime}
-              />
-            </div>
+            {Object.values(groupedEntries).some(entries => 
+              getDailySummary(entries).shouldShowOvertime
+            ) && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">Show Overtime</span>
+                <Switch
+                  checked={showOvertime}
+                  onCheckedChange={setShowOvertime}
+                />
+              </div>
+            )}
           </div>
         </DialogHeader>
         <ScrollArea className="h-[600px] pr-4">
@@ -138,7 +145,8 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
               totalWorkMinutes, 
               totalBreakMinutes, 
               totalOvertimeMinutes,
-              remainingMinutes 
+              remainingMinutes,
+              shouldShowOvertime
             } = getDailySummary(dayEntries);
 
             return (
@@ -151,21 +159,21 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Daily Progress</span>
-                      <span>{formatDuration(totalWorkMinutes)} / 7h 0m</span>
+                      <span>{formatDuration(totalWorkMinutes)} / 8h 0m</span>
                     </div>
                     <div className="flex gap-1 h-2">
                       <div 
                         className="bg-[#2C4D9E] rounded-l"
-                        style={{ width: `${(totalWorkMinutes / (7 * 60)) * 100}%` }}
+                        style={{ width: `${(totalWorkMinutes / (8 * 60)) * 100}%` }}
                       />
                       <div 
                         className="bg-[#FF9F43]"
-                        style={{ width: `${(totalBreakMinutes / (7 * 60)) * 100}%` }}
+                        style={{ width: `${(totalBreakMinutes / (8 * 60)) * 100}%` }}
                       />
-                      {showOvertime && (
+                      {showOvertime && shouldShowOvertime && (
                         <div 
                           className="bg-[#9B87F5] rounded-r"
-                          style={{ width: `${(totalOvertimeMinutes / (7 * 60)) * 100}%` }}
+                          style={{ width: `${(totalOvertimeMinutes / (8 * 60)) * 100}%` }}
                         />
                       )}
                     </div>
@@ -178,10 +186,12 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
                         <div className="text-[#FF9F43] font-medium">Break Time</div>
                         <div>{formatDuration(totalBreakMinutes)}</div>
                       </div>
-                      <div className="text-sm">
-                        <div className="text-[#9B87F5] font-medium">Overtime</div>
-                        <div>{formatDuration(totalOvertimeMinutes)}</div>
-                      </div>
+                      {shouldShowOvertime && (
+                        <div className="text-sm">
+                          <div className="text-[#9B87F5] font-medium">Overtime</div>
+                          <div>{formatDuration(totalOvertimeMinutes)}</div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
