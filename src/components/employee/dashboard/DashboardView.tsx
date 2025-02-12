@@ -19,7 +19,9 @@ import {
   Search, 
   SlidersHorizontal,
   Grid,
-  Download
+  Download,
+  UserCircle,
+  Briefcase
 } from "lucide-react";
 
 interface DashboardViewProps {
@@ -115,11 +117,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ formData }) => {
             <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
           <Button variant="outline" size="sm" className="text-brand-secondary">
-            Site
+            <UserCircle className="mr-2 h-4 w-4" />
+            Designation
             <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
           <Button variant="outline" size="sm" className="text-brand-secondary">
-            Lifecycle
+            <Briefcase className="mr-2 h-4 w-4" />
+            Job Type
             <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
           <Button variant="outline" size="sm" className="text-brand-secondary">
