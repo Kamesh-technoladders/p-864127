@@ -41,7 +41,24 @@ const Index = () => {
     }));
   };
 
+  const handleTabChange = (tabId: string) => {
+    // Check if current form is completed before allowing tab change
+    if (!formProgress[activeTab as keyof FormProgress]) {
+      toast.error("Please complete the current section before proceeding");
+      return;
+    }
+    setActiveTab(tabId);
+  };
+
   const handleSaveAndNext = () => {
+    // Submit the current form
+    if (activeTab === "personal") {
+      const form = document.getElementById("personalDetailsForm") as HTMLFormElement;
+      if (form) {
+        form.requestSubmit();
+      }
+    }
+
     if (!formProgress[activeTab as keyof FormProgress]) {
       toast.error("Please complete all required fields before proceeding");
       return;
@@ -72,6 +89,9 @@ const Index = () => {
               updateSectionProgress("personal", completed);
               if (completed && data) {
                 updateFormData("personal", data);
+                handleSaveAndNext();
+              } else {
+                toast.error("Please fill in all required fields");
               }
             }}
             initialData={formData.personal}
@@ -140,7 +160,7 @@ const Index = () => {
         />
 
         <section className="bg-white shadow-sm rounded-lg mt-6 p-6">
-          <TabNavigation tabs={tabs} onTabChange={setActiveTab} />
+          <TabNavigation tabs={tabs} onTabChange={handleTabChange} />
           {renderActiveTabContent()}
           <div className="h-px my-6 bg-gray-200" />
           <div className="flex justify-end space-x-4">
