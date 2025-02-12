@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
 import { 
@@ -29,6 +30,12 @@ const EmployeeProfile = () => {
   const navigate = useNavigate();
   const { isLoading, employeeData, error, fetchEmployeeData, updateEmployee } = useEmployeeData(id);
   const [isEmploymentModalOpen, setIsEmploymentModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      fetchEmployeeData();
+    }
+  }, [id, fetchEmployeeData]);
 
   const handleEdit = (section: string) => {
     if (section === "employment") {
