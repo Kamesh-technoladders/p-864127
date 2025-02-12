@@ -23,6 +23,14 @@ interface FamilyMember {
   phone: string;
 }
 
+const addressSchema = z.object({
+  addressLine1: z.string().min(1, "Address is required"),
+  country: z.string().min(1, "Country is required"),
+  state: z.string().min(1, "State is required"),
+  city: z.string().min(1, "City is required"),
+  zipCode: z.string().min(1, "ZIP code is required")
+});
+
 const personalDetailsSchema = z.object({
   employeeId: z.string().min(1, "Employee ID is required"),
   firstName: z.string().min(1, "First name is required"),
@@ -33,7 +41,9 @@ const personalDetailsSchema = z.object({
   gender: z.string().min(1, "Gender is required"),
   bloodGroup: z.string().min(1, "Blood group is required"),
   maritalStatus: z.string().min(1, "Marital status is required"),
-  // Add more validation rules as needed
+  presentAddress: addressSchema,
+  permanentAddress: addressSchema,
+  sameAsPresent: z.boolean().optional()
 });
 
 export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete, initialData }) => {
@@ -45,7 +55,24 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
   ]);
 
   const form = useForm({
-    defaultValues: initialData || {},
+    defaultValues: {
+      ...initialData,
+      presentAddress: initialData?.presentAddress || {
+        addressLine1: "",
+        country: "",
+        state: "",
+        city: "",
+        zipCode: ""
+      },
+      permanentAddress: initialData?.permanentAddress || {
+        addressLine1: "",
+        country: "",
+        state: "",
+        city: "",
+        zipCode: ""
+      },
+      sameAsPresent: false
+    },
     resolver: zodResolver(personalDetailsSchema)
   });
 

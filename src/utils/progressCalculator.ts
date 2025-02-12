@@ -7,7 +7,42 @@ export interface FormProgress {
 }
 
 export interface FormData {
-  personal: any;
+  personal: {
+    employeeId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    dateOfBirth: string;
+    gender: string;
+    bloodGroup: string;
+    maritalStatus: string;
+    presentAddress: {
+      addressLine1: string;
+      country: string;
+      state: string;
+      city: string;
+      zipCode: string;
+    };
+    permanentAddress: {
+      addressLine1: string;
+      country: string;
+      state: string;
+      city: string;
+      zipCode: string;
+    };
+    emergencyContacts?: Array<{
+      relationship: string;
+      name: string;
+      phone: string;
+    }>;
+    familyDetails?: Array<{
+      relationship: string;
+      name: string;
+      occupation: string;
+      phone: string;
+    }>;
+  } | null;
   education: any;
   experience: any[];
   bank: any;

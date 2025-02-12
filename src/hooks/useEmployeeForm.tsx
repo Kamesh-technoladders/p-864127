@@ -31,6 +31,7 @@ export const useEmployeeForm = () => {
   };
 
   const updateFormData = (section: keyof FormData, data: any) => {
+    console.log(`Updating ${section} data:`, data);
     setFormData((prev) => ({
       ...prev,
       [section]: data,
@@ -77,10 +78,11 @@ export const useEmployeeForm = () => {
       if (isRequiredCompleted) {
         setIsSubmitting(true);
         try {
+          console.log('Submitting form data:', formData);
           await employeeService.createEmployee({
             personal: formData.personal,
             education: formData.education,
-            experience: formData.experience,
+            experience: formData.experience || [],
             bank: formData.bank,
           });
           
