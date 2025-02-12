@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { ExperienceForm } from "./experience/ExperienceForm";
 import { DocumentUploads } from "./experience/DocumentUploads";
 import { FormActions } from "./experience/FormActions";
+import { useParams } from "react-router-dom";
 
 export interface ExperienceData {
   jobTitle: string;
@@ -36,6 +37,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
   onSave,
   initialData,
 }) => {
+  const { id: employeeId } = useParams<{ id: string }>();
   const [formData, setFormData] = useState<ExperienceData>({
     jobTitle: "",
     company: "",
@@ -51,16 +53,6 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
-    } else {
-      setFormData({
-        jobTitle: "",
-        company: "",
-        location: "",
-        employmentType: "Full Time",
-        startDate: "",
-        endDate: "",
-        payslips: [],
-      });
     }
   }, [initialData, isOpen]);
 
@@ -69,47 +61,22 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const validateForm = () => {
-    if (!formData.jobTitle || !formData.company || !formData.location) {
-      toast.error("Please fill in all required fields");
-      return false;
-    }
+  const handleFileUpload = (field: keyof ExperienceData) => async (file: File) => {
+    if (!file) return;
 
-    if (!formData.startDate || !formData.endDate) {
-      toast.error("Please select both start and end dates");
-      return false;
-    }
-
-    if (new Date(formData.startDate) > new Date(formData.endDate)) {
-      toast.error("Start date cannot be after end date");
-      return false;
-    }
-
-    if (!formData.offerLetter) {
-      toast.error("Please upload offer letter");
-      return false;
-    }
-
-    if (!formData.separationLetter) {
-      toast.error("Please upload separation letter");
-      return false;
-    }
-
-    if (formData.payslips.length === 0) {
-      toast.error("Please upload at least one payslip");
-      return false;
-    }
-
-    return true;
+    setFormData((prev) => {
+      if (field === "payslips") {
+        return {
+          ...prev,
+          payslips: [...prev.payslips, file],
+        };
+      }
+      return { ...prev, [field]: file };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       onSave(formData);
@@ -130,42 +97,6 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
     }
   };
 
-  const handleFileUpload = (field: keyof ExperienceData) => async (file: File) => {
-    if (!file) return;
-
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error("File size should not exceed 5MB");
-      return;
-    }
-
-    const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error("Only PDF, JPG, and PNG files are allowed");
-      return;
-    }
-
-    // Simulate upload delay for progress bar
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        if (field === "payslips") {
-          if (formData.payslips.length >= 3) {
-            toast.error("Maximum 3 payslips allowed");
-            resolve();
-            return;
-          }
-          setFormData((prev) => ({
-            ...prev,
-            payslips: [...prev.payslips, file],
-          }));
-        } else {
-          setFormData((prev) => ({ ...prev, [field]: file }));
-        }
-        resolve();
-      }, 2000);
-    });
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
@@ -182,6 +113,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
           <DocumentUploads
             formData={formData}
             handleFileUpload={handleFileUpload}
+            employeeId={employeeId || ""}
           />
           <FormActions onClose={onClose} isSubmitting={isSubmitting} />
         </form>

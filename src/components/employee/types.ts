@@ -1,4 +1,3 @@
-
 export interface Experience {
   id: string;
   jobTitle: string;
@@ -34,12 +33,16 @@ export interface BankAccountData {
 
 export interface PersonalDetailsFormProps extends FormComponentProps<PersonalDetailsData> {}
 
-export interface EducationFormProps extends FormComponentProps<EducationData> {}
+export interface EducationFormProps extends FormComponentProps<EducationData> {
+  employeeId: string;
+}
 
 export interface ExperienceFormProps {
   onComplete: (completed: boolean, data?: Experience[]) => void;
   experiences?: Experience[];
+  employeeId: string;
 }
 
-export interface BankAccountFormProps extends FormComponentProps<BankAccountData> {}
-
+export interface BankAccountFormProps extends FormComponentProps<BankAccountData> {
+  employeeId: string;
+}

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +15,11 @@ import { FormField } from "./bank/FormField";
 import { DocumentUploads } from "./bank/DocumentUploads";
 import { bankAccountSchema, type BankFormData } from "./bank/bankAccountSchema";
 
-export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete, initialData }) => {
+export const BankAccountForm: React.FC<BankAccountFormProps> = ({ 
+  onComplete, 
+  initialData, 
+  employeeId 
+}) => {
   const { toast } = useToast();
   const {
     register,
@@ -127,7 +130,11 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete, in
           type="tel"
         />
 
-        <DocumentUploads setValue={setValue} formValues={formValues} />
+        <DocumentUploads 
+          setValue={setValue} 
+          formValues={formValues}
+          employeeId={employeeId}
+        />
       </form>
     </div>
   );

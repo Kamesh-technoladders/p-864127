@@ -4,6 +4,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { UploadField } from "../UploadField";
 import { MAX_FILE_SIZE, ACCEPTED_FILE_TYPES } from "./bankAccountSchema";
 import { documentService } from "@/services/employee/document.service";
+import { uploadDocument } from "@/utils/uploadDocument";
+import { DocumentMetadata } from "@/types/document.types";
 
 interface DocumentUploadsProps {
   setValue: (field: string, value: any) => void;
@@ -12,13 +14,6 @@ interface DocumentUploadsProps {
     passbookCopy?: File;
   };
   employeeId: string;
-}
-
-interface DocumentMetadata {
-  id: string;
-  file_name: string;
-  file_path: string;
-  mime_type: string;
 }
 
 export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
@@ -34,7 +29,12 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
       try {
         const docs = await documentService.getEmployeeDocuments(employeeId, 'bank');
         const docMap = docs.reduce((acc, doc) => {
-          acc[doc.document_type] = doc;
+          acc[doc.document_type] = {
+            id: doc.id,
+            file_name: doc.file_name,
+            file_path: doc.file_path,
+            mime_type: doc.mime_type || 'application/octet-stream'
+          };
           return acc;
         }, {} as Record<string, DocumentMetadata>);
         setDocuments(docMap);
@@ -75,7 +75,12 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
       // Refresh documents after upload
       const docs = await documentService.getEmployeeDocuments(employeeId, 'bank');
       const docMap = docs.reduce((acc, doc) => {
-        acc[doc.document_type] = doc;
+        acc[doc.document_type] = {
+          id: doc.id,
+          file_name: doc.file_name,
+          file_path: doc.file_path,
+          mime_type: doc.mime_type || 'application/octet-stream'
+        };
         return acc;
       }, {} as Record<string, DocumentMetadata>);
       setDocuments(docMap);
@@ -103,11 +108,7 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
           onUpload={handleFileUpload("cancelledCheque")}
           value={formValues.cancelledCheque?.name}
           showProgress
-          currentFile={documents['cancelled_cheque'] ? {
-            name: documents['cancelled_cheque'].file_name,
-            type: documents['cancelled_cheque'].mime_type,
-            id: documents['cancelled_cheque'].id,
-          } : undefined}
+          currentFile={documents['cancelled_cheque']}
           documentId={documents['cancelled_cheque']?.id}
         />
         
@@ -117,11 +118,7 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
           onUpload={handleFileUpload("passbookCopy")}
           value={formValues.passbookCopy?.name}
           showProgress
-          currentFile={documents['passbook'] ? {
-            name: documents['passbook'].file_name,
-            type: documents['passbook'].mime_type,
-            id: documents['passbook'].id,
-          } : undefined}
+          currentFile={documents['passbook']}
           documentId={documents['passbook']?.id}
         />
       </div>
