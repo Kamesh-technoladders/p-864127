@@ -1,0 +1,33 @@
+
+import React from "react";
+import { WorkTimeCard } from "../cards/WorkTimeCard";
+import { TimeTrackerCard } from "../cards/TimeTrackerCard";
+import { OnboardingTasksCard } from "../cards/OnboardingTasksCard";
+import { OnboardingProgressCard } from "../cards/OnboardingProgressCard";
+import { CalendarCard } from "../cards/CalendarCard";
+
+export const MetricsSection: React.FC = () => {
+  return (
+    <>
+      <div className="h-[350px]">
+        <WorkTimeCard />
+      </div>
+
+      <div className="h-[350px]">
+        <TimeTrackerCard />
+      </div>
+
+      <div className="h-[350px]">
+        <OnboardingTasksCard />
+      </div>
+
+      <div className="h-[350px]">
+        <OnboardingProgressCard />
+      </div>
+
+      <div className="md:col-span-2 lg:col-span-3 xl:col-span-4 h-[300px]">
+        <CalendarCard />
+      </div>
+    </>
+  );
+};
