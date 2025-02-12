@@ -8,9 +8,9 @@ export const personalInfoService = {
       .from('employees')
       .select('id')
       .eq('employee_id', employeeId)
-      .single();
+      .maybeSingle(); // Changed from single() to maybeSingle()
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
       throw error;
     }
 

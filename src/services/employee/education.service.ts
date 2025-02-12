@@ -5,9 +5,9 @@ import { Education } from "../types/employee.types";
 export const educationService = {
   async createEducation(employeeId: string, education: Education) {
     const educationData = [
-      { employee_id: employeeId, type: 'ssc' },
-      { employee_id: employeeId, type: 'hsc' },
-      { employee_id: employeeId, type: 'degree' }
+      { employee_id: employeeId, type: 'ssc', document_url: null },
+      { employee_id: employeeId, type: 'hsc', document_url: null },
+      { employee_id: employeeId, type: 'degree', document_url: null }
     ];
 
     const { error } = await supabase
@@ -25,7 +25,7 @@ export const educationService = {
       promises.push(
         supabase
           .from('employee_education')
-          .update({ document_url: 'url_here' }) // URL will be set by upload function
+          .update({ document_url: education.ssc })
           .eq('employee_id', employeeId)
           .eq('type', 'ssc')
       );
@@ -35,7 +35,7 @@ export const educationService = {
       promises.push(
         supabase
           .from('employee_education')
-          .update({ document_url: 'url_here' })
+          .update({ document_url: education.hsc })
           .eq('employee_id', employeeId)
           .eq('type', 'hsc')
       );
@@ -45,7 +45,7 @@ export const educationService = {
       promises.push(
         supabase
           .from('employee_education')
-          .update({ document_url: 'url_here' })
+          .update({ document_url: education.degree })
           .eq('employee_id', employeeId)
           .eq('type', 'degree')
       );
