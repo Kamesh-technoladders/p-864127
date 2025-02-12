@@ -16,12 +16,18 @@ import { EmploymentInfoSection } from "@/components/employee/profile/sections/Em
 import { EducationSection } from "@/components/employee/profile/sections/EducationSection";
 import { BankInfoSection } from "@/components/employee/profile/sections/BankInfoSection";
 import { MetricsSection } from "@/components/employee/profile/sections/MetricsSection";
+import { PersonalDetailsEditModal } from "@/components/employee/modals/PersonalDetailsEditModal";
+import { EducationEditModal } from "@/components/employee/modals/EducationEditModal";
+import { BankDetailsEditModal } from "@/components/employee/modals/BankDetailsEditModal";
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const { isLoading, employeeData, error, fetchEmployeeData, updateEmployee } = useEmployeeData(id);
   const [isEmploymentModalOpen, setIsEmploymentModalOpen] = useState(false);
+  const [isPersonalModalOpen, setIsPersonalModalOpen] = useState(false);
+  const [isEducationModalOpen, setIsEducationModalOpen] = useState(false);
+  const [isBankModalOpen, setIsBankModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -30,10 +36,21 @@ const EmployeeProfile = () => {
   }, [id, fetchEmployeeData]);
 
   const handleEdit = (section: string) => {
-    if (section === "employment") {
-      setIsEmploymentModalOpen(true);
-    } else {
-      toast.info(`Editing ${section} details`);
+    switch(section) {
+      case "employment":
+        setIsEmploymentModalOpen(true);
+        break;
+      case "personal":
+        setIsPersonalModalOpen(true);
+        break;
+      case "education":
+        setIsEducationModalOpen(true);
+        break;
+      case "bank":
+        setIsBankModalOpen(true);
+        break;
+      default:
+        toast.error("Invalid section");
     }
   };
 
@@ -44,17 +61,6 @@ const EmployeeProfile = () => {
     } catch (error) {
       throw error;
     }
-  };
-
-  const calculateYearsOfExperience = (joinedDate: string) => {
-    const joined = new Date(joinedDate);
-    const now = new Date();
-    const years = now.getFullYear() - joined.getFullYear();
-    const months = now.getMonth() - joined.getMonth();
-    if (months < 0) {
-      return `${years - 1} years`;
-    }
-    return `${years} years`;
   };
 
   if (!id) {
@@ -68,6 +74,8 @@ const EmployeeProfile = () => {
   if (error || !employeeData) {
     return <ErrorState message={error || "Employee Not Found"} onReturn={() => navigate("/")} />;
   }
+
+  const presentAddress = employeeData.employee_addresses?.find(addr => addr.type === 'present');
 
   return (
     <DashboardLayout>
@@ -103,6 +111,10 @@ const EmployeeProfile = () => {
             phone={employeeData.phone}
             dateOfBirth={employeeData.date_of_birth}
             maritalStatus={employeeData.marital_status}
+            gender={employeeData.gender}
+            bloodGroup={employeeData.blood_group}
+            state={presentAddress?.state || 'N/A'}
+            country={presentAddress?.country || 'N/A'}
             onEdit={() => handleEdit("personal")}
           />
 
@@ -148,9 +160,80 @@ const EmployeeProfile = () => {
           }}
           onUpdate={handleUpdateEmployment}
         />
+
+        <PersonalDetailsEditModal
+          isOpen={isPersonalModalOpen}
+          onClose={() => setIsPersonalModalOpen(false)}
+          data={{
+            employeeId: employeeData.employee_id,
+            firstName: employeeData.first_name,
+            lastName: employeeData.last_name,
+            email: employeeData.email,
+            phone: employeeData.phone,
+            dateOfBirth: employeeData.date_of_birth,
+            gender: employeeData.gender,
+            bloodGroup: employeeData.blood_group,
+            maritalStatus: employeeData.marital_status,
+            presentAddress: presentAddress || {
+              addressLine1: '',
+              country: '',
+              state: '',
+              city: '',
+              zipCode: ''
+            },
+            permanentAddress: {
+              addressLine1: '',
+              country: '',
+              state: '',
+              city: '',
+              zipCode: ''
+            }
+          }}
+          employeeId={employeeData.id}
+          onUpdate={fetchEmployeeData}
+        />
+
+        <EducationEditModal
+          isOpen={isEducationModalOpen}
+          onClose={() => setIsEducationModalOpen(false)}
+          data={{
+            ssc: undefined,
+            hsc: undefined,
+            degree: undefined
+          }}
+          employeeId={employeeData.id}
+          onUpdate={fetchEmployeeData}
+        />
+
+        <BankDetailsEditModal
+          isOpen={isBankModalOpen}
+          onClose={() => setIsBankModalOpen(false)}
+          data={{
+            accountHolderName: '',
+            accountNumber: '',
+            ifscCode: '',
+            bankName: '',
+            branchName: '',
+            accountType: 'savings',
+            bankPhone: ''
+          }}
+          employeeId={employeeData.id}
+          onUpdate={fetchEmployeeData}
+        />
       </div>
     </DashboardLayout>
   );
+};
+
+const calculateYearsOfExperience = (joinedDate: string) => {
+  const joined = new Date(joinedDate);
+  const now = new Date();
+  const years = now.getFullYear() - joined.getFullYear();
+  const months = now.getMonth() - joined.getMonth();
+  if (months < 0) {
+    return `${years - 1} years`;
+  }
+  return `${years} years`;
 };
 
 export default EmployeeProfile;
