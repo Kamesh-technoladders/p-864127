@@ -31,7 +31,9 @@ export const useWorkSession = (employeeId: string) => {
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
-          total_pause_duration_minutes: data.total_pause_duration_minutes
+          total_pause_duration_minutes: data.total_pause_duration_minutes,
+          overtime_minutes: data.overtime_minutes,
+          regular_hours_completed: data.regular_hours_completed
         });
       } else {
         setActiveSession(null);

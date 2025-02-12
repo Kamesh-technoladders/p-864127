@@ -196,9 +196,11 @@ export type Database = {
           expected_work_hours: number | null
           id: string
           missed_breaks: string[] | null
+          overtime_minutes: number | null
           pause_end_time: string | null
           pause_reason: string | null
           pause_start_time: string | null
+          regular_hours_completed: boolean | null
           start_time: string
           status: string
           total_pause_duration_minutes: number | null
@@ -216,9 +218,11 @@ export type Database = {
           expected_work_hours?: number | null
           id?: string
           missed_breaks?: string[] | null
+          overtime_minutes?: number | null
           pause_end_time?: string | null
           pause_reason?: string | null
           pause_start_time?: string | null
+          regular_hours_completed?: boolean | null
           start_time: string
           status: string
           total_pause_duration_minutes?: number | null
@@ -236,9 +240,11 @@ export type Database = {
           expected_work_hours?: number | null
           id?: string
           missed_breaks?: string[] | null
+          overtime_minutes?: number | null
           pause_end_time?: string | null
           pause_reason?: string | null
           pause_start_time?: string | null
+          regular_hours_completed?: boolean | null
           start_time?: string
           status?: string
           total_pause_duration_minutes?: number | null

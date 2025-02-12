@@ -9,6 +9,8 @@ export interface WorkTimeSession {
   pause_start_time?: string;
   pause_end_time?: string;
   total_pause_duration_minutes?: number;
+  overtime_minutes?: number;
+  regular_hours_completed?: boolean;
 }
 
 export type WorkTimeAction = 'start' | 'pause' | 'resume' | 'reset' | 'stop';

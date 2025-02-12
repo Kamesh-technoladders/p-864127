@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,9 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
-import { Clock, AlertCircle, Coffee, UtensilsCrossed } from "lucide-react";
+import { Clock, AlertCircle, Coffee, UtensilsCrossed, Timer } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 
 interface WorkTimeEntry {
   id: string;
@@ -23,6 +25,8 @@ interface WorkTimeEntry {
   excess_break_minutes?: number;
   missed_breaks?: string[];
   auto_stopped?: boolean;
+  overtime_minutes?: number;
+  regular_hours_completed?: boolean;
 }
 
 interface WorkTimeHistoryModalProps {
@@ -36,6 +40,8 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
   onClose,
   entries,
 }) => {
+  const [showOvertime, setShowOvertime] = useState(false);
+
   const formatDuration = (minutes: number | null) => {
     if (!minutes) return "In progress";
     const hours = Math.floor(minutes / 60);
@@ -72,10 +78,19 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Clock className="w-5 h-5" />
-            Work Time History
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              <Clock className="w-5 h-5" />
+              Work Time History
+            </DialogTitle>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">Show Overtime</span>
+              <Switch
+                checked={showOvertime}
+                onCheckedChange={setShowOvertime}
+              />
+            </div>
+          </div>
         </DialogHeader>
         <ScrollArea className="h-[500px] pr-4">
           {Object.entries(groupedEntries).map(([date, dayEntries]) => (
@@ -101,7 +116,16 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
                           </div>
                           <div className="text-sm text-gray-500">
                             Duration: {formatDuration(entry.duration_minutes)}
+                            {entry.regular_hours_completed && (
+                              <span className="text-green-600 ml-2">(Regular hours completed)</span>
+                            )}
                           </div>
+                          {showOvertime && entry.overtime_minutes && entry.overtime_minutes > 0 && (
+                            <div className="text-sm text-purple-600 flex items-center gap-1 mt-1">
+                              <Timer className="h-4 w-4" />
+                              Overtime: {formatDuration(entry.overtime_minutes)}
+                            </div>
+                          )}
                         </div>
 
                         {entry.excess_break_minutes && entry.excess_break_minutes > 0 && (
