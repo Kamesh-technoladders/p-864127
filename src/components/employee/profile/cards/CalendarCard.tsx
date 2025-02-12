@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Info } from "lucide-react";
-import { Calendar as DayPicker } from "@/components/ui/calendar";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Info } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
@@ -10,7 +9,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { format } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, 
+         isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface Holiday {
@@ -23,7 +23,17 @@ interface Holiday {
   type: string;
 }
 
+interface CalendarDay {
+  date: Date;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  isHoliday: boolean;
+  isSunday: boolean;
+  holidayInfo?: Holiday;
+}
+
 export const CalendarCard = () => {
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +55,21 @@ export const CalendarCard = () => {
     fetchHolidays();
   }, []);
 
+  const generateMonth = (date: Date): CalendarDay[] => {
+    const start = startOfWeek(startOfMonth(date));
+    const end = endOfWeek(endOfMonth(date));
+    const days = eachDayOfInterval({ start, end });
+
+    return days.map(day => ({
+      date: day,
+      isCurrentMonth: isSameMonth(day, date),
+      isToday: isSameDay(day, new Date()),
+      isHoliday: isHoliday(day),
+      isSunday: day.getDay() === 0,
+      holidayInfo: getHolidayInfo(day),
+    }));
+  };
+
   const isHoliday = (date: Date) => {
     const dateString = format(date, 'yyyy-MM-dd');
     return holidays.some(holiday => holiday.date === dateString);
@@ -55,32 +80,11 @@ export const CalendarCard = () => {
     return holidays.find(holiday => holiday.date === dateString);
   };
 
-  const isSunday = (date: Date) => {
-    return date.getDay() === 0;
-  };
+  const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
+  const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
 
-  const isWorkingDay = (date: Date) => {
-    return !isSunday(date) && !isHoliday(date);
-  };
-
-  const footer = (
-    <div className="mt-2 text-xs">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#4BAE4F]" />
-          <span className="text-gray-600">Working Day</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
-          <span className="text-gray-600">Holiday</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
-          <span className="text-gray-600">Sunday</span>
-        </div>
-      </div>
-    </div>
-  );
+  const days = generateMonth(currentDate);
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
     <Card className="p-5 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[500px]">
@@ -91,73 +95,83 @@ export const CalendarCard = () => {
             <CalendarIcon className="w-4 h-4 text-gray-500" />
           </div>
           
-          <TooltipProvider>
-            <DayPicker
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              className="border rounded-md p-2"
-              classNames={{
-                day_today: "bg-[#F2FCE2] text-[#4BAE4F] font-medium",
-                day: cn(
-                  "h-8 w-8 p-0 font-normal aria-selected:opacity-100",
-                  "hover:bg-gray-50 rounded-full transition-colors"
-                ),
-                day_selected: "bg-[#4BAE4F] text-white hover:bg-[#4BAE4F] hover:text-white",
-                day_disabled: "text-gray-400 hover:bg-transparent",
-                nav_button: "hover:bg-gray-50 transition-colors",
-                cell: "text-center text-sm p-0",
-                table: "w-full border-collapse space-y-1",
-                head_cell: "text-gray-500 font-normal text-[0.8rem]",
-                nav: "space-x-1 flex items-center",
-                caption: "flex justify-center pt-1 relative items-center",
-                caption_label: "text-sm font-medium",
-              }}
-              modifiers={{
-                holiday: (date) => isHoliday(date),
-                sunday: (date) => isSunday(date),
-                workingDay: (date) => isWorkingDay(date),
-              }}
-              modifiersStyles={{
-                holiday: { 
-                  color: "#EF4444",
-                  backgroundColor: "rgba(239, 68, 68, 0.05)"
-                },
-                sunday: { 
-                  color: "#F59E0B",
-                  backgroundColor: "rgba(245, 158, 11, 0.05)"
-                },
-                workingDay: { 
-                  color: "#4BAE4F",
-                  backgroundColor: "rgba(75, 174, 79, 0.05)"
-                },
-              }}
-              components={{
-                DayContent: ({ date }) => {
-                  const holiday = getHolidayInfo(date);
-                  return (
-                    <div className="relative w-full h-full flex items-center justify-center">
-                      {date.getDate()}
-                      {holiday && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <div className="text-sm">
-                              <p className="font-medium">{holiday.name}</p>
-                              <p className="text-xs text-gray-500">{holiday.localName}</p>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      )}
-                    </div>
-                  );
-                },
-              }}
-              footer={footer}
-            />
-          </TooltipProvider>
+          <div className="border rounded-lg p-4 bg-white">
+            <div className="flex items-center justify-between mb-4">
+              <button 
+                onClick={prevMonth}
+                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <h2 className="text-sm font-medium">
+                {format(currentDate, 'MMMM yyyy')}
+              </h2>
+              <button 
+                onClick={nextMonth}
+                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {weekDays.map(day => (
+                <div key={day} className="text-center text-xs text-gray-500 font-medium">
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-7 gap-1">
+              {days.map((day, index) => (
+                <TooltipProvider key={index}>
+                  <div
+                    className={cn(
+                      "aspect-square flex items-center justify-center text-sm relative",
+                      "rounded-full transition-colors cursor-pointer",
+                      !day.isCurrentMonth && "text-gray-300",
+                      day.isToday && "bg-[#F2FCE2] text-[#4BAE4F] font-medium",
+                      day.isSunday && "text-[#F59E0B] bg-[#F59E0B]/5",
+                      day.isHoliday && "text-[#EF4444] bg-[#EF4444]/5",
+                      !day.isSunday && !day.isHoliday && day.isCurrentMonth && "text-[#4BAE4F] hover:bg-[#4BAE4F]/5",
+                      isSameDay(day.date, selectedDate) && "bg-[#4BAE4F] text-white hover:bg-[#4BAE4F]"
+                    )}
+                    onClick={() => setSelectedDate(day.date)}
+                  >
+                    {format(day.date, 'd')}
+                    {day.holidayInfo && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="text-sm">
+                            <p className="font-medium">{day.holidayInfo.name}</p>
+                            <p className="text-xs text-gray-500">{day.holidayInfo.localName}</p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </div>
+                </TooltipProvider>
+              ))}
+            </div>
+
+            <div className="mt-4 flex items-center gap-3 text-xs">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#4BAE4F]" />
+                <span className="text-gray-600">Working Day</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
+                <span className="text-gray-600">Holiday</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+                <span className="text-gray-600">Sunday</span>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="space-y-3">
