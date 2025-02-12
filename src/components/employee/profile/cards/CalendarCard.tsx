@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Info } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
@@ -84,108 +83,83 @@ export const CalendarCard = () => {
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
 
   const days = generateMonth(currentDate);
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
   return (
-    <Card className="p-5 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[500px]">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 h-full">
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <h3 className="font-medium text-gray-800">Calendar</h3>
-            <CalendarIcon className="w-4 h-4 text-gray-500" />
+    <Card className="p-6 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-[500px]">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <button 
+              onClick={prevMonth}
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <h2 className="text-lg font-semibold text-gray-900">
+              {format(currentDate, 'MMMM yyyy')}
+            </h2>
+            <button 
+              onClick={nextMonth}
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </button>
           </div>
-          
-          <div className="border rounded-lg p-4 bg-white">
-            <div className="flex items-center justify-between mb-4">
-              <button 
-                onClick={prevMonth}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <h2 className="text-sm font-medium">
-                {format(currentDate, 'MMMM yyyy')}
-              </h2>
-              <button 
-                onClick={nextMonth}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
 
-            <div className="grid grid-cols-7 gap-1 mb-2">
-              {weekDays.map(day => (
-                <div key={day} className="text-center text-xs text-gray-500 font-medium">
-                  {day}
+          <div className="grid grid-cols-7 gap-1">
+            {weekDays.map(day => (
+              <div key={day} className="h-10 flex items-center justify-center text-sm font-medium text-gray-400">
+                {day}
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7 gap-1">
+            {days.map((day, index) => (
+              <TooltipProvider key={index}>
+                <div
+                  className={cn(
+                    "h-10 w-10 flex items-center justify-center text-sm relative",
+                    "rounded-full transition-colors cursor-pointer mx-auto",
+                    !day.isCurrentMonth && "text-gray-300",
+                    day.isToday && !isSameDay(day.date, selectedDate) && "bg-blue-50 text-blue-600 font-medium",
+                    day.isSunday && !isSameDay(day.date, selectedDate) && "text-[#F59E0B]",
+                    day.isHoliday && !isSameDay(day.date, selectedDate) && "text-[#EF4444]",
+                    !day.isSunday && !day.isHoliday && day.isCurrentMonth && !isSameDay(day.date, selectedDate) && "text-gray-900 hover:bg-gray-100",
+                    isSameDay(day.date, selectedDate) && "bg-[#1A73E8] text-white hover:bg-[#1A73E8]/90"
+                  )}
+                  onClick={() => setSelectedDate(day.date)}
+                >
+                  {format(day.date, 'd')}
+                  {day.holidayInfo && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <div className="text-sm">
+                          <p className="font-medium">{day.holidayInfo.name}</p>
+                          <p className="text-xs text-gray-500">{day.holidayInfo.localName}</p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-7 gap-1">
-              {days.map((day, index) => (
-                <TooltipProvider key={index}>
-                  <div
-                    className={cn(
-                      "aspect-square flex items-center justify-center text-sm relative",
-                      "rounded-full transition-colors cursor-pointer",
-                      !day.isCurrentMonth && "text-gray-300",
-                      day.isToday && "bg-[#F2FCE2] text-[#4BAE4F] font-medium",
-                      day.isSunday && "text-[#F59E0B] bg-[#F59E0B]/5",
-                      day.isHoliday && "text-[#EF4444] bg-[#EF4444]/5",
-                      !day.isSunday && !day.isHoliday && day.isCurrentMonth && "text-[#4BAE4F] hover:bg-[#4BAE4F]/5",
-                      isSameDay(day.date, selectedDate) && "bg-[#4BAE4F] text-white hover:bg-[#4BAE4F]"
-                    )}
-                    onClick={() => setSelectedDate(day.date)}
-                  >
-                    {format(day.date, 'd')}
-                    {day.holidayInfo && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <div className="text-sm">
-                            <p className="font-medium">{day.holidayInfo.name}</p>
-                            <p className="text-xs text-gray-500">{day.holidayInfo.localName}</p>
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                  </div>
-                </TooltipProvider>
-              ))}
-            </div>
-
-            <div className="mt-4 flex items-center gap-3 text-xs">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#4BAE4F]" />
-                <span className="text-gray-600">Working Day</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
-                <span className="text-gray-600">Holiday</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
-                <span className="text-gray-600">Sunday</span>
-              </div>
-            </div>
+              </TooltipProvider>
+            ))}
           </div>
         </div>
         
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <h3 className="font-medium text-gray-800">Upcoming Events</h3>
-            <Info className="w-4 h-4 text-gray-500" />
-          </div>
+        <div className="space-y-4">
+          <h3 className="font-medium text-gray-900 px-2">Upcoming Events</h3>
           
-          <ScrollArea className="h-[380px] w-full rounded-md border">
-            <div className="p-4 space-y-3">
+          <ScrollArea className="h-[420px] w-full rounded-md">
+            <div className="space-y-3 pr-4">
               {[...Array(5)].map((_, i) => (
                 <div 
                   key={i}
-                  className="w-full bg-white border border-gray-100 p-4 rounded-lg hover:border-[#4BAE4F]/20 hover:bg-[#F2FCE2]/30 transition-all duration-200 cursor-pointer"
+                  className="w-full bg-white border border-gray-100 p-4 rounded-lg hover:border-[#1A73E8]/20 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer"
                 >
                   <div className="space-y-2">
                     <div className="font-medium text-gray-800">Team Sync {i + 1}</div>
@@ -193,8 +167,8 @@ export const CalendarCard = () => {
                     <div className="text-sm text-gray-600">
                       Daily standup meeting with the development team
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-[#4BAE4F]">
-                      <div className="w-2 h-2 rounded-full bg-[#4BAE4F]" />
+                    <div className="flex items-center gap-2 text-xs text-[#1A73E8]">
+                      <div className="w-2 h-2 rounded-full bg-[#1A73E8]" />
                       <span>In Progress</span>
                     </div>
                   </div>
