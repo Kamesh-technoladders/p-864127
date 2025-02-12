@@ -14,33 +14,41 @@ export interface FormData {
 }
 
 export const calculateProgress = (progress: FormProgress): number => {
-  const totalSections = Object.keys(progress).length;
-  const completedSections = Object.values(progress).filter(Boolean).length;
-  return Math.round((completedSections / totalSections) * 100);
+  // Calculate weighted progress
+  let totalProgress = 0;
+  
+  // Personal Details (25%)
+  if (progress.personal) totalProgress += 25;
+  
+  // Education & Experience (50% combined)
+  if (progress.education) totalProgress += 25;
+  if (progress.experience) totalProgress += 25;
+  
+  // Bank Details (25%)
+  if (progress.bank) totalProgress += 25;
+  
+  return totalProgress;
 };
 
 export const getProgressMessage = (progress: FormProgress): string => {
-  const remaining = Object.entries(progress)
-    .filter(([_, completed]) => !completed)
-    .map(([section]) => {
-      switch (section) {
-        case "personal":
-          return "Personal Details";
-        case "education":
-          return "Education";
-        case "experience":
-          return "Experience";
-        case "bank":
-          return "Bank Account Details";
-        default:
-          return section.charAt(0).toUpperCase() + section.slice(1);
-      }
-    })
-    .join(", ");
-
-  if (remaining) {
-    return `Please complete the following sections: ${remaining}`;
+  const incomplete = [];
+  
+  if (!progress.personal) {
+    incomplete.push("Personal Details");
   }
-  return "All sections completed! You can proceed.";
-};
+  
+  // Check both education and experience together
+  if (!progress.education || !progress.experience) {
+    incomplete.push("Education & Experience");
+  }
+  
+  if (!progress.bank) {
+    incomplete.push("Bank Account Details");
+  }
 
+  if (incomplete.length === 0) {
+    return "All sections completed! You can proceed.";
+  }
+
+  return `Please complete the following sections: ${incomplete.join(", ")}`;
+};

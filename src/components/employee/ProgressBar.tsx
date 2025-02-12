@@ -1,3 +1,4 @@
+
 import React from "react";
 
 interface ProgressBarProps {
@@ -16,7 +17,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       <div className="text-black text-base font-semibold">{title}</div>
       <div className="bg-[rgba(242,242,245,1)] flex w-[600px] max-w-full flex-col mt-3 rounded-[100px]">
         <div
-          className="bg-[rgba(221,1,1,1)] flex h-5 rounded-[10px]"
+          className="bg-[rgba(221,1,1,1)] flex h-5 rounded-[10px] transition-all duration-300 ease-in-out"
           style={{ width: `${percentage}%` }}
         />
       </div>
