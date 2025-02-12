@@ -1,5 +1,5 @@
-
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -29,6 +29,7 @@ interface DashboardViewProps {
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ formData }) => {
+  const navigate = useNavigate();
   // Transform form data for display
   const employeeData = formData.personal ? [
     {
@@ -43,6 +44,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ formData }) => {
       status: "Active"
     }
   ] : [];
+
+  const handleNameClick = (employeeId: string) => {
+    navigate(`/employee/${employeeId}`);
+  };
 
   return (
     <div className="space-y-8">
@@ -178,7 +183,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ formData }) => {
                     <input type="checkbox" className="rounded border-gray-300" />
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-3">
+                    <div 
+                      className="flex items-center gap-3 cursor-pointer"
+                      onClick={() => handleNameClick(index.toString())}
+                    >
                       <Avatar className="h-8 w-8">
                         <AvatarImage src="" />
                         <AvatarFallback>{employee.name.substring(0, 2).toUpperCase()}</AvatarFallback>

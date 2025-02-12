@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import EmployeeProfile from "./pages/EmployeeProfile";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +19,7 @@ const App: React.FC = () => {
           <TooltipProvider>
             <Routes>
               <Route path="/" element={<Index />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="/employee/:id" element={<EmployeeProfile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />
