@@ -1,20 +1,22 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { documentService } from "@/services/employee/document.service";
 
 export const uploadDocument = async (
   file: File,
   type: 'education' | 'experience' | 'bank',
-  employeeId: string
+  employeeId: string,
+  documentType: string
 ): Promise<string> => {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('type', type);
-  formData.append('employeeId', employeeId);
-
-  const { data, error } = await supabase.functions.invoke('upload-document', {
-    body: formData
-  });
-
-  if (error) throw error;
-  return data.url;
+  try {
+    const document = await documentService.uploadDocument(
+      file,
+      employeeId,
+      type,
+      documentType
+    );
+    return document.file_path;
+  } catch (error) {
+    console.error('Error uploading document:', error);
+    throw error;
+  }
 };

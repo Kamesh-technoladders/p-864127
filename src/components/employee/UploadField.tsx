@@ -1,12 +1,15 @@
 
 import React, { useState } from "react";
-import { LoaderCircle, FileText, X, AlertCircle } from "lucide-react";
+import { LoaderCircle, FileText, X, AlertCircle, Download } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { documentService } from "@/services/employee/document.service";
+import { toast } from "sonner";
 
 interface UploadedFile {
   name: string;
   type: string;
   url?: string;
+  id?: string;
 }
 
 interface UploadFieldProps {
@@ -18,6 +21,7 @@ interface UploadFieldProps {
   currentFile?: UploadedFile | null;
   onRemove?: () => void;
   error?: string;
+  documentId?: string;
 }
 
 export const UploadField: React.FC<UploadFieldProps> = ({
@@ -29,8 +33,10 @@ export const UploadField: React.FC<UploadFieldProps> = ({
   currentFile,
   onRemove,
   error,
+  documentId,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +58,10 @@ export const UploadField: React.FC<UploadFieldProps> = ({
       try {
         await onUpload(file);
         setProgress(100);
+        toast.success("File uploaded successfully");
+      } catch (error) {
+        toast.error("Failed to upload file");
+        console.error("Upload error:", error);
       } finally {
         clearInterval(progressInterval);
         setTimeout(() => {
@@ -59,6 +69,33 @@ export const UploadField: React.FC<UploadFieldProps> = ({
           setProgress(0);
         }, 500);
       }
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!documentId) return;
+    
+    setIsDownloading(true);
+    try {
+      const url = await documentService.downloadDocument(documentId);
+      
+      // Create a temporary anchor element to trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = currentFile?.name || 'document';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      // Clean up the blob URL
+      URL.revokeObjectURL(url);
+      
+      toast.success("File downloaded successfully");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Failed to download file");
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -84,14 +121,25 @@ export const UploadField: React.FC<UploadFieldProps> = ({
                 <FileText className="h-6 w-6 text-gray-500" />
               )}
               <span className="text-sm">{currentFile.name}</span>
-              {onRemove && (
-                <button
-                  onClick={onRemove}
-                  className="p-1 hover:bg-gray-200 rounded-full"
-                >
-                  <X className="h-4 w-4 text-gray-500" />
-                </button>
-              )}
+              <div className="flex items-center gap-2">
+                {documentId && (
+                  <button
+                    onClick={handleDownload}
+                    disabled={isDownloading}
+                    className="p-1 hover:bg-gray-200 rounded-full"
+                  >
+                    <Download className="h-4 w-4 text-gray-500" />
+                  </button>
+                )}
+                {onRemove && (
+                  <button
+                    onClick={onRemove}
+                    className="p-1 hover:bg-gray-200 rounded-full"
+                  >
+                    <X className="h-4 w-4 text-gray-500" />
+                  </button>
+                )}
+              </div>
             </div>
           ) : (
             <div className="flex flex-col relative self-stretch aspect-[6.714] w-[282px] text-black whitespace-nowrap px-[17px] py-3 rounded-lg">
