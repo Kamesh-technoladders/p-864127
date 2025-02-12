@@ -38,6 +38,17 @@ const EmployeeProfile = () => {
     toast.info(`Editing ${section} details`);
   };
 
+  const calculateYearsOfExperience = (joinedDate: string) => {
+    const joined = new Date(joinedDate);
+    const now = new Date();
+    const years = now.getFullYear() - joined.getFullYear();
+    const months = now.getMonth() - joined.getMonth();
+    if (months < 0) {
+      return `${years - 1} years`;
+    }
+    return `${years} years`;
+  };
+
   if (!id) {
     return <ErrorState message="No Employee Selected" onReturn={() => navigate("/")} />;
   }
@@ -74,8 +85,9 @@ const EmployeeProfile = () => {
 
         <StatsBar
           joinedDate={new Date(employeeData.created_at).toLocaleDateString()}
-          gender={employeeData.gender}
-          bloodGroup={employeeData.blood_group}
+          department="Engineering"
+          designation="Software Engineer"
+          yearsOfExperience={calculateYearsOfExperience(employeeData.created_at)}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
