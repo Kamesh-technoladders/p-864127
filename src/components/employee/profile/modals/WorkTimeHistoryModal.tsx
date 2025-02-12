@@ -8,9 +8,10 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
-import { Clock, AlertCircle, Coffee, UtensilsCrossed, Timer } from "lucide-react";
+import { Clock, AlertCircle, Coffee, UtensilsCrossed, Timer, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
 
 interface WorkTimeEntry {
   id: string;
@@ -61,22 +62,61 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
     return grouped;
   };
 
-  const getBreakIcon = (reason: string) => {
-    switch (reason) {
-      case 'Lunch Break':
-        return <UtensilsCrossed className="h-4 w-4" />;
-      case 'Coffee Break':
-        return <Coffee className="h-4 w-4" />;
-      default:
-        return null;
+  const getActivityColor = (entry: WorkTimeEntry) => {
+    if (entry.pause_reason === 'Lunch Break') {
+      return {
+        border: 'border-l-[#FF9F43]',
+        bg: 'bg-[#FFF4E9]',
+        text: 'text-[#FF9F43]'
+      };
     }
+    if (entry.pause_reason === 'Coffee Break') {
+      return {
+        border: 'border-l-[#4CAF50]',
+        bg: 'bg-[#F2FCE2]',
+        text: 'text-[#4CAF50]'
+      };
+    }
+    if (entry.overtime_minutes && entry.overtime_minutes > 0) {
+      return {
+        border: 'border-l-[#9B87F5]',
+        bg: 'bg-[#F5F2FF]',
+        text: 'text-[#9B87F5]'
+      };
+    }
+    return {
+      border: 'border-l-[#2C4D9E]',
+      bg: 'bg-[#F0F4FF]',
+      text: 'text-[#2C4D9E]'
+    };
+  };
+
+  const getActivityIcon = (entry: WorkTimeEntry) => {
+    if (entry.pause_reason === 'Lunch Break') return <UtensilsCrossed className="h-4 w-4" />;
+    if (entry.pause_reason === 'Coffee Break') return <Coffee className="h-4 w-4" />;
+    if (entry.overtime_minutes && entry.overtime_minutes > 0) return <Timer className="h-4 w-4" />;
+    return <Briefcase className="h-4 w-4" />;
+  };
+
+  const getDailySummary = (dayEntries: WorkTimeEntry[]) => {
+    const totalWorkMinutes = dayEntries.reduce((acc, entry) => 
+      acc + (entry.duration_minutes || 0), 0);
+    const totalBreakMinutes = dayEntries.reduce((acc, entry) => 
+      acc + (entry.total_pause_duration_minutes || 0), 0);
+    const totalOvertimeMinutes = dayEntries.reduce((acc, entry) => 
+      acc + (entry.overtime_minutes || 0), 0);
+
+    const targetMinutes = 7 * 60; // 7 hours in minutes
+    const remainingMinutes = Math.max(0, targetMinutes - totalWorkMinutes);
+
+    return { totalWorkMinutes, totalBreakMinutes, totalOvertimeMinutes, remainingMinutes };
   };
 
   const groupedEntries = groupEntriesByDate(entries);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2">
@@ -92,70 +132,125 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
             </div>
           </div>
         </DialogHeader>
-        <ScrollArea className="h-[500px] pr-4">
-          {Object.entries(groupedEntries).map(([date, dayEntries]) => (
-            <div key={date} className="mb-6">
-              <h3 className="text-sm font-medium mb-3">
-                {format(new Date(date), 'EEEE, MMMM d, yyyy')}
-              </h3>
-              <div className="space-y-3">
-                {dayEntries.map(entry => (
-                  <div
-                    key={entry.id}
-                    className="bg-white p-4 rounded-lg border shadow-sm"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-2">
-                        <div>
-                          <div className="text-sm font-medium">
-                            {format(new Date(entry.start_time), 'h:mm a')}
-                            {entry.end_time && ` - ${format(new Date(entry.end_time), 'h:mm a')}`}
-                            {entry.auto_stopped && (
-                              <span className="ml-2 text-xs text-orange-600">(Auto-stopped)</span>
-                            )}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            Duration: {formatDuration(entry.duration_minutes)}
-                            {entry.regular_hours_completed && (
-                              <span className="text-green-600 ml-2">(Regular hours completed)</span>
-                            )}
-                          </div>
-                          {showOvertime && entry.overtime_minutes && entry.overtime_minutes > 0 && (
-                            <div className="text-sm text-purple-600 flex items-center gap-1 mt-1">
-                              <Timer className="h-4 w-4" />
-                              Overtime: {formatDuration(entry.overtime_minutes)}
+        <ScrollArea className="h-[600px] pr-4">
+          {Object.entries(groupedEntries).map(([date, dayEntries]) => {
+            const { 
+              totalWorkMinutes, 
+              totalBreakMinutes, 
+              totalOvertimeMinutes,
+              remainingMinutes 
+            } = getDailySummary(dayEntries);
+
+            return (
+              <div key={date} className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">
+                  {format(new Date(date), 'EEEE, MMMM d, yyyy')}
+                </h3>
+
+                <div className="bg-white p-4 rounded-lg border mb-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Daily Progress</span>
+                      <span>{formatDuration(totalWorkMinutes)} / 7h 0m</span>
+                    </div>
+                    <div className="flex gap-1 h-2">
+                      <div 
+                        className="bg-[#2C4D9E] rounded-l"
+                        style={{ width: `${(totalWorkMinutes / (7 * 60)) * 100}%` }}
+                      />
+                      <div 
+                        className="bg-[#FF9F43]"
+                        style={{ width: `${(totalBreakMinutes / (7 * 60)) * 100}%` }}
+                      />
+                      {showOvertime && (
+                        <div 
+                          className="bg-[#9B87F5] rounded-r"
+                          style={{ width: `${(totalOvertimeMinutes / (7 * 60)) * 100}%` }}
+                        />
+                      )}
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 mt-4">
+                      <div className="text-sm">
+                        <div className="text-[#2C4D9E] font-medium">Work Time</div>
+                        <div>{formatDuration(totalWorkMinutes)}</div>
+                      </div>
+                      <div className="text-sm">
+                        <div className="text-[#FF9F43] font-medium">Break Time</div>
+                        <div>{formatDuration(totalBreakMinutes)}</div>
+                      </div>
+                      <div className="text-sm">
+                        <div className="text-[#9B87F5] font-medium">Overtime</div>
+                        <div>{formatDuration(totalOvertimeMinutes)}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {dayEntries.map(entry => {
+                    const colors = getActivityColor(entry);
+                    return (
+                      <div
+                        key={entry.id}
+                        className={`border-l-4 ${colors.border} ${colors.bg} p-4 rounded-lg`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className={`${colors.text}`}>
+                                {getActivityIcon(entry)}
+                              </span>
+                              <span className="font-medium">
+                                {format(new Date(entry.start_time), 'h:mm a')}
+                                {entry.end_time && ` - ${format(new Date(entry.end_time), 'h:mm a')}`}
+                              </span>
+                              {entry.pause_reason && (
+                                <span className={`text-sm ${colors.text}`}>
+                                  {entry.pause_reason}
+                                </span>
+                              )}
                             </div>
-                          )}
-                        </div>
-
-                        {entry.excess_break_minutes && entry.excess_break_minutes > 0 && (
-                          <div className="text-sm text-red-600 flex items-center gap-1">
-                            <AlertCircle className="h-4 w-4" />
-                            Excess break time: {entry.excess_break_minutes} minutes
+                            <div className="text-sm text-gray-600">
+                              Duration: {formatDuration(entry.duration_minutes)}
+                              {entry.regular_hours_completed && (
+                                <span className="text-[#4BAE4F] ml-2">(Regular hours completed)</span>
+                              )}
+                            </div>
+                            {entry.pause_reason && entry.total_pause_duration_minutes && (
+                              <div className="text-sm text-gray-600">
+                                Break Duration: {formatDuration(entry.total_pause_duration_minutes)}
+                                {entry.excess_break_minutes && entry.excess_break_minutes > 0 && (
+                                  <span className="text-[#FF5252] ml-2">
+                                    (Excess: {entry.excess_break_minutes}m)
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
-                        )}
-
+                          <div className={`text-xs px-2 py-1 rounded-full ${
+                            entry.status === 'completed' 
+                              ? 'bg-green-100 text-green-700'
+                              : entry.status === 'running'
+                              ? 'bg-blue-100 text-blue-700'
+                              : 'bg-yellow-100 text-yellow-700'
+                          }`}>
+                            {entry.status}
+                          </div>
+                        </div>
+                        
                         {entry.missed_breaks && entry.missed_breaks.length > 0 && (
-                          <div className="text-sm text-orange-600">
+                          <div className="mt-2 text-sm text-[#FFA726] flex items-center gap-1">
+                            <AlertCircle className="h-4 w-4" />
                             Missed breaks: {entry.missed_breaks.join(', ')}
                           </div>
                         )}
                       </div>
-                      <div className={`text-xs px-2 py-1 rounded-full ${
-                        entry.status === 'completed' 
-                          ? 'bg-green-100 text-green-700'
-                          : entry.status === 'running'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-yellow-100 text-yellow-700'
-                      }`}>
-                        {entry.status}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </ScrollArea>
       </DialogContent>
     </Dialog>
