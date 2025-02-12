@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AddExperienceModal, ExperienceData } from "./AddExperienceModal";
 import { toast } from "sonner";
 import { Experience, ExperienceFormProps } from "./types";
@@ -9,32 +9,38 @@ import { DeleteConfirmationDialog } from "./experience/DeleteConfirmationDialog"
 export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, experiences = [] }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedExperience, setSelectedExperience] = useState<Experience | null>(
-    null
-  );
+  const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
   const [experiencesList, setExperiencesList] = useState<Experience[]>(experiences);
+
+  useEffect(() => {
+    // Update parent component whenever experiences list changes
+    onComplete(experiencesList.length > 0, experiencesList);
+  }, [experiencesList, onComplete]);
 
   const handleAddExperience = (data: ExperienceData) => {
     try {
-      if (selectedExperience) {
-        // Edit mode
-        setExperiencesList((prev) =>
-          prev.map((exp) =>
+      setExperiencesList((prev) => {
+        let newList;
+        if (selectedExperience) {
+          // Edit mode
+          newList = prev.map((exp) =>
             exp.id === selectedExperience.id ? { ...data, id: exp.id } : exp
-          )
-        );
-        toast.success("Experience updated successfully");
-      } else {
-        // Add mode
-        const newExperience: Experience = {
-          ...data,
-          id: Date.now().toString(),
-        };
-        setExperiencesList((prev) => [...prev, newExperience]);
-        toast.success("Experience added successfully");
-      }
+          );
+          toast.success("Experience updated successfully");
+        } else {
+          // Add mode
+          const newExperience: Experience = {
+            ...data,
+            id: Date.now().toString(),
+          };
+          newList = [...prev, newExperience];
+          toast.success("Experience added successfully");
+        }
+        return newList;
+      });
+      
       setSelectedExperience(null);
-      onComplete(true, experiencesList);
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error handling experience:", error);
       toast.error(
@@ -57,13 +63,12 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
 
   const confirmDelete = () => {
     if (selectedExperience) {
-      setExperiencesList((prev) =>
+      setExperiencesList((prev) => 
         prev.filter((exp) => exp.id !== selectedExperience.id)
       );
       toast.success("Experience deleted successfully");
       setIsDeleteDialogOpen(false);
       setSelectedExperience(null);
-      onComplete(true, experiencesList);
     }
   };
 

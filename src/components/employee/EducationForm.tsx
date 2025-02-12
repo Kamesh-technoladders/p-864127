@@ -2,48 +2,55 @@
 import React, { useState, useEffect } from "react";
 import { UploadField } from "./UploadField";
 import { EducationFormProps } from "./types";
+import { uploadDocument } from "@/utils/uploadDocument";
+import { toast } from "sonner";
 
 export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initialData }) => {
   const [ssc, setSsc] = useState<File | null>(null);
   const [hsc, setHsc] = useState<File | null>(null);
   const [degree, setDegree] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (initialData) {
-      // Handle initial data if needed
-      // For example, if initialData contains file information
+      // Handle initial data if provided
     }
   }, [initialData]);
 
   useEffect(() => {
-    onComplete(!!ssc && !!hsc && !!degree);
+    const educationData = {
+      ssc,
+      hsc,
+      degree
+    };
+    
+    // Pass both completion status and data
+    onComplete(!!ssc && !!hsc && !!degree, educationData);
   }, [ssc, hsc, degree, onComplete]);
 
-  const handleSscUpload = async (file: File) => {
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        setSsc(file);
-        resolve();
-      }, 2000);
-    });
-  };
-
-  const handleHscUpload = async (file: File) => {
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        setHsc(file);
-        resolve();
-      }, 2000);
-    });
-  };
-
-  const handleDegreeUpload = async (file: File) => {
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        setDegree(file);
-        resolve();
-      }, 2000);
-    });
+  const handleFileUpload = async (file: File, type: 'ssc' | 'hsc' | 'degree') => {
+    try {
+      setIsSubmitting(true);
+      
+      switch (type) {
+        case 'ssc':
+          setSsc(file);
+          break;
+        case 'hsc':
+          setHsc(file);
+          break;
+        case 'degree':
+          setDegree(file);
+          break;
+      }
+      
+      toast.success(`${type.toUpperCase()} document uploaded successfully`);
+    } catch (error) {
+      console.error(`Error uploading ${type} document:`, error);
+      toast.error(`Failed to upload ${type.toUpperCase()} document`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -57,9 +64,10 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
         <UploadField 
           label="SSC" 
           required 
-          onUpload={handleSscUpload}
+          onUpload={(file) => handleFileUpload(file, 'ssc')}
           showProgress
           value={ssc?.name}
+          currentFile={ssc ? { name: ssc.name, type: ssc.type } : null}
         />
       </div>
 
@@ -67,9 +75,10 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
         <UploadField 
           label="HSC/Diploma" 
           required 
-          onUpload={handleHscUpload}
+          onUpload={(file) => handleFileUpload(file, 'hsc')}
           showProgress
           value={hsc?.name}
+          currentFile={hsc ? { name: hsc.name, type: hsc.type } : null}
         />
       </div>
 
@@ -77,21 +86,12 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
         <UploadField 
           label="Degree" 
           required 
-          onUpload={handleDegreeUpload}
+          onUpload={(file) => handleFileUpload(file, 'degree')}
           showProgress
           value={degree?.name}
+          currentFile={degree ? { name: degree.name, type: degree.type } : null}
         />
       </div>
-
-      <button className="flex items-stretch gap-2 text-[rgba(221,1,1,1)] mt-[29px]">
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/94b97c43fd3a409f8a2658d3c3f998e3/94ba00a354d444e81c8d49b7bd51add7537c14e2c575d31fbdfae2aad48e7d91?placeholderIfAbsent=true"
-          className="aspect-[1] object-contain w-4 shrink-0"
-          alt="Add icon"
-        />
-        <span>Add additional Exam/Course</span>
-      </button>
     </div>
   );
 };

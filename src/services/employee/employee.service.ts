@@ -3,6 +3,7 @@ import { EmployeeData } from "../types/employee.types";
 import { personalInfoService } from "./personalInfo.service";
 import { bankDetailsService } from "./bankDetails.service";
 import { experienceService } from "./experience.service";
+import { educationService } from "./education.service";
 import { supabase } from "@/integrations/supabase/client";
 
 export const employeeService = {
@@ -19,6 +20,9 @@ export const employeeService = {
 
       // Create bank details
       await bankDetailsService.createBankDetails(employee.id, data.bank);
+
+      // Create education records
+      await educationService.createEducation(employee.id, data.education);
 
       // Create experiences
       await experienceService.createExperiences(employee.id, data.experience);
@@ -37,6 +41,10 @@ export const employeeService = {
     try {
       if (data.personal) {
         await personalInfoService.updatePersonalInfo(employeeId, data.personal);
+      }
+
+      if (data.education) {
+        await educationService.updateEducation(employeeId, data.education);
       }
 
       if (data.bank) {
