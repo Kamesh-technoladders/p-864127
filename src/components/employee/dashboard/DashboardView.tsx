@@ -18,7 +18,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ formData }) => {
       email: formData.personal.email,
       jobTitle: formData.experience?.[0]?.jobTitle || "Not specified",
       department: "Not specified",
-      site: formData.personal?.address?.city || "Not specified",
+      site: formData.personal.presentAddress.city || "Not specified",
       salary: "Not specified",
       startDate: formData.experience?.[0]?.startDate || "Not specified",
       lifecycle: "Full-time",
