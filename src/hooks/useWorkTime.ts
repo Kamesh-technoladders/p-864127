@@ -1,75 +1,16 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-interface WorkTimeSession {
-  id: string;
-  start_time: string;
-  end_time: string | null;
-  duration_minutes: number | null;
-  status: 'running' | 'completed' | 'paused';
-  pause_reason?: string;
-  pause_start_time?: string;
-  pause_end_time?: string;
-  total_pause_duration_minutes?: number;
-}
+import { useWorkSession } from './workTime/useWorkSession';
+import { useTimeFormat } from './workTime/useTimeFormat';
+import { useTimer } from './workTime/useTimer';
 
 export const useWorkTime = (employeeId: string) => {
-  const [activeSession, setActiveSession] = useState<WorkTimeSession | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
+  const { activeSession, setActiveSession, isLoading, setIsLoading, checkActiveSession } = useWorkSession(employeeId);
+  const { formatTime } = useTimeFormat();
+  const { elapsedTime } = useTimer(activeSession);
   const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
-
-  useEffect(() => {
-    // Check for any running session on component mount
-    const checkActiveSession = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('employee_work_times')
-          .select('*')
-          .eq('employee_id', employeeId)
-          .eq('status', 'running')
-          .order('start_time', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (error) throw error;
-
-        if (data) {
-          setActiveSession({
-            id: data.id,
-            start_time: data.start_time,
-            end_time: data.end_time,
-            duration_minutes: data.duration_minutes,
-            status: data.status as 'running' | 'completed' | 'paused',
-            pause_reason: data.pause_reason,
-            pause_start_time: data.pause_start_time,
-            pause_end_time: data.pause_end_time,
-            total_pause_duration_minutes: data.total_pause_duration_minutes
-          });
-          // Calculate elapsed time for running session
-          const startTime = new Date(data.start_time).getTime();
-          const currentTime = new Date().getTime();
-          setElapsedTime(Math.floor((currentTime - startTime) / 1000));
-        }
-      } catch (error) {
-        console.error('Error checking active session:', error);
-      }
-    };
-
-    checkActiveSession();
-  }, [employeeId]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (activeSession?.status === 'running') {
-      interval = setInterval(() => {
-        setElapsedTime(prev => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [activeSession?.status]);
 
   const startTimer = async () => {
     setIsLoading(true);
@@ -95,14 +36,13 @@ export const useWorkTime = (employeeId: string) => {
           start_time: data.start_time,
           end_time: data.end_time,
           duration_minutes: data.duration_minutes,
-          status: data.status as 'running' | 'completed' | 'paused',
+          status: data.status,
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
           total_pause_duration_minutes: data.total_pause_duration_minutes
         });
       }
-      setElapsedTime(0);
       toast.success('Timer started successfully');
     } catch (error) {
       console.error('Error starting timer:', error);
@@ -135,7 +75,7 @@ export const useWorkTime = (employeeId: string) => {
           start_time: data.start_time,
           end_time: data.end_time,
           duration_minutes: data.duration_minutes,
-          status: data.status as 'running' | 'completed' | 'paused',
+          status: data.status,
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
@@ -173,7 +113,7 @@ export const useWorkTime = (employeeId: string) => {
           start_time: data.start_time,
           end_time: data.end_time,
           duration_minutes: data.duration_minutes,
-          status: data.status as 'running' | 'completed' | 'paused',
+          status: data.status,
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
@@ -206,7 +146,6 @@ export const useWorkTime = (employeeId: string) => {
       if (error) throw error;
 
       setActiveSession(null);
-      setElapsedTime(0);
       toast.success('Timer reset');
     } catch (error) {
       console.error('Error resetting timer:', error);
@@ -214,13 +153,6 @@ export const useWorkTime = (employeeId: string) => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   return {

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 interface TimerDisplayProps {
   elapsedTime: number;
-  status: 'running' | 'paused' | null;
+  status: string | null;
   formatTime: (seconds: number) => string;
 }
 
