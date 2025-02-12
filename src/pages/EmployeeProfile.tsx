@@ -1,23 +1,13 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
-import { Card } from "@/components/ui/card";
 import { 
-  ChevronRight, 
-  Laptop, 
-  MoreHorizontal, 
-  Loader2, 
-  ArrowLeft,
-  Edit,
   UserCircle,
   Briefcase,
   GraduationCap,
   CreditCard,
-  Download,
-  Calendar,
-  Clock,
-  BadgeCheck,
-  Activity
+  ArrowLeft,
+  Download
 } from "lucide-react";
 import { useEmployeeData } from "@/hooks/useEmployeeData";
 import { ProfileHeader } from "@/components/employee/profile/ProfileHeader";
@@ -29,27 +19,14 @@ import { OnboardingProgressCard } from "@/components/employee/profile/cards/Onbo
 import { CalendarCard } from "@/components/employee/profile/cards/CalendarCard";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { QuickActions } from "@/components/employee/profile/QuickActions";
+import { InfoCard } from "@/components/employee/profile/InfoCard";
+import { LoadingState, ErrorState } from "@/components/employee/profile/ProfileStates";
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const { isLoading, employeeData, error, fetchEmployeeData } = useEmployeeData(id);
-
-  const [activeSection, setActiveSection] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (id) {
@@ -59,169 +36,19 @@ const EmployeeProfile = () => {
 
   const handleEdit = (section: string) => {
     toast.info(`Editing ${section} details`);
-    // Add your edit modal logic here
   };
 
-  const QuickActionButton = ({ icon: Icon, label, onClick }: { icon: any; label: string; onClick: () => void }) => (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="w-10 h-10 rounded-full hover:bg-brand-primary hover:text-white transition-colors"
-            onClick={onClick}
-          >
-            <Icon className="w-5 h-5" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{label}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-
-  const InfoCard = ({ 
-    title, 
-    icon: Icon, 
-    children, 
-    onEdit,
-    expandable = false 
-  }: { 
-    title: string; 
-    icon: any; 
-    children: React.ReactNode; 
-    onEdit?: () => void;
-    expandable?: boolean;
-  }) => {
-    const [isExpanded, setIsExpanded] = React.useState(false);
-
-    return (
-      <Card className={`
-        p-6 
-        bg-white/80 
-        backdrop-blur-sm 
-        hover:shadow-lg 
-        transition-all 
-        duration-300 
-        transform 
-        hover:-translate-y-1 
-        relative 
-        group
-        border border-gray-100
-        ${expandable ? 'cursor-pointer' : ''}
-        before:absolute 
-        before:inset-0 
-        before:z-0 
-        before:bg-gradient-to-r 
-        before:from-white/50 
-        before:to-transparent 
-        before:opacity-0 
-        before:transition-opacity 
-        hover:before:opacity-100
-      `}>
-        <div className="relative z-10">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <Icon className="w-5 h-5 text-brand-primary" />
-              <h3 className="font-medium text-lg">{title}</h3>
-            </div>
-            <div className="flex items-center gap-2">
-              {expandable && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="hover:bg-gray-100/50"
-                >
-                  <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                </Button>
-              )}
-              {onEdit && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onEdit}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-          <div className={`
-            transition-all 
-            duration-300 
-            ${expandable ? (isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden') : ''}
-          `}>
-            {children}
-          </div>
-          {!expandable && children}
-        </div>
-      </Card>
-    );
-  };
-
-  if (!id || isLoading || error || !employeeData) {
-    if (!id) {
-      return (
-        <DashboardLayout>
-          <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold mb-2">No Employee Selected</h2>
-              <p className="text-gray-500">Please select an employee to view their profile.</p>
-            </div>
-            <Button onClick={() => navigate("/")}>Return to Dashboard</Button>
-          </div>
-        </DashboardLayout>
-      );
-    }
-
-    if (isLoading) {
-      return (
-        <DashboardLayout>
-          <div className="min-h-screen flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin" />
-          </div>
-        </DashboardLayout>
-      );
-    }
-
-    return (
-      <DashboardLayout>
-        <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold mb-2">
-              {error || "Employee Not Found"}
-            </h2>
-            <p className="text-gray-500">The requested employee could not be found.</p>
-          </div>
-          <Button onClick={() => navigate("/")}>Return to Dashboard</Button>
-        </div>
-      </DashboardLayout>
-    );
+  if (!id) {
+    return <ErrorState message="No Employee Selected" onReturn={() => navigate("/")} />;
   }
 
-  const handleDownloadDocuments = () => {
-    toast.info("Preparing documents for download...");
-    // Implementation for document download
-  };
+  if (isLoading) {
+    return <LoadingState />;
+  }
 
-  const handleScheduleMeeting = () => {
-    toast.info("Opening meeting scheduler...");
-    // Implementation for meeting scheduler
-  };
-
-  const handleViewAttendance = () => {
-    toast.info("Loading attendance history...");
-    // Implementation for attendance history
-  };
-
-  const handleGenerateReport = () => {
-    toast.info("Generating employee report...");
-    // Implementation for report generation
-  };
+  if (error || !employeeData) {
+    return <ErrorState message={error || "Employee Not Found"} onReturn={() => navigate("/")} />;
+  }
 
   return (
     <DashboardLayout>
@@ -235,29 +62,7 @@ const EmployeeProfile = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
-          
-          <div className="flex items-center gap-3">
-            <QuickActionButton
-              icon={Download}
-              label="Download Documents"
-              onClick={handleDownloadDocuments}
-            />
-            <QuickActionButton
-              icon={Calendar}
-              label="Schedule Meeting"
-              onClick={handleScheduleMeeting}
-            />
-            <QuickActionButton
-              icon={Clock}
-              label="View Attendance"
-              onClick={handleViewAttendance}
-            />
-            <QuickActionButton
-              icon={Activity}
-              label="Generate Report"
-              onClick={handleGenerateReport}
-            />
-          </div>
+          <QuickActions />
         </div>
 
         <ProfileHeader
