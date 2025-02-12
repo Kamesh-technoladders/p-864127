@@ -182,6 +182,47 @@ export type Database = {
           },
         ]
       }
+      employee_work_times: {
+        Row: {
+          created_at: string | null
+          date: string
+          duration_minutes: number | null
+          employee_id: string
+          end_time: string | null
+          id: string
+          start_time: string
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          duration_minutes?: number | null
+          employee_id: string
+          end_time?: string | null
+          id?: string
+          start_time: string
+          status: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          duration_minutes?: number | null
+          employee_id?: string
+          end_time?: string | null
+          id?: string
+          start_time?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_work_times_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employees: {
         Row: {
           blood_group: string | null

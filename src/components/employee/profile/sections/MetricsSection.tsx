@@ -6,7 +6,11 @@ import { OnboardingTasksCard } from "../cards/OnboardingTasksCard";
 import { OnboardingProgressCard } from "../cards/OnboardingProgressCard";
 import { CalendarCard } from "../cards/CalendarCard";
 
-export const MetricsSection: React.FC = () => {
+interface MetricsSectionProps {
+  employeeId: string;
+}
+
+export const MetricsSection: React.FC<MetricsSectionProps> = ({ employeeId }) => {
   return (
     <>
       <div className="h-[350px]">
@@ -14,7 +18,7 @@ export const MetricsSection: React.FC = () => {
       </div>
 
       <div className="h-[350px]">
-        <TimeTrackerCard />
+        <TimeTrackerCard employeeId={employeeId} />
       </div>
 
       <div className="h-[350px]">
