@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
@@ -57,7 +56,6 @@ const EmployeeProfile = () => {
   const handleUpdateEmployment = async (data: any) => {
     try {
       await updateEmployee("employment", data);
-      await fetchEmployeeData();
     } catch (error) {
       throw error;
     }
@@ -124,10 +122,13 @@ const EmployeeProfile = () => {
           />
 
           <EducationSection
+            education={employeeData.employee_education?.[0]}
+            experience={employeeData.employee_experiences}
             onEdit={() => handleEdit("education")}
           />
 
           <BankInfoSection
+            data={employeeData.employee_bank_details?.[0]}
             onEdit={() => handleEdit("bank")}
           />
 
@@ -196,11 +197,7 @@ const EmployeeProfile = () => {
         <EducationEditModal
           isOpen={isEducationModalOpen}
           onClose={() => setIsEducationModalOpen(false)}
-          data={{
-            ssc: undefined,
-            hsc: undefined,
-            degree: undefined
-          }}
+          data={employeeData.employee_education?.[0] || {}}
           employeeId={employeeData.id}
           onUpdate={fetchEmployeeData}
         />
@@ -208,15 +205,7 @@ const EmployeeProfile = () => {
         <BankDetailsEditModal
           isOpen={isBankModalOpen}
           onClose={() => setIsBankModalOpen(false)}
-          data={{
-            accountHolderName: '',
-            accountNumber: '',
-            ifscCode: '',
-            bankName: '',
-            branchName: '',
-            accountType: 'savings',
-            bankPhone: ''
-          }}
+          data={employeeData.employee_bank_details?.[0] || {}}
           employeeId={employeeData.id}
           onUpdate={fetchEmployeeData}
         />

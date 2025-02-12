@@ -1,15 +1,16 @@
 
 import React from "react";
-import { CreditCard, Download } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { InfoCard } from "../InfoCard";
-import { Button } from "@/components/ui/button";
 
 interface BankInfoSectionProps {
   onEdit: () => void;
+  data: any;
 }
 
 export const BankInfoSection: React.FC<BankInfoSectionProps> = ({
   onEdit,
+  data,
 }) => {
   return (
     <InfoCard 
@@ -21,24 +22,19 @@ export const BankInfoSection: React.FC<BankInfoSectionProps> = ({
         <div className="space-y-2">
           <div className="flex justify-between">
             <span className="text-gray-500">Bank Name</span>
-            <span>●●●● Bank</span>
+            <span>{data?.bank_name || 'Not provided'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Account No.</span>
-            <span>●●●● 4321</span>
+            <span>{data?.account_number ? `●●●● ${data.account_number.slice(-4)}` : 'Not provided'}</span>
           </div>
-        </div>
-        <div className="pt-4 border-t border-gray-100">
-          <h4 className="text-sm font-medium mb-2">Documents</h4>
-          <div className="space-y-2">
-            <Button variant="outline" size="sm" className="w-full justify-start">
-              <Download className="w-4 h-4 mr-2" />
-              Cancelled Cheque
-            </Button>
-            <Button variant="outline" size="sm" className="w-full justify-start">
-              <Download className="w-4 h-4 mr-2" />
-              Bank Statement
-            </Button>
+          <div className="flex justify-between">
+            <span className="text-gray-500">IFSC Code</span>
+            <span>{data?.ifsc_code || 'Not provided'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-500">Account Type</span>
+            <span>{data?.account_type ? data.account_type.charAt(0).toUpperCase() + data.account_type.slice(1) : 'Not provided'}</span>
           </div>
         </div>
       </div>
