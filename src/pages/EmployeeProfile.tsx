@@ -92,48 +92,61 @@ const EmployeeProfile = () => {
           bloodGroup={employeeData.blood_group}
         />
 
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-3 space-y-6">
-            <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-medium">Pension Contributions</h3>
-                <ChevronRight className="w-4 h-4" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
+          {/* Quick Info Cards */}
+          <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[200px]">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-medium">Pension Contributions</h3>
+              <ChevronRight className="w-4 h-4" />
+            </div>
+          </Card>
+
+          <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[200px]">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-medium">Devices</h3>
+              <MoreHorizontal className="w-4 h-4 cursor-pointer hover:text-gray-600" />
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                <Laptop className="w-4 h-4" />
               </div>
-            </Card>
-            <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-medium">Devices</h3>
-                <MoreHorizontal className="w-4 h-4 cursor-pointer hover:text-gray-600" />
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <Laptop className="w-4 h-4" />
-                </div>
-                <span className="text-sm flex-1">MacBook Air Version M1</span>
-              </div>
-            </Card>
-            <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-medium">Compensation Summary</h3>
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </Card>
-            <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-medium">Employee Benefits</h3>
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </Card>
+              <span className="text-sm flex-1">MacBook Air Version M1</span>
+            </div>
+          </Card>
+
+          <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[200px]">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-medium">Compensation Summary</h3>
+              <ChevronRight className="w-4 h-4" />
+            </div>
+          </Card>
+
+          <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[200px]">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-medium">Employee Benefits</h3>
+              <ChevronRight className="w-4 h-4" />
+            </div>
+          </Card>
+
+          {/* Main Feature Cards */}
+          <div className="h-[350px]">
+            <WorkTimeCard />
           </div>
 
-          <div className="col-span-6 space-y-6">
-            <WorkTimeCard />
+          <div className="h-[350px]">
             <TimeTrackerCard />
+          </div>
+
+          <div className="h-[350px]">
             <OnboardingTasksCard />
+          </div>
+
+          <div className="h-[350px]">
             <OnboardingProgressCard />
           </div>
 
-          <div className="col-span-3">
+          {/* Calendar Card - Full Width on Mobile, Side Column on Desktop */}
+          <div className="md:col-span-2 lg:col-span-3 xl:col-span-4 h-[300px]">
             <CalendarCard />
           </div>
         </div>
