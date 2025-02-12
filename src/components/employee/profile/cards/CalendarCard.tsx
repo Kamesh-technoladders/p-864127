@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar, ListTodo } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -11,6 +12,7 @@ import {
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, 
          isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from "date-fns";
 import { cn } from "@/lib/utils";
+import { TaskItem } from "../TaskSection";
 
 interface Holiday {
   date: string;
@@ -36,6 +38,7 @@ export const CalendarCard = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("events");
 
   useEffect(() => {
     const fetchHolidays = async () => {
@@ -87,7 +90,7 @@ export const CalendarCard = () => {
 
   return (
     <Card className="p-6 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-[500px]">
+      <div className="grid grid-cols-[2fr_3fr] gap-8 h-[600px]">
         <div className="space-y-6">
           <div className="flex items-center justify-between px-2">
             <button 
@@ -109,7 +112,7 @@ export const CalendarCard = () => {
 
           <div className="grid grid-cols-7 gap-1">
             {weekDays.map(day => (
-              <div key={day} className="h-10 flex items-center justify-center text-sm font-medium text-gray-400">
+              <div key={day} className="h-12 flex items-center justify-center text-sm font-medium text-gray-400">
                 {day}
               </div>
             ))}
@@ -120,7 +123,7 @@ export const CalendarCard = () => {
               <TooltipProvider key={index}>
                 <div
                   className={cn(
-                    "h-10 w-10 flex items-center justify-center text-sm relative",
+                    "h-12 w-12 flex items-center justify-center text-sm relative",
                     "rounded-full transition-colors cursor-pointer mx-auto",
                     !day.isCurrentMonth && "text-gray-300",
                     day.isToday && !isSameDay(day.date, selectedDate) && "bg-blue-50 text-blue-600 font-medium",
@@ -152,30 +155,58 @@ export const CalendarCard = () => {
         </div>
         
         <div className="space-y-4">
-          <h3 className="font-medium text-gray-900 px-2">Upcoming Events</h3>
-          
-          <ScrollArea className="h-[420px] w-full rounded-md">
-            <div className="space-y-3 pr-4">
-              {[...Array(5)].map((_, i) => (
-                <div 
-                  key={i}
-                  className="w-full bg-white border border-gray-100 p-4 rounded-lg hover:border-[#1A73E8]/20 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer"
-                >
-                  <div className="space-y-2">
-                    <div className="font-medium text-gray-800">Team Sync {i + 1}</div>
-                    <div className="text-xs text-gray-500">10:00 AM</div>
-                    <div className="text-sm text-gray-600">
-                      Daily standup meeting with the development team
+          <Tabs defaultValue="events" className="w-full" onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-2 mb-4">
+              <TabsTrigger value="events" className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Upcoming Events
+              </TabsTrigger>
+              <TabsTrigger value="tasks" className="flex items-center gap-2">
+                <ListTodo className="w-4 h-4" />
+                Tasks
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="events" className="mt-0">
+              <ScrollArea className="h-[520px] w-full rounded-md">
+                <div className="space-y-3 pr-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div 
+                      key={i}
+                      className="w-full bg-white border border-gray-100 p-4 rounded-lg hover:border-[#1A73E8]/20 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer"
+                    >
+                      <div className="space-y-2">
+                        <div className="font-medium text-gray-800">Team Sync {i + 1}</div>
+                        <div className="text-xs text-gray-500">10:00 AM</div>
+                        <div className="text-sm text-gray-600">
+                          Daily standup meeting with the development team
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-[#1A73E8]">
+                          <div className="w-2 h-2 rounded-full bg-[#1A73E8]" />
+                          <span>In Progress</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-[#1A73E8]">
-                      <div className="w-2 h-2 rounded-full bg-[#1A73E8]" />
-                      <span>In Progress</span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </ScrollArea>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="tasks" className="mt-0">
+              <ScrollArea className="h-[520px] w-full rounded-md">
+                <div className="space-y-3 pr-4">
+                  <TaskItem time="Sep 13, 08:50" title="Interview" completed={true} />
+                  <TaskItem time="Sep 13, 10:30" title="Team-Meeting" completed={true} />
+                  <TaskItem time="Sep 13, 13:00" title="Project Update" completed={false} />
+                  <TaskItem time="Sep 13, 14:45" title="Discuss Q3 Goals" completed={false} />
+                  <TaskItem time="Sep 15, 16:30" title="HR Policy Review" completed={false} />
+                  <TaskItem time="Sep 16, 09:00" title="Code Review" completed={false} />
+                  <TaskItem time="Sep 16, 11:30" title="Client Meeting" completed={false} />
+                  <TaskItem time="Sep 16, 14:00" title="Sprint Planning" completed={false} />
+                </div>
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </Card>
