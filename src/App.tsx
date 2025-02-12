@@ -23,17 +23,17 @@ const AppRoutes = () => {
 
 const App: React.FC = () => {
   return (
-    <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
+        <React.StrictMode>
           <TooltipProvider>
             <AppRoutes />
             <Toaster />
             <Sonner />
           </TooltipProvider>
-        </QueryClientProvider>
+        </React.StrictMode>
       </BrowserRouter>
-    </React.StrictMode>
+    </QueryClientProvider>
   );
 };
 
