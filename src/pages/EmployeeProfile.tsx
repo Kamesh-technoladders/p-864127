@@ -11,27 +11,14 @@ import {
   ChevronRight,
   Laptop,
   Calendar,
-  Users,
-  Briefcase,
-  Target,
-  Check,
-  Clock,
   MoreHorizontal,
-  Loader2
+  Loader2,
+  Target
 } from "lucide-react";
 import { useEmployeeData } from "@/hooks/useEmployeeData";
-
-const TaskItem = ({ time, title, completed }: { time: string; title: string; completed: boolean }) => (
-  <div className="flex items-center gap-3 py-2.5">
-    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${completed ? 'bg-brand-accent' : 'bg-gray-100'}`}>
-      {completed ? <Check className="w-4 h-4 text-brand-primary" /> : <Clock className="w-4 h-4 text-gray-400" />}
-    </div>
-    <div className="flex-1">
-      <div className="text-sm font-medium">{title}</div>
-      <div className="text-xs text-gray-500">{time}</div>
-    </div>
-  </div>
-);
+import { ProfileHeader } from "@/components/employee/profile/ProfileHeader";
+import { StatsBar } from "@/components/employee/profile/StatsBar";
+import { TaskItem } from "@/components/employee/profile/TaskSection";
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,52 +53,25 @@ const EmployeeProfile = () => {
     );
   }
 
-  const fullName = `${employeeData.first_name} ${employeeData.last_name}`;
-
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gradient-to-b from-white to-[#FFF9E7] p-8">
-        <div className="relative w-full h-[200px] rounded-xl overflow-hidden mb-8 backdrop-blur-sm">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#ee9ca7]/90 to-[#ffdde1]/90" />
-          <div className="absolute inset-0 bg-white/10 backdrop-filter backdrop-blur-[2px]" />
-          <div className="relative z-10 flex items-end p-6 h-full">
-            <div className="flex items-end gap-6">
-              <div className="relative">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/80 shadow-lg backdrop-blur-sm">
-                  <div className="w-full h-full bg-gray-300" />
-                </div>
-                <div className="absolute -top-2 -right-2 bg-brand-accent text-brand-primary px-2 py-1 rounded-lg text-sm font-medium shadow-sm backdrop-blur-sm">
-                  ID: {employeeData.employee_id}
-                </div>
-              </div>
-              <div className="mb-2 bg-black/20 px-4 py-2 rounded-lg backdrop-blur-sm">
-                <h1 className="text-2xl font-bold text-white">{fullName}</h1>
-                <p className="text-white/80">{employeeData.email}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProfileHeader
+          employeeId={employeeData.employee_id}
+          firstName={employeeData.first_name}
+          lastName={employeeData.last_name}
+          email={employeeData.email}
+        />
 
-        <div className="grid grid-cols-3 gap-6 mb-8">
-          {[
-            { title: "Joined Date", value: new Date(employeeData.created_at).toLocaleDateString(), icon: <Users className="w-5 h-5" /> },
-            { title: "Gender", value: employeeData.gender || "Not specified", icon: <Briefcase className="w-5 h-5" /> },
-            { title: "Blood Group", value: employeeData.blood_group || "Not specified", icon: <Target className="w-5 h-5" /> }
-          ].map(({ title, value, icon }, index) => (
-            <Card key={title} className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm border border-white/20">
-              <div className="flex items-center gap-3">
-                {icon}
-                <div>
-                  <div className="text-sm text-gray-500">{title}</div>
-                  <div className="text-xl font-bold">{value}</div>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+        <StatsBar
+          joinedDate={new Date(employeeData.created_at).toLocaleDateString()}
+          gender={employeeData.gender}
+          bloodGroup={employeeData.blood_group}
+        />
 
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-3 space-y-6">
+            {/* Left sidebar cards */}
             <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-medium">Pension Contributions</h3>
@@ -145,6 +105,7 @@ const EmployeeProfile = () => {
           </div>
 
           <div className="col-span-6 space-y-6">
+            {/* Center column cards */}
             <Card className="p-6 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium">Work Time this Week</h3>
@@ -233,6 +194,7 @@ const EmployeeProfile = () => {
           </div>
 
           <div className="col-span-3">
+            {/* Right sidebar calendar */}
             <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-medium">Calendar</h3>
