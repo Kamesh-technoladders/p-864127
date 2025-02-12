@@ -1,7 +1,6 @@
 
 import React from "react";
-import { LayoutDashboard } from "lucide-react";
-import { toast } from "sonner";
+import { NavigationHeader } from "../NavigationHeader";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -9,18 +8,13 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gradient-main p-8">
-      <div className="flex justify-end mb-4">
-        <button 
-          onClick={() => toast.info("Redirecting to dashboard...")}
-          className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-        >
-          <LayoutDashboard className="h-6 w-6 text-gray-600" />
-        </button>
-      </div>
-      <div className="max-w-3xl mx-auto">
-        {children}
-      </div>
+    <div className="min-h-screen bg-gradient-main">
+      <NavigationHeader />
+      <main className="p-8">
+        <div className="max-w-[1400px] mx-auto">
+          {children}
+        </div>
+      </main>
     </div>
   );
 };
