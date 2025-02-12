@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -137,23 +136,18 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
           </div>
 
           {activeSession?.status === 'paused' && (
-            <div className="w-full max-w-xs bg-orange-50 rounded-lg p-4 mt-2">
-              <div className="flex items-center gap-2 text-orange-600 mb-2">
-                {getPauseIcon(activeSession.pause_reason)}
-                <span className="text-sm font-medium">{activeSession.pause_reason}</span>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-semibold text-orange-700">
-                  {formatTime(pauseDuration)}
-                </div>
-                <div className="text-xs text-orange-600/80">Pause Duration</div>
-              </div>
+            <div className="flex items-center gap-2 bg-orange-50 rounded-full px-4 py-2 text-orange-600">
+              {getPauseIcon(activeSession.pause_reason)}
+              <span className="text-sm font-medium">{activeSession.pause_reason}</span>
+              <span className="text-sm font-semibold ml-2">
+                {formatTime(pauseDuration)}
+              </span>
             </div>
           )}
         </div>
 
         <div className="flex justify-center gap-3 mt-6">
-          {!activeSession ? (
+          {!activeSession && (
             <Button
               size="icon"
               variant="outline"
@@ -163,17 +157,34 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
             >
               <Play className="h-5 w-5" />
             </Button>
-          ) : activeSession.status === 'running' ? (
+          )}
+          
+          {activeSession && activeSession.status === 'running' && (
+            <Button
+              size="icon"
+              variant="outline"
+              className="hover:bg-orange-100 w-12 h-12"
+              onClick={() => handleAction('pause')}
+              disabled={isLoading}
+            >
+              <Pause className="h-5 w-5" />
+            </Button>
+          )}
+          
+          {activeSession && activeSession.status === 'paused' && (
+            <Button
+              size="icon"
+              variant="outline"
+              className="hover:bg-brand-accent/10 w-12 h-12"
+              onClick={() => handleAction('resume')}
+              disabled={isLoading}
+            >
+              <Play className="h-5 w-5" />
+            </Button>
+          )}
+
+          {activeSession && (
             <>
-              <Button
-                size="icon"
-                variant="outline"
-                className="hover:bg-orange-100 w-12 h-12"
-                onClick={() => handleAction('pause')}
-                disabled={isLoading}
-              >
-                <Pause className="h-5 w-5" />
-              </Button>
               <Button
                 size="icon"
                 variant="outline"
@@ -183,38 +194,17 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
               >
                 <Square className="h-5 w-5" />
               </Button>
-            </>
-          ) : (
-            <>
               <Button
                 size="icon"
                 variant="outline"
-                className="hover:bg-brand-accent/10 w-12 h-12"
-                onClick={() => handleAction('resume')}
+                className="hover:bg-gray-100 w-12 h-12"
+                onClick={() => handleAction('reset')}
                 disabled={isLoading}
               >
-                <Play className="h-5 w-5" />
-              </Button>
-              <Button
-                size="icon"
-                variant="outline"
-                className="hover:bg-red-100 w-12 h-12 text-red-600 border-red-200"
-                onClick={() => handleAction('stop')}
-                disabled={isLoading}
-              >
-                <Square className="h-5 w-5" />
+                <RefreshCcw className="h-5 w-5" />
               </Button>
             </>
           )}
-          <Button
-            size="icon"
-            variant="outline"
-            className="hover:bg-gray-100 w-12 h-12"
-            onClick={() => handleAction('reset')}
-            disabled={isLoading || !activeSession}
-          >
-            <RefreshCcw className="h-5 w-5" />
-          </Button>
         </div>
       </Card>
 
