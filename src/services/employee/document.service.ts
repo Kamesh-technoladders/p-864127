@@ -22,29 +22,32 @@ class DocumentService {
     documentType: string
   ): Promise<EmployeeDocument> {
     try {
-      // Create form data for the function call
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('type', category);
-      formData.append('employeeId', employeeId);
-      formData.append('documentType', documentType);
+      const fileName = `${employeeId}/${category}/${documentType}/${crypto.randomUUID()}-${file.name}`;
+      
+      // Upload file to storage
+      const { error: uploadError } = await supabase.storage
+        .from('employee-documents')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      // Call the Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('upload-document', {
-        body: formData,
-      });
+      if (uploadError) throw uploadError;
 
-      if (error) throw error;
-
-      // Get document details from the response
+      // Create document metadata
       const { data: document, error: dbError } = await supabase
         .from('employee_documents')
+        .insert({
+          employee_id: employeeId,
+          document_type: documentType,
+          category,
+          file_name: file.name,
+          file_path: fileName,
+          file_size: file.size,
+          mime_type: file.type,
+          status: 'active'
+        })
         .select()
-        .eq('employee_id', employeeId)
-        .eq('document_type', documentType)
-        .eq('category', category)
-        .order('created_at', { ascending: false })
-        .limit(1)
         .single();
 
       if (dbError) throw dbError;
