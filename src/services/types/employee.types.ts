@@ -21,6 +21,13 @@ export interface PersonalInfo {
   permanentAddress: Address;
 }
 
+export interface EmploymentInfo {
+  department: string;
+  position: string;
+  employmentStartDate: string;
+  employmentStatus: "active" | "inactive" | "onLeave";
+}
+
 export interface Education {
   ssc?: File;
   hsc?: File;
@@ -54,6 +61,7 @@ export interface BankDetails {
 
 export interface EmployeeData {
   personal: PersonalInfo;
+  employment: EmploymentInfo;
   education: Education;
   experience: Experience[];
   bank: BankDetails;
