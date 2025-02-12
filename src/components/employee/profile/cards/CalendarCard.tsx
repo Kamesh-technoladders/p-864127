@@ -151,12 +151,12 @@ export const CalendarCard = () => {
             <Info className="w-4 h-4 text-gray-500" />
           </div>
           
-          <ScrollArea className="h-[450px] w-full" orientation="horizontal">
-            <div className="flex space-x-4 pb-4">
+          <ScrollArea className="h-[450px] w-full">
+            <div className="flex pb-4" style={{ minWidth: "max-content" }}>
               {[...Array(5)].map((_, i) => (
                 <div 
                   key={i}
-                  className="flex-none w-[280px] bg-gray-100 p-4 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
+                  className="flex-none w-[280px] bg-gray-100 p-4 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer mr-4"
                 >
                   <div className="space-y-2">
                     <div className="font-medium">Team Sync {i + 1}</div>
