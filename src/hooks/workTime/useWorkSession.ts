@@ -14,7 +14,7 @@ export const useWorkSession = (employeeId: string) => {
         .from('employee_work_times')
         .select('*')
         .eq('employee_id', employeeId)
-        .eq('status', 'running')
+        .or('status.eq.running,status.eq.paused')
         .order('start_time', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -27,12 +27,14 @@ export const useWorkSession = (employeeId: string) => {
           start_time: data.start_time,
           end_time: data.end_time,
           duration_minutes: data.duration_minutes,
-          status: data.status,
+          status: data.status as WorkTimeSession['status'],
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
           total_pause_duration_minutes: data.total_pause_duration_minutes
         });
+      } else {
+        setActiveSession(null);
       }
     } catch (error) {
       console.error('Error checking active session:', error);

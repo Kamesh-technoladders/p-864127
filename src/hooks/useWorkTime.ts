@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useWorkSession } from './workTime/useWorkSession';
 import { useTimeFormat } from './workTime/useTimeFormat';
 import { useTimer } from './workTime/useTimer';
+import { WorkTimeSession } from '@/types/workTime';
 
 export const useWorkTime = (employeeId: string) => {
   const { activeSession, setActiveSession, isLoading, setIsLoading, checkActiveSession } = useWorkSession(employeeId);
@@ -19,7 +20,7 @@ export const useWorkTime = (employeeId: string) => {
         employee_id: employeeId,
         start_time: new Date().toISOString(),
         date: new Date().toISOString().split('T')[0],
-        status: 'running' as const,
+        status: 'running' as WorkTimeSession['status'],
       };
 
       const { data, error } = await supabase
@@ -36,7 +37,7 @@ export const useWorkTime = (employeeId: string) => {
           start_time: data.start_time,
           end_time: data.end_time,
           duration_minutes: data.duration_minutes,
-          status: data.status,
+          status: data.status as WorkTimeSession['status'],
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
@@ -59,7 +60,7 @@ export const useWorkTime = (employeeId: string) => {
       const { data, error } = await supabase
         .from('employee_work_times')
         .update({
-          status: 'paused',
+          status: 'paused' as WorkTimeSession['status'],
           pause_reason: reason,
           pause_start_time: new Date().toISOString()
         })
@@ -75,7 +76,7 @@ export const useWorkTime = (employeeId: string) => {
           start_time: data.start_time,
           end_time: data.end_time,
           duration_minutes: data.duration_minutes,
-          status: data.status,
+          status: data.status as WorkTimeSession['status'],
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
@@ -98,7 +99,7 @@ export const useWorkTime = (employeeId: string) => {
       const { data, error } = await supabase
         .from('employee_work_times')
         .update({
-          status: 'running',
+          status: 'running' as WorkTimeSession['status'],
           pause_end_time: new Date().toISOString()
         })
         .eq('id', activeSession.id)
@@ -113,7 +114,7 @@ export const useWorkTime = (employeeId: string) => {
           start_time: data.start_time,
           end_time: data.end_time,
           duration_minutes: data.duration_minutes,
-          status: data.status,
+          status: data.status as WorkTimeSession['status'],
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
@@ -136,7 +137,7 @@ export const useWorkTime = (employeeId: string) => {
       const { data, error } = await supabase
         .from('employee_work_times')
         .update({ 
-          status: 'completed', 
+          status: 'completed' as WorkTimeSession['status'], 
           end_time: new Date().toISOString()
         })
         .eq('id', activeSession.id)

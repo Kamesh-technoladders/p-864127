@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { TimerDisplay } from "./time-tracker/TimerDisplay";
 import { BreakStatus } from "./time-tracker/BreakStatus";
 import { ControlButtons } from "./time-tracker/ControlButtons";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TimeTrackerCardProps {
   employeeId: string;
@@ -29,8 +30,35 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
 
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
-  const [workTimeEntries, setWorkTimeEntries] = useState([]);
+  const [workTimeEntries, setWorkTimeEntries] = useState<any[]>([]);
   const [pauseDuration, setPauseDuration] = useState(0);
+
+  const fetchWorkTimeEntries = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('employee_work_times')
+        .select('*')
+        .eq('employee_id', employeeId)
+        .order('start_time', { ascending: false });
+
+      if (error) throw error;
+      setWorkTimeEntries(data || []);
+    } catch (error) {
+      console.error('Error fetching work time entries:', error);
+      toast.error('Failed to load work history');
+    }
+  };
+
+  useEffect(() => {
+    fetchWorkTimeEntries();
+  }, [employeeId]);
+
+  // Refresh work time entries when active session changes
+  useEffect(() => {
+    if (activeSession) {
+      fetchWorkTimeEntries();
+    }
+  }, [activeSession?.status]);
 
   const checkOfficeHours = () => {
     const now = new Date();
@@ -64,6 +92,7 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
           setPauseDuration(0);
           break;
       }
+      await fetchWorkTimeEntries();
     } catch (error: any) {
       toast.error(error.message || "An error occurred");
     }
@@ -73,6 +102,7 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
     try {
       await pauseTimer(reason);
       setPauseDuration(0);
+      await fetchWorkTimeEntries();
     } catch (error: any) {
       toast.error(error.message || "Failed to start break");
     }
