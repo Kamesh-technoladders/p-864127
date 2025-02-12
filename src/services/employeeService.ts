@@ -85,12 +85,20 @@ export const employeeService = {
         {
           employee_id: employee.id,
           type: 'present',
-          ...data.personal.presentAddress
+          address_line1: data.personal.presentAddress.addressLine1,
+          country: data.personal.presentAddress.country,
+          state: data.personal.presentAddress.state,
+          city: data.personal.presentAddress.city,
+          zip_code: data.personal.presentAddress.zipCode
         },
         {
           employee_id: employee.id,
           type: 'permanent',
-          ...data.personal.permanentAddress
+          address_line1: data.personal.permanentAddress.addressLine1,
+          country: data.personal.permanentAddress.country,
+          state: data.personal.permanentAddress.state,
+          city: data.personal.permanentAddress.city,
+          zip_code: data.personal.permanentAddress.zipCode
         }
       ];
 
@@ -164,7 +172,13 @@ export const employeeService = {
         if (data.personal.presentAddress) {
           const { error: presentAddressError } = await supabase
             .from('employee_addresses')
-            .update(data.personal.presentAddress)
+            .update({
+              address_line1: data.personal.presentAddress.addressLine1,
+              country: data.personal.presentAddress.country,
+              state: data.personal.presentAddress.state,
+              city: data.personal.presentAddress.city,
+              zip_code: data.personal.presentAddress.zipCode
+            })
             .eq('employee_id', employeeId)
             .eq('type', 'present');
 
@@ -174,7 +188,13 @@ export const employeeService = {
         if (data.personal.permanentAddress) {
           const { error: permanentAddressError } = await supabase
             .from('employee_addresses')
-            .update(data.personal.permanentAddress)
+            .update({
+              address_line1: data.personal.permanentAddress.addressLine1,
+              country: data.personal.permanentAddress.country,
+              state: data.personal.permanentAddress.state,
+              city: data.personal.permanentAddress.city,
+              zip_code: data.personal.permanentAddress.zipCode
+            })
             .eq('employee_id', employeeId)
             .eq('type', 'permanent');
 
