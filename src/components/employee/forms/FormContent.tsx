@@ -1,12 +1,11 @@
 
 import React from "react";
 import { PersonalDetailsForm } from "../PersonalDetailsForm";
+import { EmploymentDetailsForm } from "../EmploymentDetailsForm";
 import { EducationForm } from "../EducationForm";
-import { ExperienceForm } from "../ExperienceForm";
 import { BankAccountForm } from "../BankAccountForm";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
 import { Experience } from "../types";
-import { useParams } from "react-router-dom";
 
 interface FormContentProps {
   activeTab: string;
@@ -23,11 +22,8 @@ export const FormContent: React.FC<FormContentProps> = ({
   updateFormData,
   handleSaveAndNext,
 }) => {
-  const { id: employeeId } = useParams<{ id: string }>();
-
-  if (!employeeId) {
-    throw new Error("Employee ID is required");
-  }
+  // The employeeId will come from formData.personal when needed
+  const employeeId = formData.personal?.employeeId;
 
   switch (activeTab) {
     case "personal":
@@ -43,6 +39,20 @@ export const FormContent: React.FC<FormContentProps> = ({
           initialData={formData.personal}
         />
       );
+    case "employment":
+      return (
+        <EmploymentDetailsForm
+          onComplete={(completed: boolean, data?: any) => {
+            updateSectionProgress("employment", completed);
+            if (completed && data) {
+              updateFormData("employment", data);
+              handleSaveAndNext();
+            }
+          }}
+          initialData={formData.employment}
+          employeeId={employeeId || ""}
+        />
+      );
     case "education":
       return (
         <EducationForm
@@ -53,7 +63,7 @@ export const FormContent: React.FC<FormContentProps> = ({
             }
           }}
           initialData={formData.education}
-          employeeId={employeeId}
+          employeeId={employeeId || ""}
         />
       );
     case "bank":
@@ -66,7 +76,7 @@ export const FormContent: React.FC<FormContentProps> = ({
             }
           }}
           initialData={formData.bank}
-          employeeId={employeeId}
+          employeeId={employeeId || ""}
         />
       );
     default:
