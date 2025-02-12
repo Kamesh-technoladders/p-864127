@@ -190,8 +190,12 @@ export type Database = {
           employee_id: string
           end_time: string | null
           id: string
+          pause_end_time: string | null
+          pause_reason: string | null
+          pause_start_time: string | null
           start_time: string
           status: string
+          total_pause_duration_minutes: number | null
         }
         Insert: {
           created_at?: string | null
@@ -200,8 +204,12 @@ export type Database = {
           employee_id: string
           end_time?: string | null
           id?: string
+          pause_end_time?: string | null
+          pause_reason?: string | null
+          pause_start_time?: string | null
           start_time: string
           status: string
+          total_pause_duration_minutes?: number | null
         }
         Update: {
           created_at?: string | null
@@ -210,8 +218,12 @@ export type Database = {
           employee_id?: string
           end_time?: string | null
           id?: string
+          pause_end_time?: string | null
+          pause_reason?: string | null
+          pause_start_time?: string | null
           start_time?: string
           status?: string
+          total_pause_duration_minutes?: number | null
         }
         Relationships: [
           {

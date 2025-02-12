@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Pause, RefreshCcw, List } from "lucide-react";
 import { useWorkTime } from "@/hooks/useWorkTime";
 import { WorkTimeHistoryModal } from "../modals/WorkTimeHistoryModal";
+import { PauseReasonModal } from "../modals/PauseReasonModal";
 import { supabase } from "@/integrations/supabase/client";
 
 interface TimeTrackerCardProps {
@@ -24,6 +25,7 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
   } = useWorkTime(employeeId);
 
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
   const [workTimeEntries, setWorkTimeEntries] = useState([]);
 
   const fetchWorkTimeHistory = async () => {
@@ -56,7 +58,7 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
         await startTimer();
         break;
       case 'pause':
-        await pauseTimer();
+        setIsPauseModalOpen(true);
         break;
       case 'resume':
         await resumeTimer();
@@ -65,6 +67,10 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
         await resetTimer();
         break;
     }
+  };
+
+  const handlePauseReasonSelect = async (reason: string) => {
+    await pauseTimer(reason);
   };
 
   return (
@@ -84,7 +90,9 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
             </div>
           </div>
           <div className="text-sm text-gray-500 mt-2">
-            {activeSession?.status === 'running' ? 'Currently Working' : 'Work Time'}
+            {activeSession?.status === 'running' ? 'Currently Working' : 
+             activeSession?.status === 'paused' ? `Paused (${activeSession.pause_reason})` : 
+             'Work Time'}
           </div>
         </div>
         <div className="flex justify-center gap-4 mt-4">
@@ -143,6 +151,12 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)}
         entries={workTimeEntries}
+      />
+
+      <PauseReasonModal
+        isOpen={isPauseModalOpen}
+        onClose={() => setIsPauseModalOpen(false)}
+        onSelectReason={handlePauseReasonSelect}
       />
     </>
   );

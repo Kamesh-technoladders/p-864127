@@ -16,6 +16,10 @@ interface WorkTimeEntry {
   end_time: string | null;
   duration_minutes: number | null;
   status: string;
+  pause_reason?: string;
+  pause_start_time?: string;
+  pause_end_time?: string;
+  total_pause_duration_minutes?: number;
 }
 
 interface WorkTimeHistoryModalProps {
@@ -71,7 +75,7 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
                     key={entry.id}
                     className="bg-white p-3 rounded-lg border shadow-sm"
                   >
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-start">
                       <div>
                         <div className="text-sm font-medium">
                           {format(new Date(entry.start_time), 'h:mm a')}
@@ -80,6 +84,11 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
                         <div className="text-sm text-gray-500">
                           Duration: {formatDuration(entry.duration_minutes)}
                         </div>
+                        {entry.pause_reason && (
+                          <div className="text-sm text-orange-600 mt-1">
+                            Pause: {entry.pause_reason} ({formatDuration(entry.total_pause_duration_minutes || 0)})
+                          </div>
+                        )}
                       </div>
                       <div className={`text-xs px-2 py-1 rounded-full ${
                         entry.status === 'completed' 

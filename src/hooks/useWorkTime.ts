@@ -9,12 +9,17 @@ interface WorkTimeSession {
   end_time: string | null;
   duration_minutes: number | null;
   status: 'running' | 'completed' | 'paused';
+  pause_reason?: string;
+  pause_start_time?: string;
+  pause_end_time?: string;
+  total_pause_duration_minutes?: number;
 }
 
 export const useWorkTime = (employeeId: string) => {
   const [activeSession, setActiveSession] = useState<WorkTimeSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
 
   useEffect(() => {
     // Check for any running session on component mount
@@ -37,7 +42,11 @@ export const useWorkTime = (employeeId: string) => {
             start_time: data.start_time,
             end_time: data.end_time,
             duration_minutes: data.duration_minutes,
-            status: data.status as 'running' | 'completed' | 'paused'
+            status: data.status as 'running' | 'completed' | 'paused',
+            pause_reason: data.pause_reason,
+            pause_start_time: data.pause_start_time,
+            pause_end_time: data.pause_end_time,
+            total_pause_duration_minutes: data.total_pause_duration_minutes
           });
           // Calculate elapsed time for running session
           const startTime = new Date(data.start_time).getTime();
@@ -86,7 +95,11 @@ export const useWorkTime = (employeeId: string) => {
           start_time: data.start_time,
           end_time: data.end_time,
           duration_minutes: data.duration_minutes,
-          status: data.status as 'running' | 'completed' | 'paused'
+          status: data.status as 'running' | 'completed' | 'paused',
+          pause_reason: data.pause_reason,
+          pause_start_time: data.pause_start_time,
+          pause_end_time: data.pause_end_time,
+          total_pause_duration_minutes: data.total_pause_duration_minutes
         });
       }
       setElapsedTime(0);
@@ -99,13 +112,17 @@ export const useWorkTime = (employeeId: string) => {
     }
   };
 
-  const pauseTimer = async () => {
+  const pauseTimer = async (reason: string) => {
     if (!activeSession) return;
     setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('employee_work_times')
-        .update({ status: 'paused', end_time: new Date().toISOString() })
+        .update({
+          status: 'paused',
+          pause_reason: reason,
+          pause_start_time: new Date().toISOString()
+        })
         .eq('id', activeSession.id)
         .select()
         .single();
@@ -118,7 +135,11 @@ export const useWorkTime = (employeeId: string) => {
           start_time: data.start_time,
           end_time: data.end_time,
           duration_minutes: data.duration_minutes,
-          status: data.status as 'running' | 'completed' | 'paused'
+          status: data.status as 'running' | 'completed' | 'paused',
+          pause_reason: data.pause_reason,
+          pause_start_time: data.pause_start_time,
+          pause_end_time: data.pause_end_time,
+          total_pause_duration_minutes: data.total_pause_duration_minutes
         });
       }
       toast.success('Timer paused');
@@ -131,18 +152,16 @@ export const useWorkTime = (employeeId: string) => {
   };
 
   const resumeTimer = async () => {
+    if (!activeSession) return;
     setIsLoading(true);
     try {
-      const newSession = {
-        employee_id: employeeId,
-        start_time: new Date().toISOString(),
-        date: new Date().toISOString().split('T')[0],
-        status: 'running' as const,
-      };
-
       const { data, error } = await supabase
         .from('employee_work_times')
-        .insert([newSession])
+        .update({
+          status: 'running',
+          pause_end_time: new Date().toISOString()
+        })
+        .eq('id', activeSession.id)
         .select()
         .single();
 
@@ -154,10 +173,13 @@ export const useWorkTime = (employeeId: string) => {
           start_time: data.start_time,
           end_time: data.end_time,
           duration_minutes: data.duration_minutes,
-          status: data.status as 'running' | 'completed' | 'paused'
+          status: data.status as 'running' | 'completed' | 'paused',
+          pause_reason: data.pause_reason,
+          pause_start_time: data.pause_start_time,
+          pause_end_time: data.pause_end_time,
+          total_pause_duration_minutes: data.total_pause_duration_minutes
         });
       }
-      setElapsedTime(0);
       toast.success('Timer resumed');
     } catch (error) {
       console.error('Error resuming timer:', error);
@@ -210,5 +232,7 @@ export const useWorkTime = (employeeId: string) => {
     resumeTimer,
     resetTimer,
     formatTime,
+    isPauseModalOpen,
+    setIsPauseModalOpen
   };
 };
