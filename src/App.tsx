@@ -11,23 +11,29 @@ import EmployeeProfile from "./pages/EmployeeProfile";
 
 const queryClient = new QueryClient();
 
+const AppRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/employee/:id" element={<EmployeeProfile />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
 const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
+    <React.StrictMode>
       <BrowserRouter>
-        <React.StrictMode>
+        <QueryClientProvider client={queryClient}>
           <TooltipProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/employee/:id" element={<EmployeeProfile />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AppRoutes />
             <Toaster />
             <Sonner />
           </TooltipProvider>
-        </React.StrictMode>
+        </QueryClientProvider>
       </BrowserRouter>
-    </QueryClientProvider>
+    </React.StrictMode>
   );
 };
 
