@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
-import { Clock } from "lucide-react";
+import { Clock, AlertCircle, Coffee, UtensilsCrossed } from "lucide-react";
 
 interface WorkTimeEntry {
   id: string;
@@ -20,6 +20,9 @@ interface WorkTimeEntry {
   pause_start_time?: string;
   pause_end_time?: string;
   total_pause_duration_minutes?: number;
+  excess_break_minutes?: number;
+  missed_breaks?: string[];
+  auto_stopped?: boolean;
 }
 
 interface WorkTimeHistoryModalProps {
@@ -52,6 +55,17 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
     return grouped;
   };
 
+  const getBreakIcon = (reason: string) => {
+    switch (reason) {
+      case 'Lunch Break':
+        return <UtensilsCrossed className="h-4 w-4" />;
+      case 'Coffee Break':
+        return <Coffee className="h-4 w-4" />;
+      default:
+        return null;
+    }
+  };
+
   const groupedEntries = groupEntriesByDate(entries);
 
   return (
@@ -73,20 +87,33 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
                 {dayEntries.map(entry => (
                   <div
                     key={entry.id}
-                    className="bg-white p-3 rounded-lg border shadow-sm"
+                    className="bg-white p-4 rounded-lg border shadow-sm"
                   >
                     <div className="flex justify-between items-start">
-                      <div>
-                        <div className="text-sm font-medium">
-                          {format(new Date(entry.start_time), 'h:mm a')}
-                          {entry.end_time && ` - ${format(new Date(entry.end_time), 'h:mm a')}`}
+                      <div className="space-y-2">
+                        <div>
+                          <div className="text-sm font-medium">
+                            {format(new Date(entry.start_time), 'h:mm a')}
+                            {entry.end_time && ` - ${format(new Date(entry.end_time), 'h:mm a')}`}
+                            {entry.auto_stopped && (
+                              <span className="ml-2 text-xs text-orange-600">(Auto-stopped)</span>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Duration: {formatDuration(entry.duration_minutes)}
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-500">
-                          Duration: {formatDuration(entry.duration_minutes)}
-                        </div>
-                        {entry.pause_reason && (
-                          <div className="text-sm text-orange-600 mt-1">
-                            Pause: {entry.pause_reason} ({formatDuration(entry.total_pause_duration_minutes || 0)})
+
+                        {entry.excess_break_minutes && entry.excess_break_minutes > 0 && (
+                          <div className="text-sm text-red-600 flex items-center gap-1">
+                            <AlertCircle className="h-4 w-4" />
+                            Excess break time: {entry.excess_break_minutes} minutes
+                          </div>
+                        )}
+
+                        {entry.missed_breaks && entry.missed_breaks.length > 0 && (
+                          <div className="text-sm text-orange-600">
+                            Missed breaks: {entry.missed_breaks.join(', ')}
                           </div>
                         )}
                       </div>

@@ -184,12 +184,18 @@ export type Database = {
       }
       employee_work_times: {
         Row: {
+          auto_stopped: boolean | null
           created_at: string | null
           date: string
           duration_minutes: number | null
           employee_id: string
           end_time: string | null
+          excess_break_minutes: number | null
+          expected_coffee_duration_minutes: number | null
+          expected_lunch_duration_minutes: number | null
+          expected_work_hours: number | null
           id: string
+          missed_breaks: string[] | null
           pause_end_time: string | null
           pause_reason: string | null
           pause_start_time: string | null
@@ -198,12 +204,18 @@ export type Database = {
           total_pause_duration_minutes: number | null
         }
         Insert: {
+          auto_stopped?: boolean | null
           created_at?: string | null
           date: string
           duration_minutes?: number | null
           employee_id: string
           end_time?: string | null
+          excess_break_minutes?: number | null
+          expected_coffee_duration_minutes?: number | null
+          expected_lunch_duration_minutes?: number | null
+          expected_work_hours?: number | null
           id?: string
+          missed_breaks?: string[] | null
           pause_end_time?: string | null
           pause_reason?: string | null
           pause_start_time?: string | null
@@ -212,12 +224,18 @@ export type Database = {
           total_pause_duration_minutes?: number | null
         }
         Update: {
+          auto_stopped?: boolean | null
           created_at?: string | null
           date?: string
           duration_minutes?: number | null
           employee_id?: string
           end_time?: string | null
+          excess_break_minutes?: number | null
+          expected_coffee_duration_minutes?: number | null
+          expected_lunch_duration_minutes?: number | null
+          expected_work_hours?: number | null
           id?: string
+          missed_breaks?: string[] | null
           pause_end_time?: string | null
           pause_reason?: string | null
           pause_start_time?: string | null
