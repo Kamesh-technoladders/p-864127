@@ -317,42 +317,54 @@ export type Database = {
           blood_group: string | null
           created_at: string | null
           date_of_birth: string | null
+          department: string | null
           email: string
           employee_id: string
+          employment_start_date: string | null
+          employment_status: string | null
           first_name: string
           gender: string | null
           id: string
           last_name: string
           marital_status: string | null
           phone: string | null
+          position: string | null
           updated_at: string | null
         }
         Insert: {
           blood_group?: string | null
           created_at?: string | null
           date_of_birth?: string | null
+          department?: string | null
           email: string
           employee_id: string
+          employment_start_date?: string | null
+          employment_status?: string | null
           first_name: string
           gender?: string | null
           id?: string
           last_name: string
           marital_status?: string | null
           phone?: string | null
+          position?: string | null
           updated_at?: string | null
         }
         Update: {
           blood_group?: string | null
           created_at?: string | null
           date_of_birth?: string | null
+          department?: string | null
           email?: string
           employee_id?: string
+          employment_start_date?: string | null
+          employment_status?: string | null
           first_name?: string
           gender?: string | null
           id?: string
           last_name?: string
           marital_status?: string | null
           phone?: string | null
+          position?: string | null
           updated_at?: string | null
         }
         Relationships: []
