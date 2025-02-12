@@ -4,6 +4,7 @@ import { ProgressBar } from "@/components/employee/ProgressBar";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
 import { FormContainer } from "@/components/employee/layout/FormContainer";
 import { FormContent } from "@/components/employee/forms/FormContent";
+import { DashboardView } from "@/components/employee/dashboard/DashboardView";
 import { useEmployeeForm } from "@/hooks/useEmployeeForm";
 import { calculateProgress, getProgressMessage } from "@/utils/progressCalculator";
 
@@ -12,6 +13,7 @@ const Index = () => {
     activeTab,
     formProgress,
     formData,
+    isFormCompleted,
     updateSectionProgress,
     updateFormData,
     handleTabChange,
@@ -29,25 +31,31 @@ const Index = () => {
 
   return (
     <DashboardLayout>
-      <ProgressBar
-        percentage={progress}
-        title={`${progress}% Completed`}
-        subtitle={progressMessage}
-      />
-      <FormContainer
-        tabs={tabs}
-        onTabChange={handleTabChange}
-        onSaveAndNext={handleSaveAndNext}
-        activeTab={activeTab}
-      >
-        <FormContent
-          activeTab={activeTab}
-          formData={formData}
-          updateSectionProgress={updateSectionProgress}
-          updateFormData={updateFormData}
-          handleSaveAndNext={handleSaveAndNext}
-        />
-      </FormContainer>
+      {isFormCompleted ? (
+        <DashboardView formData={formData} />
+      ) : (
+        <>
+          <ProgressBar
+            percentage={progress}
+            title={`${progress}% Completed`}
+            subtitle={progressMessage}
+          />
+          <FormContainer
+            tabs={tabs}
+            onTabChange={handleTabChange}
+            onSaveAndNext={handleSaveAndNext}
+            activeTab={activeTab}
+          >
+            <FormContent
+              activeTab={activeTab}
+              formData={formData}
+              updateSectionProgress={updateSectionProgress}
+              updateFormData={updateFormData}
+              handleSaveAndNext={handleSaveAndNext}
+            />
+          </FormContainer>
+        </>
+      )}
     </DashboardLayout>
   );
 };

@@ -6,6 +6,7 @@ import { Experience } from "@/components/employee/types";
 
 export const useEmployeeForm = () => {
   const [activeTab, setActiveTab] = useState("personal");
+  const [isFormCompleted, setIsFormCompleted] = useState(false);
   const [formProgress, setFormProgress] = useState<FormProgress>({
     personal: false,
     education: false,
@@ -57,11 +58,19 @@ export const useEmployeeForm = () => {
 
     const tabOrder = ["personal", "education", "bank"];
     const currentIndex = tabOrder.indexOf(activeTab);
+    
     if (currentIndex < tabOrder.length - 1) {
       setActiveTab(tabOrder[currentIndex + 1]);
     } else {
-      console.log("Submitting form data:", formData);
-      toast.success("All forms completed successfully!");
+      // Check if all required sections are completed
+      const isAllCompleted = Object.values(formProgress).every(Boolean);
+      if (isAllCompleted) {
+        console.log("Submitting form data:", formData);
+        toast.success("All forms completed successfully!");
+        setIsFormCompleted(true);
+      } else {
+        toast.error("Please complete all sections before submitting");
+      }
     }
   };
 
@@ -69,6 +78,7 @@ export const useEmployeeForm = () => {
     activeTab,
     formProgress,
     formData,
+    isFormCompleted,
     updateSectionProgress,
     updateFormData,
     handleTabChange,
