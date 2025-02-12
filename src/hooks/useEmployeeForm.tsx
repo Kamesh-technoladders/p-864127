@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
@@ -87,6 +88,7 @@ export const useEmployeeForm = () => {
           
           toast.success("Employee information saved successfully!");
           setIsFormCompleted(true);
+          window.location.reload(); // Refresh to show updated table
         } catch (error: any) {
           console.error('Error saving employee data:', error);
           if (error.message && error.message.includes('Employee ID')) {

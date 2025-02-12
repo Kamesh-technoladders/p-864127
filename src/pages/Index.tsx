@@ -1,6 +1,5 @@
 
-import React from "react";
-import { ProgressBar } from "@/components/employee/ProgressBar";
+import React, { useState } from "react";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
 import { FormContainer } from "@/components/employee/layout/FormContainer";
 import { FormContent } from "@/components/employee/forms/FormContent";
@@ -9,6 +8,7 @@ import { useEmployeeForm } from "@/hooks/useEmployeeForm";
 import { calculateProgress, getProgressMessage } from "@/utils/progressCalculator";
 
 const Index = () => {
+  const [showForm, setShowForm] = useState(false);
   const {
     activeTab,
     formProgress,
@@ -29,17 +29,31 @@ const Index = () => {
   const progress = calculateProgress(formProgress);
   const progressMessage = getProgressMessage(formProgress);
 
+  const handleAddEmployee = () => {
+    setShowForm(true);
+  };
+
+  const handleFormClose = () => {
+    setShowForm(false);
+  };
+
+  const handleFormComplete = () => {
+    setShowForm(false);
+  };
+
   return (
     <DashboardLayout>
-      {isFormCompleted ? (
-        <DashboardView formData={formData} />
-      ) : (
+      {showForm ? (
         <>
-          <ProgressBar
-            percentage={progress}
-            title={`${progress}% Completed`}
-            subtitle={progressMessage}
-          />
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">Add New Employee</h1>
+            <button
+              onClick={handleFormClose}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+            >
+              Cancel
+            </button>
+          </div>
           <FormContainer
             tabs={tabs}
             onTabChange={handleTabChange}
@@ -55,6 +69,8 @@ const Index = () => {
             />
           </FormContainer>
         </>
+      ) : (
+        <DashboardView onAddEmployee={handleAddEmployee} />
       )}
     </DashboardLayout>
   );

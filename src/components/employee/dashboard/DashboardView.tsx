@@ -5,40 +5,36 @@ import { ProgressStats } from "./components/ProgressStats";
 import { ActionButtons } from "./components/ActionButtons";
 import { FilterBar } from "./components/FilterBar";
 import { EmployeeTable } from "./components/EmployeeTable";
+import { Button } from "@/components/ui/button";
+import { UserPlus } from "lucide-react";
+import { useEmployees } from "@/hooks/useEmployees";
 
 interface DashboardViewProps {
-  formData: FormData;
+  onAddEmployee: () => void;
 }
 
-export const DashboardView: React.FC<DashboardViewProps> = ({ formData }) => {
-  // Transform form data for display
-  const employeeData = formData.personal ? [
-    {
-      name: `${formData.personal.firstName} ${formData.personal.lastName}`,
-      email: formData.personal.email,
-      jobTitle: formData.experience?.[0]?.jobTitle || "Not specified",
-      department: "Not specified",
-      site: formData.personal.presentAddress.city || "Not specified",
-      salary: "Not specified",
-      startDate: formData.experience?.[0]?.startDate || "Not specified",
-      lifecycle: "Full-time",
-      status: "Active"
-    }
-  ] : [];
+export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) => {
+  const { employees, isLoading, error } = useEmployees();
 
   return (
     <div className="space-y-8">
-      {/* Title and Progress Section */}
-      <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-brand-primary">People</h1>
-        <ProgressStats employeeCount={employeeData.length} />
-        <div className="flex justify-between items-center">
-          <ActionButtons />
-        </div>
+        <Button onClick={onAddEmployee} className="bg-red-600 hover:bg-red-700">
+          <UserPlus className="w-4 h-4 mr-2" />
+          Add Employee
+        </Button>
       </div>
-
+      <ProgressStats employeeCount={employees?.length || 0} />
+      <div className="flex justify-between items-center">
+        <ActionButtons />
+      </div>
       <FilterBar />
-      <EmployeeTable employees={employeeData} />
+      <EmployeeTable 
+        employees={employees || []} 
+        isLoading={isLoading} 
+        error={error} 
+      />
     </div>
   );
 };

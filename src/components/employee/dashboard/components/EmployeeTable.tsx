@@ -10,28 +10,41 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-interface Employee {
-  name: string;
-  email: string;
-  jobTitle: string;
-  department: string;
-  site: string;
-  startDate: string;
-  lifecycle: string;
-  status: string;
-}
+import { Loader2 } from "lucide-react";
+import { Employee } from "@/hooks/useEmployees";
 
 interface EmployeeTableProps {
   employees: Employee[];
+  isLoading: boolean;
+  error: string | null;
 }
 
-export const EmployeeTable: React.FC<EmployeeTableProps> = ({ employees }) => {
+export const EmployeeTable: React.FC<EmployeeTableProps> = ({ 
+  employees, 
+  isLoading, 
+  error 
+}) => {
   const navigate = useNavigate();
 
   const handleNameClick = (employeeId: string) => {
     navigate(`/employee/${employeeId}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8 text-red-600">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -42,41 +55,44 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({ employees }) => {
               <input type="checkbox" className="rounded border-gray-300" />
             </TableHead>
             <TableHead>Name</TableHead>
-            <TableHead>Job Title</TableHead>
-            <TableHead>Department</TableHead>
-            <TableHead>Site</TableHead>
-            <TableHead>Start Date</TableHead>
-            <TableHead>Lifecycle</TableHead>
+            <TableHead>Employee ID</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Gender</TableHead>
+            <TableHead>Blood Group</TableHead>
+            <TableHead>Join Date</TableHead>
             <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {employees.length > 0 ? (
-            employees.map((employee, index) => (
-              <TableRow key={index} className="hover:bg-brand-accent/10">
+            employees.map((employee) => (
+              <TableRow key={employee.id} className="hover:bg-brand-accent/10">
                 <TableCell>
                   <input type="checkbox" className="rounded border-gray-300" />
                 </TableCell>
                 <TableCell>
                   <div 
                     className="flex items-center gap-3 cursor-pointer"
-                    onClick={() => handleNameClick(index.toString())}
+                    onClick={() => handleNameClick(employee.id)}
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="" />
-                      <AvatarFallback>{employee.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback>
+                        {employee.first_name.charAt(0).toUpperCase()}
+                        {employee.last_name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium">{employee.name}</div>
+                      <div className="font-medium">{`${employee.first_name} ${employee.last_name}`}</div>
                       <div className="text-sm text-brand-secondary">{employee.email}</div>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>{employee.jobTitle}</TableCell>
-                <TableCell>{employee.department}</TableCell>
-                <TableCell>{employee.site}</TableCell>
-                <TableCell>{employee.startDate}</TableCell>
-                <TableCell>{employee.lifecycle}</TableCell>
+                <TableCell>{employee.employee_id}</TableCell>
+                <TableCell>{employee.email}</TableCell>
+                <TableCell>{employee.gender || '-'}</TableCell>
+                <TableCell>{employee.blood_group || '-'}</TableCell>
+                <TableCell>{new Date(employee.created_at).toLocaleDateString()}</TableCell>
                 <TableCell>
                   <span className="status-pill status-pill-invited">Active</span>
                 </TableCell>
@@ -85,7 +101,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({ employees }) => {
           ) : (
             <TableRow>
               <TableCell colSpan={8} className="text-center py-8 text-gray-500">
-                No employees found. Add an employee by completing the onboarding form.
+                No employees found. Add an employee by clicking the "Add Employee" button.
               </TableCell>
             </TableRow>
           )}
