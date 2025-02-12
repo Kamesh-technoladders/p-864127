@@ -1,16 +1,13 @@
 
 import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import { PersonalDetailsForm } from "../PersonalDetailsForm";
 import { PersonalDetailsData } from "../types";
 import { toast } from "sonner";
 import { employeeService } from "@/services/employee/employee.service";
-import { Edit2, Save, X, UserCircle } from "lucide-react";
+import { UserCircle } from "lucide-react";
+import { ModalHeader } from "./common/ModalHeader";
+import { ModalContent } from "./common/ModalContent";
 
 interface PersonalDetailsEditModalProps {
   isOpen: boolean;
@@ -51,56 +48,22 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white/90 backdrop-blur-lg border border-white/20 shadow-2xl">
-        <DialogHeader className="p-6 bg-gradient-to-r from-[#ee9ca7] to-[#ffdde1]">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <UserCircle className="w-6 h-6 text-white" />
-              <h2 className="text-2xl font-semibold text-white tracking-tight">
-                Personal Details
-              </h2>
-            </div>
-            <div className="flex items-center gap-2">
-              {!isEditing ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsEditing(true)}
-                  className="hover:bg-white/20 text-white"
-                >
-                  <Edit2 className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsEditing(false)}
-                    className="hover:bg-white/20 text-white"
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleComplete(true, data)}
-                    disabled={loading}
-                    className="hover:bg-white/20 text-white"
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    Save
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </DialogHeader>
+      <ModalContent>
+        <ModalHeader
+          title="Personal Details"
+          icon={UserCircle}
+          isEditing={isEditing}
+          onEdit={() => setIsEditing(true)}
+          onCancel={() => setIsEditing(false)}
+          onSave={() => handleComplete(true, data)}
+          loading={loading}
+          gradientFrom="#ee9ca7"
+          gradientTo="#ffdde1"
+        />
         <div className="p-6 max-h-[80vh] overflow-y-auto">
           <PersonalDetailsForm onComplete={handleComplete} initialData={data} />
         </div>
-      </DialogContent>
+      </ModalContent>
     </Dialog>
   );
 };
