@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
 import { Experience } from "@/components/employee/types";
-import { employeeService } from "@/services/employeeService";
+import { employeeService } from "@/services/employee/employee.service";
 
 export const useEmployeeForm = () => {
   const [activeTab, setActiveTab] = useState("personal");

@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from "react";
-import { employeeService } from "@/services/employeeService";
+import { employeeService } from "@/services/employee/employee.service";
 import { toast } from "sonner";
 
 export const useEmployeeData = (employeeId: string) => {

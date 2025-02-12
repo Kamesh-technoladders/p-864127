@@ -6,7 +6,7 @@ import { Experience } from "../types";
 import { ExperienceCard } from "../experience/ExperienceCard";
 import { AddExperienceModal } from "../AddExperienceModal";
 import { DeleteConfirmationDialog } from "../experience/DeleteConfirmationDialog";
-import { employeeService } from "@/services/employeeService";
+import { employeeService } from "@/services/employee/employee.service";
 import { toast } from "sonner";
 
 interface ExperienceSectionProps {

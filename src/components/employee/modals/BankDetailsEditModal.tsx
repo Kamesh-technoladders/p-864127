@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -9,7 +8,7 @@ import {
 import { BankAccountForm } from "../BankAccountForm";
 import { BankAccountData } from "../types";
 import { toast } from "sonner";
-import { employeeService } from "@/services/employeeService";
+import { employeeService } from "@/services/employee/employee.service";
 
 interface BankDetailsEditModalProps {
   isOpen: boolean;

@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -9,7 +8,7 @@ import {
 import { PersonalDetailsForm } from "../PersonalDetailsForm";
 import { PersonalDetailsData } from "../types";
 import { toast } from "sonner";
-import { employeeService } from "@/services/employeeService";
+import { employeeService } from "@/services/employee/employee.service";
 
 interface PersonalDetailsEditModalProps {
   isOpen: boolean;
