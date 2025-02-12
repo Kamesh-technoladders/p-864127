@@ -3,10 +3,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
 import { Experience } from "@/components/employee/types";
+import { employeeService } from "@/services/employeeService";
 
 export const useEmployeeForm = () => {
   const [activeTab, setActiveTab] = useState("personal");
   const [isFormCompleted, setIsFormCompleted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formProgress, setFormProgress] = useState<FormProgress>({
     personal: false,
     education: false,
@@ -34,7 +36,6 @@ export const useEmployeeForm = () => {
       [section]: data,
     }));
 
-    // If this is experience data, handle it specially since it's an array
     if (section === 'experience') {
       updateSectionProgress('experience', Array.isArray(data) && data.length > 0);
     }
@@ -48,7 +49,7 @@ export const useEmployeeForm = () => {
     setActiveTab(tabId);
   };
 
-  const handleSaveAndNext = () => {
+  const handleSaveAndNext = async () => {
     if (activeTab === "personal") {
       const form = document.getElementById("personalDetailsForm") as HTMLFormElement;
       if (form) {
@@ -74,12 +75,23 @@ export const useEmployeeForm = () => {
       );
       
       if (isRequiredCompleted) {
-        console.log("Form data being submitted:", formData);
-        toast.success("All forms completed successfully!");
-        setIsFormCompleted(true);
-        
-        // Here you would typically save the data to a backend
-        // For now, we're just storing it in state and displaying it
+        setIsSubmitting(true);
+        try {
+          await employeeService.createEmployee({
+            personal: formData.personal,
+            education: formData.education,
+            experience: formData.experience,
+            bank: formData.bank,
+          });
+          
+          toast.success("Employee information saved successfully!");
+          setIsFormCompleted(true);
+        } catch (error) {
+          console.error('Error saving employee data:', error);
+          toast.error("Failed to save employee information. Please try again.");
+        } finally {
+          setIsSubmitting(false);
+        }
       } else {
         toast.error("Please complete all required sections before submitting");
       }
@@ -91,6 +103,7 @@ export const useEmployeeForm = () => {
     formProgress,
     formData,
     isFormCompleted,
+    isSubmitting,
     updateSectionProgress,
     updateFormData,
     handleTabChange,
