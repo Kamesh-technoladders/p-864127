@@ -5,29 +5,26 @@ import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 
 const QuickActionButton = ({ icon: Icon, label, onClick }: { icon: any; label: string; onClick: () => void }) => (
-  <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          className="w-10 h-10 rounded-full hover:bg-brand-primary hover:text-white transition-colors"
-          onClick={onClick}
-        >
-          <Icon className="w-5 h-5" />
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>{label}</p>
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button
+        variant="outline"
+        size="icon"
+        className="w-10 h-10 rounded-full hover:bg-brand-primary hover:text-white transition-colors"
+        onClick={onClick}
+      >
+        <Icon className="w-5 h-5" />
+      </Button>
+    </TooltipTrigger>
+    <TooltipContent>
+      <p>{label}</p>
+    </TooltipContent>
+  </Tooltip>
 );
 
 export const QuickActions = () => {
