@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { UploadField } from "../UploadField";
@@ -23,22 +22,34 @@ interface DocumentMetadata {
   mime_type: string;
 }
 
+interface UploadedFile {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+}
+
 export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
   setValue,
   formValues,
   employeeId,
 }) => {
   const { toast } = useToast();
-  const [documents, setDocuments] = useState<Record<string, DocumentMetadata>>({});
+  const [documents, setDocuments] = useState<Record<string, UploadedFile>>({});
 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
         const docs = await documentService.getEmployeeDocuments(employeeId, 'education');
         const docMap = docs.reduce((acc, doc) => {
-          acc[doc.document_type] = doc;
+          acc[doc.document_type] = {
+            id: doc.id,
+            name: doc.file_name,
+            type: doc.mime_type,
+            url: doc.file_path
+          };
           return acc;
-        }, {} as Record<string, DocumentMetadata>);
+        }, {} as Record<string, UploadedFile>);
         setDocuments(docMap);
       } catch (error) {
         console.error("Error fetching documents:", error);
@@ -69,9 +80,14 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
       
       const docs = await documentService.getEmployeeDocuments(employeeId, 'education');
       const docMap = docs.reduce((acc, doc) => {
-        acc[doc.document_type] = doc;
+        acc[doc.document_type] = {
+          id: doc.id,
+          name: doc.file_name,
+          type: doc.mime_type,
+          url: doc.file_path
+        };
         return acc;
-      }, {} as Record<string, DocumentMetadata>);
+      }, {} as Record<string, UploadedFile>);
       setDocuments(docMap);
       
       toast({
@@ -96,11 +112,7 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
         onUpload={handleFileUpload("ssc")}
         value={formValues.ssc?.name}
         showProgress
-        currentFile={documents['ssc'] ? {
-          name: documents['ssc'].file_name,
-          type: documents['ssc'].mime_type,
-          id: documents['ssc'].id,
-        } : undefined}
+        currentFile={documents['ssc']}
         documentId={documents['ssc']?.id}
       />
       
@@ -110,11 +122,7 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
         onUpload={handleFileUpload("hsc")}
         value={formValues.hsc?.name}
         showProgress
-        currentFile={documents['hsc'] ? {
-          name: documents['hsc'].file_name,
-          type: documents['hsc'].mime_type,
-          id: documents['hsc'].id,
-        } : undefined}
+        currentFile={documents['hsc']}
         documentId={documents['hsc']?.id}
       />
       
@@ -124,11 +132,7 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
         onUpload={handleFileUpload("degree")}
         value={formValues.degree?.name}
         showProgress
-        currentFile={documents['degree'] ? {
-          name: documents['degree'].file_name,
-          type: documents['degree'].mime_type,
-          id: documents['degree'].id,
-        } : undefined}
+        currentFile={documents['degree']}
         documentId={documents['degree']?.id}
       />
     </div>

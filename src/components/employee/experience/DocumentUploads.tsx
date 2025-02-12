@@ -1,10 +1,10 @@
-
 import React, { useEffect, useState } from "react";
 import { UploadField } from "../UploadField";
 import { validateDocument } from "@/utils/documentValidation";
 import { documentService } from "@/services/employee/document.service";
 import { uploadDocument } from "@/utils/uploadDocument";
 import { toast } from "sonner";
+import { UploadedFile } from "@/types/document.types";
 
 interface DocumentUploadsProps {
   employeeId: string;
@@ -30,7 +30,7 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
   formData,
   handleFileUpload,
 }) => {
-  const [documents, setDocuments] = useState<Record<string, DocumentMetadata>>({});
+  const [documents, setDocuments] = useState<Record<string, UploadedFile>>({});
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -38,9 +38,14 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
         if (experienceId) {
           const docs = await documentService.getEmployeeDocuments(employeeId, 'experience');
           const docMap = docs.reduce((acc, doc) => {
-            acc[doc.document_type] = doc;
+            acc[doc.document_type] = {
+              id: doc.id,
+              name: doc.file_name,
+              type: doc.mime_type,
+              url: doc.file_path
+            };
             return acc;
-          }, {} as Record<string, DocumentMetadata>);
+          }, {} as Record<string, UploadedFile>);
           setDocuments(docMap);
         }
       } catch (error) {
@@ -72,9 +77,14 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
       if (experienceId) {
         const docs = await documentService.getEmployeeDocuments(employeeId, 'experience');
         const docMap = docs.reduce((acc, doc) => {
-          acc[doc.document_type] = doc;
+          acc[doc.document_type] = {
+            id: doc.id,
+            name: doc.file_name,
+            type: doc.mime_type,
+            url: doc.file_path
+          };
           return acc;
-        }, {} as Record<string, DocumentMetadata>);
+        }, {} as Record<string, UploadedFile>);
         setDocuments(docMap);
       }
     } catch (error) {
@@ -92,8 +102,8 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
         value={formData.offerLetter?.name}
         showProgress
         currentFile={documents['offer_letter'] ? {
-          name: documents['offer_letter'].file_name,
-          type: documents['offer_letter'].mime_type,
+          name: documents['offer_letter'].name,
+          type: documents['offer_letter'].type,
           id: documents['offer_letter'].id,
         } : undefined}
         documentId={documents['offer_letter']?.id}
@@ -106,8 +116,8 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
         value={formData.separationLetter?.name}
         showProgress
         currentFile={documents['separation_letter'] ? {
-          name: documents['separation_letter'].file_name,
-          type: documents['separation_letter'].mime_type,
+          name: documents['separation_letter'].name,
+          type: documents['separation_letter'].type,
           id: documents['separation_letter'].id,
         } : undefined}
         documentId={documents['separation_letter']?.id}
@@ -124,8 +134,8 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
         }
         showProgress
         currentFile={documents['payslip'] ? {
-          name: documents['payslip'].file_name,
-          type: documents['payslip'].mime_type,
+          name: documents['payslip'].name,
+          type: documents['payslip'].type,
           id: documents['payslip'].id,
         } : undefined}
         documentId={documents['payslip']?.id}

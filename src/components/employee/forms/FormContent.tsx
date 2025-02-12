@@ -6,7 +6,7 @@ import { ExperienceForm } from "../ExperienceForm";
 import { BankAccountForm } from "../BankAccountForm";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
 import { Experience } from "../types";
-import { toast } from "sonner";
+import { useParams } from "react-router-dom";
 
 interface FormContentProps {
   activeTab: string;
@@ -23,6 +23,12 @@ export const FormContent: React.FC<FormContentProps> = ({
   updateFormData,
   handleSaveAndNext,
 }) => {
+  const { id: employeeId } = useParams<{ id: string }>();
+
+  if (!employeeId) {
+    throw new Error("Employee ID is required");
+  }
+
   switch (activeTab) {
     case "personal":
       return (
@@ -32,8 +38,6 @@ export const FormContent: React.FC<FormContentProps> = ({
             if (completed && data) {
               updateFormData("personal", data);
               handleSaveAndNext();
-            } else {
-              toast.error("Please fill in all required fields");
             }
           }}
           initialData={formData.personal}
@@ -41,27 +45,16 @@ export const FormContent: React.FC<FormContentProps> = ({
       );
     case "education":
       return (
-        <>
-          <EducationForm
-            onComplete={(completed: boolean, data?: any) => {
-              updateSectionProgress("education", completed);
-              if (completed && data) {
-                updateFormData("education", data);
-              }
-            }}
-            initialData={formData.education}
-          />
-          <div className="shrink-0 h-px mt-[29px] border-[rgba(239,242,255,1)] border-solid border-2" />
-          <ExperienceForm
-            onComplete={(completed: boolean, data?: Experience[]) => {
-              updateSectionProgress("experience", completed);
-              if (completed && data) {
-                updateFormData("experience", data);
-              }
-            }}
-            experiences={formData.experience}
-          />
-        </>
+        <EducationForm
+          onComplete={(completed: boolean, data?: any) => {
+            updateSectionProgress("education", completed);
+            if (completed && data) {
+              updateFormData("education", data);
+            }
+          }}
+          initialData={formData.education}
+          employeeId={employeeId}
+        />
       );
     case "bank":
       return (
@@ -73,6 +66,7 @@ export const FormContent: React.FC<FormContentProps> = ({
             }
           }}
           initialData={formData.bank}
+          employeeId={employeeId}
         />
       );
     default:

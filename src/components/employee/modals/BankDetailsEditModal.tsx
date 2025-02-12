@@ -61,7 +61,11 @@ export const BankDetailsEditModal: React.FC<BankDetailsEditModalProps> = ({
           gradientTo="#81C784"
         />
         <div className="p-6 max-h-[80vh] overflow-y-auto">
-          <BankAccountForm onComplete={handleComplete} initialData={data} />
+          <BankAccountForm 
+            onComplete={handleComplete} 
+            initialData={data}
+            employeeId={employeeId}
+          />
         </div>
       </ModalContent>
     </Dialog>

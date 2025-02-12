@@ -61,7 +61,11 @@ export const EducationEditModal: React.FC<EducationEditModalProps> = ({
           gradientTo="#64B5F6"
         />
         <div className="p-6 max-h-[80vh] overflow-y-auto">
-          <EducationForm onComplete={handleComplete} initialData={data} />
+          <EducationForm 
+            onComplete={handleComplete} 
+            initialData={data}
+            employeeId={employeeId}
+          />
         </div>
       </ModalContent>
     </Dialog>

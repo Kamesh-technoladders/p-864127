@@ -1,11 +1,10 @@
-
 import React, { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { UploadField } from "../UploadField";
 import { MAX_FILE_SIZE, ACCEPTED_FILE_TYPES } from "./bankAccountSchema";
 import { documentService } from "@/services/employee/document.service";
 import { uploadDocument } from "@/utils/uploadDocument";
-import { DocumentMetadata } from "@/types/document.types";
+import { UploadedFile } from "@/types/document.types";
 
 interface DocumentUploadsProps {
   setValue: (field: string, value: any) => void;
@@ -22,7 +21,7 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
   employeeId,
 }) => {
   const { toast } = useToast();
-  const [documents, setDocuments] = useState<Record<string, DocumentMetadata>>({});
+  const [documents, setDocuments] = useState<Record<string, UploadedFile>>({});
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -31,12 +30,12 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
         const docMap = docs.reduce((acc, doc) => {
           acc[doc.document_type] = {
             id: doc.id,
-            file_name: doc.file_name,
-            file_path: doc.file_path,
-            mime_type: doc.mime_type || 'application/octet-stream'
+            name: doc.file_name,
+            type: doc.mime_type,
+            url: doc.file_path
           };
           return acc;
-        }, {} as Record<string, DocumentMetadata>);
+        }, {} as Record<string, UploadedFile>);
         setDocuments(docMap);
       } catch (error) {
         console.error("Error fetching documents:", error);
@@ -77,12 +76,12 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
       const docMap = docs.reduce((acc, doc) => {
         acc[doc.document_type] = {
           id: doc.id,
-          file_name: doc.file_name,
-          file_path: doc.file_path,
-          mime_type: doc.mime_type || 'application/octet-stream'
+          name: doc.file_name,
+          type: doc.mime_type,
+          url: doc.file_path
         };
         return acc;
-      }, {} as Record<string, DocumentMetadata>);
+      }, {} as Record<string, UploadedFile>);
       setDocuments(docMap);
       
       toast({
