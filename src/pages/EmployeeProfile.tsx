@@ -3,7 +3,7 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
 import { Card } from "@/components/ui/card";
-import { ChevronRight, Laptop, MoreHorizontal, Loader2 } from "lucide-react";
+import { ChevronRight, Laptop, MoreHorizontal, Loader2, ArrowLeft } from "lucide-react";
 import { useEmployeeData } from "@/hooks/useEmployeeData";
 import { ProfileHeader } from "@/components/employee/profile/ProfileHeader";
 import { StatsBar } from "@/components/employee/profile/StatsBar";
@@ -68,6 +68,17 @@ const EmployeeProfile = () => {
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gradient-to-b from-white to-[#FFF9E7] p-8">
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+            className="hover:bg-white/50 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
+
         <ProfileHeader
           employeeId={employeeData.employee_id}
           firstName={employeeData.first_name}
