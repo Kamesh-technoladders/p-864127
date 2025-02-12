@@ -119,7 +119,7 @@ const EmployeeProfile = () => {
             onEdit={() => handleEdit("bank")}
           />
 
-          <MetricsSection />
+          <MetricsSection employeeId={employeeData.id} />
         </div>
 
         <EmploymentDetailsModal

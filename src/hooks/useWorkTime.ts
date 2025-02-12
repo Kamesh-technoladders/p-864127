@@ -32,7 +32,13 @@ export const useWorkTime = (employeeId: string) => {
         if (error) throw error;
 
         if (data) {
-          setActiveSession(data);
+          setActiveSession({
+            id: data.id,
+            start_time: data.start_time,
+            end_time: data.end_time,
+            duration_minutes: data.duration_minutes,
+            status: data.status as 'running' | 'completed' | 'paused'
+          });
           // Calculate elapsed time for running session
           const startTime = new Date(data.start_time).getTime();
           const currentTime = new Date().getTime();
@@ -63,7 +69,7 @@ export const useWorkTime = (employeeId: string) => {
         employee_id: employeeId,
         start_time: new Date().toISOString(),
         date: new Date().toISOString().split('T')[0],
-        status: 'running',
+        status: 'running' as const,
       };
 
       const { data, error } = await supabase
@@ -74,7 +80,15 @@ export const useWorkTime = (employeeId: string) => {
 
       if (error) throw error;
 
-      setActiveSession(data);
+      if (data) {
+        setActiveSession({
+          id: data.id,
+          start_time: data.start_time,
+          end_time: data.end_time,
+          duration_minutes: data.duration_minutes,
+          status: data.status as 'running' | 'completed' | 'paused'
+        });
+      }
       setElapsedTime(0);
       toast.success('Timer started successfully');
     } catch (error) {
@@ -89,14 +103,24 @@ export const useWorkTime = (employeeId: string) => {
     if (!activeSession) return;
     setIsLoading(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('employee_work_times')
         .update({ status: 'paused', end_time: new Date().toISOString() })
-        .eq('id', activeSession.id);
+        .eq('id', activeSession.id)
+        .select()
+        .single();
 
       if (error) throw error;
 
-      setActiveSession(prev => prev ? { ...prev, status: 'paused' } : null);
+      if (data) {
+        setActiveSession({
+          id: data.id,
+          start_time: data.start_time,
+          end_time: data.end_time,
+          duration_minutes: data.duration_minutes,
+          status: data.status as 'running' | 'completed' | 'paused'
+        });
+      }
       toast.success('Timer paused');
     } catch (error) {
       console.error('Error pausing timer:', error);
@@ -113,7 +137,7 @@ export const useWorkTime = (employeeId: string) => {
         employee_id: employeeId,
         start_time: new Date().toISOString(),
         date: new Date().toISOString().split('T')[0],
-        status: 'running',
+        status: 'running' as const,
       };
 
       const { data, error } = await supabase
@@ -124,7 +148,15 @@ export const useWorkTime = (employeeId: string) => {
 
       if (error) throw error;
 
-      setActiveSession(data);
+      if (data) {
+        setActiveSession({
+          id: data.id,
+          start_time: data.start_time,
+          end_time: data.end_time,
+          duration_minutes: data.duration_minutes,
+          status: data.status as 'running' | 'completed' | 'paused'
+        });
+      }
       setElapsedTime(0);
       toast.success('Timer resumed');
     } catch (error) {
@@ -139,13 +171,15 @@ export const useWorkTime = (employeeId: string) => {
     if (!activeSession) return;
     setIsLoading(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('employee_work_times')
         .update({ 
           status: 'completed', 
           end_time: new Date().toISOString()
         })
-        .eq('id', activeSession.id);
+        .eq('id', activeSession.id)
+        .select()
+        .single();
 
       if (error) throw error;
 
