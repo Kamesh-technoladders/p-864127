@@ -9,7 +9,224 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      employee_addresses: {
+        Row: {
+          address_line1: string
+          city: string
+          country: string
+          created_at: string | null
+          employee_id: string | null
+          id: string
+          state: string
+          type: string
+          zip_code: string
+        }
+        Insert: {
+          address_line1: string
+          city: string
+          country: string
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          state: string
+          type: string
+          zip_code: string
+        }
+        Update: {
+          address_line1?: string
+          city?: string
+          country?: string
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          state?: string
+          type?: string
+          zip_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_addresses_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_bank_details: {
+        Row: {
+          account_holder_name: string
+          account_number: string
+          account_type: string
+          bank_name: string
+          bank_phone: string | null
+          branch_name: string
+          created_at: string | null
+          employee_id: string | null
+          id: string
+          ifsc_code: string
+        }
+        Insert: {
+          account_holder_name: string
+          account_number: string
+          account_type: string
+          bank_name: string
+          bank_phone?: string | null
+          branch_name: string
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          ifsc_code: string
+        }
+        Update: {
+          account_holder_name?: string
+          account_number?: string
+          account_type?: string
+          bank_name?: string
+          bank_phone?: string | null
+          branch_name?: string
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          ifsc_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_bank_details_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_education: {
+        Row: {
+          created_at: string | null
+          document_url: string | null
+          employee_id: string | null
+          id: string
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          document_url?: string | null
+          employee_id?: string | null
+          id?: string
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          document_url?: string | null
+          employee_id?: string | null
+          id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_education_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_experiences: {
+        Row: {
+          company: string
+          created_at: string | null
+          employee_id: string | null
+          employment_type: string | null
+          end_date: string | null
+          id: string
+          job_title: string
+          location: string | null
+          offer_letter_url: string | null
+          separation_letter_url: string | null
+          start_date: string
+        }
+        Insert: {
+          company: string
+          created_at?: string | null
+          employee_id?: string | null
+          employment_type?: string | null
+          end_date?: string | null
+          id?: string
+          job_title: string
+          location?: string | null
+          offer_letter_url?: string | null
+          separation_letter_url?: string | null
+          start_date: string
+        }
+        Update: {
+          company?: string
+          created_at?: string | null
+          employee_id?: string | null
+          employment_type?: string | null
+          end_date?: string | null
+          id?: string
+          job_title?: string
+          location?: string | null
+          offer_letter_url?: string | null
+          separation_letter_url?: string | null
+          start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_experiences_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employees: {
+        Row: {
+          blood_group: string | null
+          created_at: string | null
+          date_of_birth: string | null
+          email: string
+          employee_id: string
+          first_name: string
+          gender: string | null
+          id: string
+          last_name: string
+          marital_status: string | null
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          blood_group?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          email: string
+          employee_id: string
+          first_name: string
+          gender?: string | null
+          id?: string
+          last_name: string
+          marital_status?: string | null
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          blood_group?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          email?: string
+          employee_id?: string
+          first_name?: string
+          gender?: string | null
+          id?: string
+          last_name?: string
+          marital_status?: string | null
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
