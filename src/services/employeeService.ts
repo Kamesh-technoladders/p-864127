@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -59,8 +58,28 @@ export interface EmployeeData {
 }
 
 export const employeeService = {
+  async checkEmployeeIdExists(employeeId: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('employee_id', employeeId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
+      throw error;
+    }
+
+    return !!data;
+  },
+
   async createEmployee(data: EmployeeData) {
     try {
+      // Check if employee ID already exists
+      const exists = await this.checkEmployeeIdExists(data.personal.employeeId);
+      if (exists) {
+        throw new Error(`Employee ID ${data.personal.employeeId} already exists`);
+      }
+
       // First, create the employee record
       const { data: employee, error: employeeError } = await supabase
         .from('employees')
@@ -144,8 +163,12 @@ export const employeeService = {
       }
 
       return employee;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating employee:', error);
+      // If it's our custom error for duplicate employee ID, throw it as is
+      if (error.message && error.message.includes('Employee ID')) {
+        throw error;
+      }
       throw error;
     }
   },

@@ -80,17 +80,21 @@ export const useEmployeeForm = () => {
         try {
           console.log('Submitting form data:', formData);
           await employeeService.createEmployee({
-            personal: formData.personal,
+            personal: formData.personal!,
             education: formData.education,
             experience: formData.experience || [],
-            bank: formData.bank,
+            bank: formData.bank!,
           });
           
           toast.success("Employee information saved successfully!");
           setIsFormCompleted(true);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error saving employee data:', error);
-          toast.error("Failed to save employee information. Please try again.");
+          if (error.message && error.message.includes('Employee ID')) {
+            toast.error(error.message);
+          } else {
+            toast.error("Failed to save employee information. Please try again.");
+          }
         } finally {
           setIsSubmitting(false);
         }
