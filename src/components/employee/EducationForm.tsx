@@ -10,6 +10,11 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
   const [hsc, setHsc] = useState<File | null>(null);
   const [degree, setDegree] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, boolean>>({
+    ssc: false,
+    hsc: false,
+    degree: false
+  });
 
   useEffect(() => {
     if (initialData) {
@@ -18,14 +23,21 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
   }, [initialData]);
 
   useEffect(() => {
+    const newErrors = {
+      ssc: !ssc,
+      hsc: !hsc,
+      degree: !degree
+    };
+    setErrors(newErrors);
+
     const educationData = {
       ssc,
       hsc,
       degree
     };
     
-    // Pass both completion status and data
-    onComplete(!!ssc && !!hsc && !!degree, educationData);
+    const isComplete = !Object.values(newErrors).some(error => error);
+    onComplete(isComplete, educationData);
   }, [ssc, hsc, degree, onComplete]);
 
   const handleFileUpload = async (file: File, type: 'ssc' | 'hsc' | 'degree') => {
@@ -35,12 +47,15 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
       switch (type) {
         case 'ssc':
           setSsc(file);
+          setErrors(prev => ({ ...prev, ssc: false }));
           break;
         case 'hsc':
           setHsc(file);
+          setErrors(prev => ({ ...prev, hsc: false }));
           break;
         case 'degree':
           setDegree(file);
+          setErrors(prev => ({ ...prev, degree: false }));
           break;
       }
       
@@ -68,6 +83,7 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
           showProgress
           value={ssc?.name}
           currentFile={ssc ? { name: ssc.name, type: ssc.type } : null}
+          error={errors.ssc ? "SSC certificate is required" : undefined}
         />
       </div>
 
@@ -79,6 +95,7 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
           showProgress
           value={hsc?.name}
           currentFile={hsc ? { name: hsc.name, type: hsc.type } : null}
+          error={errors.hsc ? "HSC/Diploma certificate is required" : undefined}
         />
       </div>
 
@@ -90,6 +107,7 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
           showProgress
           value={degree?.name}
           currentFile={degree ? { name: degree.name, type: degree.type } : null}
+          error={errors.degree ? "Degree certificate is required" : undefined}
         />
       </div>
     </div>

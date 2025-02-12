@@ -11,24 +11,26 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
   const [experiencesList, setExperiencesList] = useState<Experience[]>(experiences);
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
-    // Update parent component whenever experiences list changes
-    onComplete(experiencesList.length > 0, experiencesList);
-  }, [experiencesList, onComplete]);
+    const isComplete = experiencesList.length > 0;
+    if (!isComplete && showError) {
+      toast.error("At least one experience record is required");
+    }
+    onComplete(isComplete, experiencesList);
+  }, [experiencesList, onComplete, showError]);
 
   const handleAddExperience = (data: ExperienceData) => {
     try {
       setExperiencesList((prev) => {
         let newList;
         if (selectedExperience) {
-          // Edit mode
           newList = prev.map((exp) =>
             exp.id === selectedExperience.id ? { ...data, id: exp.id } : exp
           );
           toast.success("Experience updated successfully");
         } else {
-          // Add mode
           const newExperience: Experience = {
             ...data,
             id: Date.now().toString(),
@@ -41,6 +43,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
       
       setSelectedExperience(null);
       setIsModalOpen(false);
+      setShowError(false);
     } catch (error) {
       console.error("Error handling experience:", error);
       toast.error(
@@ -57,6 +60,10 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
   };
 
   const handleDelete = (experience: Experience) => {
+    if (experiencesList.length === 1) {
+      toast.error("At least one experience record is required");
+      return;
+    }
     setSelectedExperience(experience);
     setIsDeleteDialogOpen(true);
   };
@@ -89,6 +96,13 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
           onDelete={handleDelete}
         />
       ))}
+
+      {showError && experiencesList.length === 0 && (
+        <div className="text-[#DD0101] text-xs mt-2 flex items-center gap-1">
+          <AlertCircle className="h-3 w-3" />
+          <span>At least one experience record is required</span>
+        </div>
+      )}
 
       <button
         onClick={() => {
