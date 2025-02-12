@@ -3,7 +3,18 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
 import { Card } from "@/components/ui/card";
-import { ChevronRight, Laptop, MoreHorizontal, Loader2, ArrowLeft } from "lucide-react";
+import { 
+  ChevronRight, 
+  Laptop, 
+  MoreHorizontal, 
+  Loader2, 
+  ArrowLeft,
+  Edit,
+  UserCircle,
+  Briefcase,
+  GraduationCap,
+  CreditCard
+} from "lucide-react";
 import { useEmployeeData } from "@/hooks/useEmployeeData";
 import { ProfileHeader } from "@/components/employee/profile/ProfileHeader";
 import { StatsBar } from "@/components/employee/profile/StatsBar";
@@ -13,17 +24,31 @@ import { OnboardingTasksCard } from "@/components/employee/profile/cards/Onboard
 import { OnboardingProgressCard } from "@/components/employee/profile/cards/OnboardingProgressCard";
 import { CalendarCard } from "@/components/employee/profile/cards/CalendarCard";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const { isLoading, employeeData, error, fetchEmployeeData } = useEmployeeData(id);
 
+  const [activeSection, setActiveSection] = React.useState<string | null>(null);
+
   React.useEffect(() => {
     if (id) {
       fetchEmployeeData();
     }
   }, [id, fetchEmployeeData]);
+
+  const handleEdit = (section: string) => {
+    toast.info(`Editing ${section} details`);
+    // Add your edit modal logic here
+  };
 
   if (!id) {
     return (
@@ -65,6 +90,28 @@ const EmployeeProfile = () => {
     );
   }
 
+  const InfoCard = ({ title, icon: Icon, children, onEdit }: { title: string; icon: any; children: React.ReactNode; onEdit?: () => void }) => (
+    <Card className="p-6 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative group">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center gap-2">
+          <Icon className="w-5 h-5 text-brand-primary" />
+          <h3 className="font-medium text-lg">{title}</h3>
+        </div>
+        {onEdit && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onEdit}
+            className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-4 right-4"
+          >
+            <Edit className="w-4 h-4" />
+          </Button>
+        )}
+      </div>
+      {children}
+    </Card>
+  );
+
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gradient-to-b from-white to-[#FFF9E7] p-8">
@@ -93,42 +140,82 @@ const EmployeeProfile = () => {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
-          {/* Quick Info Cards */}
-          <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[200px]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium">Pension Contributions</h3>
-              <ChevronRight className="w-4 h-4" />
-            </div>
-          </Card>
-
-          <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[200px]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium">Devices</h3>
-              <MoreHorizontal className="w-4 h-4 cursor-pointer hover:text-gray-600" />
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                <Laptop className="w-4 h-4" />
+          <InfoCard 
+            title="Personal Information" 
+            icon={UserCircle}
+            onEdit={() => handleEdit("personal")}
+          >
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Phone</span>
+                <span>{employeeData.phone}</span>
               </div>
-              <span className="text-sm flex-1">MacBook Air Version M1</span>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Date of Birth</span>
+                <span>{new Date(employeeData.date_of_birth).toLocaleDateString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Marital Status</span>
+                <span>{employeeData.marital_status}</span>
+              </div>
             </div>
-          </Card>
+          </InfoCard>
 
-          <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[200px]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium">Compensation Summary</h3>
-              <ChevronRight className="w-4 h-4" />
+          <InfoCard 
+            title="Employment Details" 
+            icon={Briefcase}
+            onEdit={() => handleEdit("employment")}
+          >
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Employee ID</span>
+                <span>{employeeData.employee_id}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Department</span>
+                <span>Engineering</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Position</span>
+                <span>Software Engineer</span>
+              </div>
             </div>
-          </Card>
+          </InfoCard>
 
-          <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[200px]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium">Employee Benefits</h3>
-              <ChevronRight className="w-4 h-4" />
+          <InfoCard 
+            title="Education & Experience" 
+            icon={GraduationCap}
+            onEdit={() => handleEdit("education")}
+          >
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Highest Degree</span>
+                <span>Bachelor's</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Experience</span>
+                <span>5 years</span>
+              </div>
             </div>
-          </Card>
+          </InfoCard>
 
-          {/* Main Feature Cards */}
+          <InfoCard 
+            title="Bank Information" 
+            icon={CreditCard}
+            onEdit={() => handleEdit("bank")}
+          >
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Bank Name</span>
+                <span>●●●● Bank</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Account No.</span>
+                <span>●●●● 4321</span>
+              </div>
+            </div>
+          </InfoCard>
+
           <div className="h-[350px]">
             <WorkTimeCard />
           </div>
@@ -145,7 +232,6 @@ const EmployeeProfile = () => {
             <OnboardingProgressCard />
           </div>
 
-          {/* Calendar Card - Full Width on Mobile, Side Column on Desktop */}
           <div className="md:col-span-2 lg:col-span-3 xl:col-span-4 h-[300px]">
             <CalendarCard />
           </div>
