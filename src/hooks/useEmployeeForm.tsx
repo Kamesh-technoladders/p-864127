@@ -33,6 +33,11 @@ export const useEmployeeForm = () => {
       ...prev,
       [section]: data,
     }));
+
+    // If this is experience data, handle it specially since it's an array
+    if (section === 'experience') {
+      updateSectionProgress('experience', Array.isArray(data) && data.length > 0);
+    }
   };
 
   const handleTabChange = (tabId: string) => {
@@ -63,13 +68,20 @@ export const useEmployeeForm = () => {
       setActiveTab(tabOrder[currentIndex + 1]);
     } else {
       // Check if all required sections are completed
-      const isAllCompleted = Object.values(formProgress).every(Boolean);
-      if (isAllCompleted) {
-        console.log("Submitting form data:", formData);
+      const requiredSections = ["personal", "bank"];
+      const isRequiredCompleted = requiredSections.every(section => 
+        formProgress[section as keyof FormProgress]
+      );
+      
+      if (isRequiredCompleted) {
+        console.log("Form data being submitted:", formData);
         toast.success("All forms completed successfully!");
         setIsFormCompleted(true);
+        
+        // Here you would typically save the data to a backend
+        // For now, we're just storing it in state and displaying it
       } else {
-        toast.error("Please complete all sections before submitting");
+        toast.error("Please complete all required sections before submitting");
       }
     }
   };

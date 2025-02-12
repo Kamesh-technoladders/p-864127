@@ -27,6 +27,21 @@ interface DashboardViewProps {
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ formData }) => {
+  // Transform form data for display
+  const employeeData = formData.personal ? [
+    {
+      name: `${formData.personal.firstName} ${formData.personal.lastName}`,
+      email: formData.personal.email,
+      jobTitle: formData.experience?.[0]?.jobTitle || "Not specified",
+      department: "Not specified",
+      site: formData.personal?.address?.city || "Not specified",
+      salary: "Not specified",
+      startDate: formData.experience?.[0]?.startDate || "Not specified",
+      lifecycle: "Full-time",
+      status: "Active"
+    }
+  ] : [];
+
   return (
     <div className="space-y-8">
       {/* Title and Progress Section */}
@@ -36,34 +51,34 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ formData }) => {
         <div className="grid grid-cols-4 gap-6">
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-medium text-brand-secondary">Interviews</span>
-              <span className="text-sm font-bold">25%</span>
+              <span className="text-sm font-medium text-brand-secondary">Total Employees</span>
+              <span className="text-sm font-bold">{employeeData.length}</span>
             </div>
-            <Progress value={25} className="h-2 bg-gray-100" />
+            <Progress value={employeeData.length > 0 ? 100 : 0} className="h-2 bg-gray-100" />
           </div>
           
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-medium text-brand-secondary">Hired</span>
-              <span className="text-sm font-bold">51%</span>
+              <span className="text-sm font-medium text-brand-secondary">Active</span>
+              <span className="text-sm font-bold">{employeeData.length}</span>
             </div>
-            <Progress value={51} className="h-2 bg-gray-100" />
+            <Progress value={employeeData.length > 0 ? 100 : 0} className="h-2 bg-gray-100" />
           </div>
           
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-medium text-brand-secondary">Project time</span>
-              <span className="text-sm font-bold">13%</span>
+              <span className="text-sm font-medium text-brand-secondary">On Leave</span>
+              <span className="text-sm font-bold">0</span>
             </div>
-            <Progress value={13} className="h-2 bg-gray-100" />
+            <Progress value={0} className="h-2 bg-gray-100" />
           </div>
           
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-medium text-brand-secondary">Output</span>
-              <span className="text-sm font-bold">14%</span>
+              <span className="text-sm font-medium text-brand-secondary">Inactive</span>
+              <span className="text-sm font-bold">0</span>
             </div>
-            <Progress value={14} className="h-2 bg-gray-100" />
+            <Progress value={0} className="h-2 bg-gray-100" />
           </div>
         </div>
 
@@ -111,10 +126,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ formData }) => {
             Status
             <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm" className="text-brand-secondary">
-            Entity
-            <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
         </div>
         
         <div className="flex items-center gap-3">
@@ -150,65 +161,47 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ formData }) => {
               <TableHead>Job Title</TableHead>
               <TableHead>Department</TableHead>
               <TableHead>Site</TableHead>
-              <TableHead>Salary</TableHead>
               <TableHead>Start Date</TableHead>
               <TableHead>Lifecycle</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="hover:bg-brand-accent/10">
-              <TableCell>
-                <input type="checkbox" className="rounded border-gray-300" />
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>JD</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-medium">John Doe</div>
-                    <div className="text-sm text-brand-secondary">john@example.com</div>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell>Software Engineer</TableCell>
-              <TableCell>Engineering</TableCell>
-              <TableCell>San Francisco</TableCell>
-              <TableCell>$120,000</TableCell>
-              <TableCell>Jan 15, 2024</TableCell>
-              <TableCell>Full-time</TableCell>
-              <TableCell>
-                <span className="status-pill status-pill-invited">Invited</span>
-              </TableCell>
-            </TableRow>
-            <TableRow className="hover:bg-brand-accent/10">
-              <TableCell>
-                <input type="checkbox" className="rounded border-gray-300" />
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>JS</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-medium">Jane Smith</div>
-                    <div className="text-sm text-brand-secondary">jane@example.com</div>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell>Product Designer</TableCell>
-              <TableCell>Design</TableCell>
-              <TableCell>London</TableCell>
-              <TableCell>$95,000</TableCell>
-              <TableCell>Feb 1, 2024</TableCell>
-              <TableCell>Contract</TableCell>
-              <TableCell>
-                <span className="status-pill status-pill-absent">Absent</span>
-              </TableCell>
-            </TableRow>
+            {employeeData.length > 0 ? (
+              employeeData.map((employee, index) => (
+                <TableRow key={index} className="hover:bg-brand-accent/10">
+                  <TableCell>
+                    <input type="checkbox" className="rounded border-gray-300" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src="" />
+                        <AvatarFallback>{employee.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-medium">{employee.name}</div>
+                        <div className="text-sm text-brand-secondary">{employee.email}</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>{employee.jobTitle}</TableCell>
+                  <TableCell>{employee.department}</TableCell>
+                  <TableCell>{employee.site}</TableCell>
+                  <TableCell>{employee.startDate}</TableCell>
+                  <TableCell>{employee.lifecycle}</TableCell>
+                  <TableCell>
+                    <span className="status-pill status-pill-invited">Active</span>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                  No employees found. Add an employee by completing the onboarding form.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
