@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, RefreshCcw, List, Square, Coffee, UtensilsCrossed, AlertCircle } from "lucide-react";
+import { List } from "lucide-react";
 import { useWorkTime } from "@/hooks/useWorkTime";
 import { WorkTimeHistoryModal } from "../modals/WorkTimeHistoryModal";
 import { PauseReasonModal } from "../modals/PauseReasonModal";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { TimerDisplay } from "./time-tracker/TimerDisplay";
+import { BreakStatus } from "./time-tracker/BreakStatus";
+import { ControlButtons } from "./time-tracker/ControlButtons";
 
 interface TimeTrackerCardProps {
   employeeId: string;
@@ -76,17 +78,6 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
     }
   };
 
-  const getPauseIcon = (reason?: string) => {
-    switch (reason) {
-      case 'Lunch Break':
-        return <UtensilsCrossed className="h-4 w-4" />;
-      case 'Coffee Break':
-        return <Coffee className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  };
-
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (activeSession?.status === 'paused' && activeSession.pause_start_time) {
@@ -98,21 +89,6 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
     }
     return () => clearInterval(interval);
   }, [activeSession?.status, activeSession?.pause_start_time]);
-
-  const getBreakStatus = () => {
-    if (!activeSession?.pause_reason) return null;
-    const maxDuration = activeSession.pause_reason === 'Lunch Break' ? 45 : 15;
-    const currentDuration = Math.floor(pauseDuration / 60);
-    if (currentDuration > maxDuration) {
-      return (
-        <div className="text-xs text-red-600 mt-1 flex items-center gap-1">
-          <AlertCircle className="h-3 w-3" />
-          Break exceeded by {currentDuration - maxDuration} minutes
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <>
@@ -128,100 +104,28 @@ export const TimeTrackerCard: React.FC<TimeTrackerCardProps> = ({ employeeId }) 
 
         <div className="flex-1 flex flex-col items-center justify-center">
           <h3 className="font-medium mb-6">Time Tracker</h3>
-          <div className="relative w-36 h-36 mb-4">
-            <div className={cn(
-              "absolute inset-0 rounded-full border-4 transition-colors duration-300",
-              activeSession?.status === 'running' 
-                ? 'border-brand-accent animate-pulse bg-gradient-to-r from-brand-accent/10 to-brand-accent/5' 
-                : activeSession?.status === 'paused'
-                ? 'border-orange-400'
-                : 'border-gray-200'
-            )} />
-            <div className="absolute inset-2 rounded-full border border-brand-accent/20" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-4xl font-bold tracking-tight">{formatTime(elapsedTime)}</div>
-              <div className="text-sm text-gray-500 mt-2">
-                {activeSession?.status === 'running' ? 'Currently Working' : 
-                 activeSession?.status === 'paused' ? 'Paused' : 
-                 'Work Time'}
-              </div>
-            </div>
-          </div>
+          
+          <TimerDisplay
+            elapsedTime={elapsedTime}
+            status={activeSession?.status || null}
+            formatTime={formatTime}
+          />
 
           {activeSession?.status === 'paused' && (
-            <div className="flex flex-col items-center">
-              <div className="flex items-center gap-2 bg-orange-50 rounded-full px-4 py-2 text-orange-600">
-                {getPauseIcon(activeSession.pause_reason)}
-                <span className="text-sm font-medium">{activeSession.pause_reason}</span>
-                <span className="text-sm font-semibold ml-2">
-                  {formatTime(pauseDuration)}
-                </span>
-              </div>
-              {getBreakStatus()}
-            </div>
+            <BreakStatus
+              pauseReason={activeSession.pause_reason}
+              pauseDuration={pauseDuration}
+              formatTime={formatTime}
+            />
           )}
         </div>
 
-        <div className="flex justify-center gap-3 mt-6">
-          {!activeSession && (
-            <Button
-              size="icon"
-              variant="outline"
-              className="hover:bg-brand-accent/10 w-12 h-12"
-              onClick={() => handleAction('start')}
-              disabled={isLoading || !checkOfficeHours()}
-            >
-              <Play className="h-5 w-5" />
-            </Button>
-          )}
-          
-          {activeSession && activeSession.status === 'running' && (
-            <Button
-              size="icon"
-              variant="outline"
-              className="hover:bg-orange-100 w-12 h-12"
-              onClick={() => handleAction('pause')}
-              disabled={isLoading}
-            >
-              <Pause className="h-5 w-5" />
-            </Button>
-          )}
-          
-          {activeSession && activeSession.status === 'paused' && (
-            <Button
-              size="icon"
-              variant="outline"
-              className="hover:bg-brand-accent/10 w-12 h-12"
-              onClick={() => handleAction('resume')}
-              disabled={isLoading}
-            >
-              <Play className="h-5 w-5" />
-            </Button>
-          )}
-
-          {activeSession && (
-            <>
-              <Button
-                size="icon"
-                variant="outline"
-                className="hover:bg-red-100 w-12 h-12 text-red-600 border-red-200"
-                onClick={() => handleAction('stop')}
-                disabled={isLoading}
-              >
-                <Square className="h-5 w-5" />
-              </Button>
-              <Button
-                size="icon"
-                variant="outline"
-                className="hover:bg-gray-100 w-12 h-12"
-                onClick={() => handleAction('reset')}
-                disabled={isLoading}
-              >
-                <RefreshCcw className="h-5 w-5" />
-              </Button>
-            </>
-          )}
-        </div>
+        <ControlButtons
+          activeSession={activeSession}
+          isLoading={isLoading}
+          checkOfficeHours={checkOfficeHours}
+          onAction={handleAction}
+        />
       </Card>
 
       <WorkTimeHistoryModal
