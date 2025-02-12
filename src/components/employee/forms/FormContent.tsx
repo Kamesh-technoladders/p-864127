@@ -1,9 +1,9 @@
 
 import React from "react";
-import { PersonalDetailsForm } from "../PersonalDetailsForm";
-import { EmploymentDetailsForm } from "../EmploymentDetailsForm";
-import { EducationForm } from "../EducationForm";
-import { BankAccountForm } from "../BankAccountForm";
+import { PersonalDetailsForm } from "../../employee/PersonalDetailsForm";
+import { EmploymentDetailsForm } from "../../employee/EmploymentDetailsForm";
+import { EducationForm } from "../../employee/EducationForm";
+import { BankAccountForm } from "../../employee/BankAccountForm";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
 import { Experience } from "../types";
 
