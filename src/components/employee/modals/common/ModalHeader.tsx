@@ -30,14 +30,14 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
 }) => {
   return (
     <DialogHeader className={`p-6 bg-gradient-to-r from-[${gradientFrom}] to-[${gradientTo}]`}>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center">
         <div className="flex items-center gap-3">
           <Icon className="w-6 h-6 text-white" />
           <h2 className="text-2xl font-semibold text-white tracking-tight">
             {title}
           </h2>
         </div>
-        <div className="flex items-center gap-2 -ml-10">
+        <div className="flex items-center gap-2 ml-auto mr-10">
           {!isEditing ? (
             <Button
               variant="ghost"
