@@ -9,6 +9,7 @@ export const useEmployeeForm = () => {
   const [activeTab, setActiveTab] = useState("personal");
   const [isFormCompleted, setIsFormCompleted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [employeeUUID, setEmployeeUUID] = useState<string>("");
   const [formProgress, setFormProgress] = useState<FormProgress>({
     personal: false,
     employment: false,
@@ -43,7 +44,12 @@ export const useEmployeeForm = () => {
 
   const handleTabChange = (tabId: string) => {
     const currentTabProgress = formProgress[activeTab as keyof FormProgress];
-    console.log('Tab change requested:', { from: activeTab, to: tabId, currentProgress: currentTabProgress });
+    console.log('Tab change requested:', { 
+      from: activeTab, 
+      to: tabId, 
+      currentProgress: currentTabProgress,
+      employeeUUID 
+    });
 
     // For education tab, check both education and experience progress
     if (activeTab === "education") {
@@ -61,7 +67,12 @@ export const useEmployeeForm = () => {
   };
 
   const handleSaveAndNext = async () => {
-    console.log('Save and Next clicked:', { activeTab, formProgress, formData });
+    console.log('Save and Next clicked:', { 
+      activeTab, 
+      formProgress, 
+      formData,
+      employeeUUID 
+    });
 
     const tabOrder = ["personal", "education", "bank"];
     const currentIndex = tabOrder.indexOf(activeTab);
@@ -81,17 +92,30 @@ export const useEmployeeForm = () => {
       if (isRequiredCompleted) {
         setIsSubmitting(true);
         try {
-          await employeeService.createEmployee({
-            personal: {
-              ...formData.personal!,
-              emergencyContacts: formData.personal?.emergencyContacts || [],
-              familyDetails: formData.personal?.familyDetails || []
-            },
-            employment: formData.employment!,
-            education: formData.education,
-            experience: formData.experience || [],
-            bank: formData.bank!,
-          });
+          if (!employeeUUID) {
+            // First time saving - create employee
+            const employee = await employeeService.createEmployee({
+              personal: {
+                ...formData.personal!,
+                emergencyContacts: formData.personal?.emergencyContacts || [],
+                familyDetails: formData.personal?.familyDetails || []
+              },
+              employment: formData.employment!,
+              education: formData.education,
+              experience: formData.experience || [],
+              bank: formData.bank!,
+            });
+            setEmployeeUUID(employee.id);
+          } else {
+            // Updating existing employee
+            await employeeService.updateEmployee(employeeUUID, {
+              personal: formData.personal,
+              employment: formData.employment,
+              education: formData.education,
+              experience: formData.experience,
+              bank: formData.bank,
+            });
+          }
           
           toast.success("Employee information saved successfully!");
           setIsFormCompleted(true);
@@ -112,6 +136,7 @@ export const useEmployeeForm = () => {
     activeTab,
     formProgress,
     formData,
+    employeeUUID,
     isFormCompleted,
     isSubmitting,
     updateSectionProgress,

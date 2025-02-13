@@ -14,6 +14,7 @@ const Index = () => {
     activeTab,
     formProgress,
     formData,
+    employeeUUID,
     isFormCompleted,
     updateSectionProgress,
     updateFormData,
@@ -35,10 +36,6 @@ const Index = () => {
   };
 
   const handleFormClose = () => {
-    setShowForm(false);
-  };
-
-  const handleFormComplete = () => {
     setShowForm(false);
   };
 
@@ -69,6 +66,7 @@ const Index = () => {
             <FormContent
               activeTab={activeTab}
               formData={formData}
+              employeeUUID={employeeUUID}
               updateSectionProgress={updateSectionProgress}
               updateFormData={updateFormData}
               handleSaveAndNext={handleSaveAndNext}

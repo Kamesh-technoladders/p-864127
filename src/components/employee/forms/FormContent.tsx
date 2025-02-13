@@ -10,6 +10,7 @@ import { Experience } from "../types";
 interface FormContentProps {
   activeTab: string;
   formData: FormData;
+  employeeUUID: string;
   updateSectionProgress: (section: keyof FormProgress, completed: boolean) => void;
   updateFormData: (section: keyof FormData, data: any) => void;
   handleSaveAndNext: () => void;
@@ -18,11 +19,12 @@ interface FormContentProps {
 export const FormContent: React.FC<FormContentProps> = ({
   activeTab,
   formData,
+  employeeUUID,
   updateSectionProgress,
   updateFormData,
   handleSaveAndNext,
 }) => {
-  const employeeId = formData.personal?.employeeId || "";
+  const displayId = formData.personal?.employeeId || "";
 
   switch (activeTab) {
     case "personal":
@@ -55,7 +57,7 @@ export const FormContent: React.FC<FormContentProps> = ({
               }
             }}
             initialData={formData.education}
-            employeeId={employeeId}
+            employeeId={employeeUUID}
           />
           
           <ExperienceForm
@@ -69,7 +71,7 @@ export const FormContent: React.FC<FormContentProps> = ({
               }
             }}
             experiences={formData.experience}
-            employeeId={employeeId}
+            employeeId={employeeUUID}
           />
         </div>
       );
@@ -86,7 +88,7 @@ export const FormContent: React.FC<FormContentProps> = ({
             }
           }}
           initialData={formData.bank}
-          employeeId={employeeId}
+          employeeId={employeeUUID}
         />
       );
     default:
