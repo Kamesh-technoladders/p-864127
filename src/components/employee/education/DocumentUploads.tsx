@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { UploadField } from "../UploadField";
@@ -40,28 +41,38 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const docs = await documentService.getEmployeeDocuments(employeeId, 'education');
-        const docMap = docs.reduce((acc, doc) => {
-          acc[doc.document_type] = {
-            id: doc.id,
-            name: doc.file_name,
-            type: doc.mime_type,
-            url: doc.file_path
-          };
-          return acc;
-        }, {} as Record<string, UploadedFile>);
-        setDocuments(docMap);
+        // Only fetch documents if we have a valid employeeId
+        if (employeeId && employeeId.trim()) {
+          const docs = await documentService.getEmployeeDocuments(employeeId, 'education');
+          const docMap = docs.reduce((acc, doc) => {
+            acc[doc.document_type] = {
+              id: doc.id,
+              name: doc.file_name,
+              type: doc.mime_type,
+              url: doc.file_path
+            };
+            return acc;
+          }, {} as Record<string, UploadedFile>);
+          setDocuments(docMap);
+        }
       } catch (error) {
         console.error("Error fetching documents:", error);
       }
     };
 
-    if (employeeId) {
-      fetchDocuments();
-    }
+    fetchDocuments();
   }, [employeeId]);
 
   const handleFileUpload = (fieldName: "ssc" | "hsc" | "degree") => async (file: File) => {
+    if (!employeeId || !employeeId.trim()) {
+      toast({
+        title: "Error",
+        description: "Employee ID is required to upload documents",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const validation = validateDocument(file);
     
     if (!validation.isValid) {
@@ -78,6 +89,7 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
       await uploadDocument(file, 'education', employeeId, documentType);
       setValue(fieldName, file);
       
+      // Refresh documents after upload
       const docs = await documentService.getEmployeeDocuments(employeeId, 'education');
       const docMap = docs.reduce((acc, doc) => {
         acc[doc.document_type] = {

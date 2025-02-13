@@ -21,6 +21,10 @@ class DocumentService {
     category: string,
     documentType: string
   ): Promise<EmployeeDocument> {
+    if (!employeeId || !employeeId.trim()) {
+      throw new Error('Employee ID is required');
+    }
+
     try {
       const fileName = `${employeeId}/${category}/${documentType}/${crypto.randomUUID()}-${file.name}`;
       
@@ -59,6 +63,10 @@ class DocumentService {
   }
 
   async downloadDocument(documentId: string): Promise<string> {
+    if (!documentId || !documentId.trim()) {
+      throw new Error('Document ID is required');
+    }
+
     const { data: document, error: fetchError } = await supabase
       .from('employee_documents')
       .select('*')
@@ -78,6 +86,10 @@ class DocumentService {
   }
 
   async getEmployeeDocuments(employeeId: string, category?: string): Promise<EmployeeDocument[]> {
+    if (!employeeId || !employeeId.trim()) {
+      return [];
+    }
+
     let query = supabase
       .from('employee_documents')
       .select('*')
