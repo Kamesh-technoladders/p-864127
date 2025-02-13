@@ -45,13 +45,14 @@ export interface PersonalDetailsData {
   maritalStatus: string;
   presentAddress: Address;
   permanentAddress: Address;
-  emergencyContacts?: EmergencyContact[];  // Made optional with ?
-  familyDetails?: FamilyMember[];          // Made optional with ?
+  emergencyContacts?: EmergencyContact[];
+  familyDetails?: FamilyMember[];
 }
 
 export interface FormComponentProps<T = any> {
   onComplete: (completed: boolean, data?: T) => void;
   initialData?: T | null;
+  isSubmitting?: boolean;
 }
 
 export interface EducationData {
