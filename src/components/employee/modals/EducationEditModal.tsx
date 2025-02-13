@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { GraduationCap, X } from "lucide-react";
 import { UploadField } from "../UploadField";
 import { toast } from "sonner";
 import { educationService } from "@/services/employee/education.service";
@@ -58,12 +59,27 @@ export const EducationEditModal: React.FC<EducationEditModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Edit Education Details</DialogTitle>
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white border border-gray-200 shadow-2xl max-h-[90vh] flex flex-col">
+        <DialogHeader className="p-3 bg-gradient-to-r from-[#30409F] to-[#4B5FBD] sticky top-0 z-10">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-1.5">
+              <GraduationCap className="w-3.5 h-3.5 text-white" />
+              <DialogTitle className="text-sm font-semibold text-white tracking-tight">
+                Edit Education Details
+              </DialogTitle>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6 text-white hover:bg-white/20"
+              onClick={onClose}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="overflow-y-auto flex-1 p-3">
           <div className="space-y-4">
             <UploadField
               label="SSC Certificate"
@@ -91,8 +107,8 @@ export const EducationEditModal: React.FC<EducationEditModalProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 mt-6">
-          <Button variant="outline" onClick={onClose}>
+        <div className="flex justify-end gap-3 p-3 border-t">
+          <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting}>

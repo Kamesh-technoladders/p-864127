@@ -4,10 +4,11 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Briefcase, Calendar, ChevronRight } from "lucide-react";
+import { Briefcase, Calendar, ChevronRight, X } from "lucide-react";
 import { TimelineEvent } from "./components/TimelineEvent";
 import { EmploymentForm } from "./components/EmploymentForm";
 import { EmploymentModalActions } from "./components/EmploymentModalActions";
@@ -68,9 +69,9 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-1.5">
               <Briefcase className="w-3.5 h-3.5 text-white" />
-              <h2 className="text-sm font-semibold text-white tracking-tight">
-                Employment Details
-              </h2>
+              <DialogTitle className="text-sm font-semibold text-white tracking-tight">
+                Edit Employment Details
+              </DialogTitle>
             </div>
             <div className="flex items-center gap-1">
               <EmploymentModalActions
