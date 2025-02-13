@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -8,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
-import { Clock, AlertCircle, Coffee, UtensilsCrossed, Timer, Briefcase } from "lucide-react";
+import { Clock, AlertCircle, Coffee, UtensilsCrossed, Timer, Briefcase, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
@@ -119,27 +118,39 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px]">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-2">
-              <Clock className="w-5 h-5" />
-              Work Time History
-            </DialogTitle>
-            {Object.values(groupedEntries).some(entries => 
-              getDailySummary(entries).shouldShowOvertime
-            ) && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Show Overtime</span>
-                <Switch
-                  checked={showOvertime}
-                  onCheckedChange={setShowOvertime}
-                />
-              </div>
-            )}
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white border border-gray-200 shadow-2xl max-h-[90vh] flex flex-col">
+        <DialogHeader className="p-3 bg-gradient-to-r from-[#30409F] to-[#4B5FBD] sticky top-0 z-10">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-white" />
+              <DialogTitle className="text-sm font-semibold text-white tracking-tight">
+                Work Time History
+              </DialogTitle>
+            </div>
+            <div className="flex items-center gap-3">
+              {Object.values(groupedEntries).some(entries => 
+                getDailySummary(entries).shouldShowOvertime
+              ) && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-white">Show Overtime</span>
+                  <Switch
+                    checked={showOvertime}
+                    onCheckedChange={setShowOvertime}
+                  />
+                </div>
+              )}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-6 w-6 text-white hover:bg-white/20"
+                onClick={onClose}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </div>
         </DialogHeader>
-        <ScrollArea className="h-[600px] pr-4">
+        <ScrollArea className="flex-1">
           {Object.entries(groupedEntries).map(([date, dayEntries]) => {
             const { 
               totalWorkMinutes, 

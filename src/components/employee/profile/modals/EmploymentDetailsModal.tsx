@@ -81,8 +81,8 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white/90 backdrop-blur-lg border border-white/20 shadow-2xl max-h-[90vh] flex flex-col">
-        <DialogHeader className="p-3 bg-gradient-to-r from-[#ee9ca7] to-[#ffdde1] sticky top-0 z-10">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white border border-gray-200 shadow-2xl max-h-[90vh] flex flex-col">
+        <DialogHeader className="p-3 bg-gradient-to-r from-[#30409F] to-[#4B5FBD] sticky top-0 z-10">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-1.5">
               <Briefcase className="w-3.5 h-3.5 text-white" />
@@ -92,15 +92,25 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
             </div>
             <div className="flex items-center gap-1">
               {!isEditing ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsEditing(true)}
-                  className="h-6 px-2 hover:bg-white/20 text-white"
-                >
-                  <Edit2 className="w-3 h-3 mr-1" />
-                  Edit
-                </Button>
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditing(true)}
+                    className="h-6 px-2 hover:bg-white/20 text-white"
+                  >
+                    <Edit2 className="w-3 h-3 mr-1" />
+                    Edit
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-6 w-6 text-white hover:bg-white/20"
+                    onClick={onClose}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </>
               ) : (
                 <>
                   <Button

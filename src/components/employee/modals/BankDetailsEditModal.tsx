@@ -10,7 +10,8 @@ import { BankAccountForm } from "../BankAccountForm";
 import { BankDetails } from "@/services/types/employee.types";
 import { toast } from "sonner";
 import { bankDetailsService } from "@/services/employee/bankDetails.service";
-import { Banknote } from "lucide-react";
+import { Banknote, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface BankDetailsEditModalProps {
   isOpen: boolean;
@@ -50,11 +51,21 @@ export const BankDetailsEditModal: React.FC<BankDetailsEditModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white/90 backdrop-blur-lg border border-white/20 shadow-2xl max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white border border-gray-200 shadow-2xl max-h-[90vh] flex flex-col">
         <DialogHeader className="p-3 bg-gradient-to-r from-[#30409F] to-[#4B5FBD] sticky top-0 z-10">
-          <div className="flex items-center gap-1.5">
-            <Banknote className="w-3.5 h-3.5 text-white" />
-            <DialogTitle className="text-sm font-semibold text-white tracking-tight">Edit Bank Details</DialogTitle>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-1.5">
+              <Banknote className="w-3.5 h-3.5 text-white" />
+              <DialogTitle className="text-sm font-semibold text-white tracking-tight">Edit Bank Details</DialogTitle>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6 text-white hover:bg-white/20"
+              onClick={onClose}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
           </div>
         </DialogHeader>
         <div className="overflow-y-auto flex-1 p-3">
