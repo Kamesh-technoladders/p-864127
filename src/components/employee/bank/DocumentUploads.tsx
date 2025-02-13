@@ -27,12 +27,11 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        // Only fetch documents if we have a valid employeeId
         if (employeeId && employeeId.trim()) {
           const docs = await documentService.getEmployeeDocuments(employeeId, 'bank');
           const docMap = docs.reduce((acc, doc) => {
-            // Map the document types consistently
-            const key = doc.document_type === 'cancelled_cheque' ? 'cancelled_cheque' : 'passbook';
+            // Map the document types to match the form field names
+            const key = doc.document_type === 'cancelled_cheque' ? 'cancelledCheque' : 'passbookCopy';
             acc[key] = {
               id: doc.id,
               name: doc.file_name,
@@ -80,7 +79,7 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
     }
 
     try {
-      // Map the field names to document types consistently
+      // Map form field names to document types
       const documentType = fieldName === 'cancelledCheque' ? 'cancelled_cheque' : 'passbook';
       await uploadDocument(file, 'bank', employeeId, documentType);
       setValue(fieldName, file);
@@ -88,7 +87,8 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
       // Refresh documents after upload
       const docs = await documentService.getEmployeeDocuments(employeeId, 'bank');
       const docMap = docs.reduce((acc, doc) => {
-        const key = doc.document_type === 'cancelled_cheque' ? 'cancelled_cheque' : 'passbook';
+        // Use the same mapping as in fetchDocuments
+        const key = doc.document_type === 'cancelled_cheque' ? 'cancelledCheque' : 'passbookCopy';
         acc[key] = {
           id: doc.id,
           name: doc.file_name,
@@ -122,8 +122,8 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
           onUpload={handleFileUpload("cancelledCheque")}
           value={formValues.cancelledCheque?.name}
           showProgress
-          currentFile={documents['cancelled_cheque']}
-          documentId={documents['cancelled_cheque']?.id}
+          currentFile={documents['cancelledCheque']}
+          documentId={documents['cancelledCheque']?.id}
         />
         
         <UploadField
@@ -132,8 +132,8 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
           onUpload={handleFileUpload("passbookCopy")}
           value={formValues.passbookCopy?.name}
           showProgress
-          currentFile={documents['passbook']}
-          documentId={documents['passbook']?.id}
+          currentFile={documents['passbookCopy']}
+          documentId={documents['passbookCopy']?.id}
         />
       </div>
     </div>
