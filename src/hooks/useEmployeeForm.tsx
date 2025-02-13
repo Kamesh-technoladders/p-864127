@@ -82,7 +82,11 @@ export const useEmployeeForm = () => {
         try {
           console.log('Submitting form data:', formData);
           await employeeService.createEmployee({
-            personal: formData.personal!,
+            personal: {
+              ...formData.personal!,
+              emergencyContacts: formData.personal?.emergencyContacts || [],
+              familyDetails: formData.personal?.familyDetails || []
+            },
             employment: formData.employment!,
             education: formData.education,
             experience: formData.experience || [],

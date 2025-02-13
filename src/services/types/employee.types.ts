@@ -1,4 +1,3 @@
-
 export interface Address {
   addressLine1: string;
   country: string;
@@ -32,8 +31,8 @@ export interface PersonalInfo {
   maritalStatus: string;
   presentAddress: Address;
   permanentAddress: Address;
-  emergencyContacts: EmergencyContact[];
-  familyDetails: FamilyDetail[];
+  emergencyContacts?: EmergencyContact[];
+  familyDetails?: FamilyDetail[];
 }
 
 export interface EmploymentInfo {
