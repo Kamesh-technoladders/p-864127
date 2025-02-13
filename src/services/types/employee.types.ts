@@ -1,3 +1,4 @@
+
 export interface Address {
   addressLine1: string;
   country: string;
@@ -39,6 +40,8 @@ export interface Education {
   ssc?: File;
   hsc?: File;
   degree?: File;
+  institute?: string;
+  yearCompleted?: string;
 }
 
 export interface Experience {
@@ -126,3 +129,4 @@ export interface EmployeeBasicInfo {
   bloodGroup: string;
   maritalStatus: string;
 }
+

@@ -3,11 +3,42 @@ import { supabase } from "@/integrations/supabase/client";
 import { Education } from "../types/employee.types";
 
 export const educationService = {
+  async fetchEducation(employeeId: string) {
+    const { data, error } = await supabase
+      .from('employee_education')
+      .select('*')
+      .eq('employee_id', employeeId);
+
+    if (error) throw error;
+    return data;
+  },
+
   async createEducation(employeeId: string, education: Education) {
     const educationData = [
-      { employee_id: employeeId, type: 'ssc', document_url: null },
-      { employee_id: employeeId, type: 'hsc', document_url: null },
-      { employee_id: employeeId, type: 'degree', document_url: null }
+      { 
+        employee_id: employeeId, 
+        type: 'ssc', 
+        document_url: null,
+        document_type: 'certificate',
+        institute: education.institute,
+        year_completed: education.yearCompleted
+      },
+      { 
+        employee_id: employeeId, 
+        type: 'hsc', 
+        document_url: null,
+        document_type: 'certificate',
+        institute: education.institute,
+        year_completed: education.yearCompleted
+      },
+      { 
+        employee_id: employeeId, 
+        type: 'degree', 
+        document_url: null,
+        document_type: 'certificate',
+        institute: education.institute,
+        year_completed: education.yearCompleted
+      }
     ];
 
     const { error } = await supabase
@@ -18,84 +49,60 @@ export const educationService = {
   },
 
   async updateEducation(employeeId: string, education: Partial<Education>) {
-    // Update each document type if provided
+    const uploadDocument = async (file: File, type: string) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'education');
+      formData.append('employeeId', employeeId);
+      
+      const response = await fetch('/api/upload-document', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to upload ${type} document`);
+      }
+      
+      const { url } = await response.json();
+      
+      const { error } = await supabase
+        .from('employee_education')
+        .update({ 
+          document_url: url,
+          institute: education.institute,
+          year_completed: education.yearCompleted
+        })
+        .eq('employee_id', employeeId)
+        .eq('type', type);
+
+      if (error) throw error;
+    };
+
     const promises = [];
 
     if (education.ssc) {
-      const formData = new FormData();
-      formData.append('file', education.ssc);
-      formData.append('type', 'education');
-      formData.append('employeeId', employeeId);
-      
-      const response = await fetch('/api/upload-document', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to upload SSC document');
-      }
-      
-      const { url } = await response.json();
-      
-      promises.push(
-        supabase
-          .from('employee_education')
-          .update({ document_url: url })
-          .eq('employee_id', employeeId)
-          .eq('type', 'ssc')
-      );
+      promises.push(uploadDocument(education.ssc, 'ssc'));
     }
 
     if (education.hsc) {
-      const formData = new FormData();
-      formData.append('file', education.hsc);
-      formData.append('type', 'education');
-      formData.append('employeeId', employeeId);
-      
-      const response = await fetch('/api/upload-document', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to upload HSC document');
-      }
-      
-      const { url } = await response.json();
-      
-      promises.push(
-        supabase
-          .from('employee_education')
-          .update({ document_url: url })
-          .eq('employee_id', employeeId)
-          .eq('type', 'hsc')
-      );
+      promises.push(uploadDocument(education.hsc, 'hsc'));
     }
 
     if (education.degree) {
-      const formData = new FormData();
-      formData.append('file', education.degree);
-      formData.append('type', 'education');
-      formData.append('employeeId', employeeId);
-      
-      const response = await fetch('/api/upload-document', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to upload degree document');
-      }
-      
-      const { url } = await response.json();
-      
+      promises.push(uploadDocument(education.degree, 'degree'));
+    }
+
+    // If only institute or year completed is updated without new documents
+    if (!education.ssc && !education.hsc && !education.degree && (education.institute || education.yearCompleted)) {
       promises.push(
         supabase
           .from('employee_education')
-          .update({ document_url: url })
+          .update({
+            institute: education.institute,
+            year_completed: education.yearCompleted
+          })
           .eq('employee_id', employeeId)
-          .eq('type', 'degree')
       );
     }
 
