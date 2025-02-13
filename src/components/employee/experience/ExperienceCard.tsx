@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { format, differenceInYears, differenceInMonths } from "date-fns";
+import { format, differenceInMonths } from "date-fns";
 import { FileText, Pencil, Trash2, Eye, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Experience } from "@/services/types/employee.types";
@@ -36,15 +36,8 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
   const calculateExperience = (startDate: string, endDate: string | null) => {
     const start = new Date(startDate);
     const end = endDate ? new Date(endDate) : new Date();
-    const years = differenceInYears(end, start);
-    const months = differenceInMonths(end, start) % 12;
-    
-    if (years === 0) {
-      return `${months} month${months !== 1 ? 's' : ''}`;
-    } else if (months === 0) {
-      return `${years} year${years !== 1 ? 's' : ''}`;
-    }
-    return `${years} year${years !== 1 ? 's' : ''} ${months} month${months !== 1 ? 's' : ''}`;
+    const years = differenceInMonths(end, start) / 12;
+    return `${years.toFixed(1)} years`;
   };
 
   const handleDownload = async (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>) => {
