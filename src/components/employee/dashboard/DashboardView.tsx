@@ -38,6 +38,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) =
     });
   }, [employees, searchValue, selectedStatus]);
 
+  const employeeStats = useMemo(() => {
+    if (!employees) return { total: 0, active: 0, inactive: 0, onLeave: 0 };
+
+    const total = employees.length;
+    const active = employees.filter(e => !e.employment_status || e.employment_status === 'active').length;
+    const inactive = employees.filter(e => e.employment_status === 'inactive').length;
+    const onLeave = employees.filter(e => e.employment_status === 'on_leave').length;
+
+    return { total, active, inactive, onLeave };
+  }, [employees]);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -47,7 +58,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) =
           Add Employee
         </Button>
       </div>
-      <ProgressStats employeeCount={employees?.length || 0} />
+      <ProgressStats 
+        totalCount={employeeStats.total}
+        activeCount={employeeStats.active}
+        inactiveCount={employeeStats.inactive}
+        onLeaveCount={employeeStats.onLeave}
+      />
       <FilterBar 
         searchValue={searchValue}
         onSearchChange={setSearchValue}
