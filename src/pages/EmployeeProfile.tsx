@@ -16,12 +16,14 @@ import { EmploymentInfoSection } from "@/components/employee/profile/sections/Em
 import { EducationSection } from "@/components/employee/profile/sections/EducationSection";
 import { BankInfoSection } from "@/components/employee/profile/sections/BankInfoSection";
 import { MetricsSection } from "@/components/employee/profile/sections/MetricsSection";
+import { PersonalDetailsEditModal } from "@/components/employee/modals/PersonalDetailsEditModal";
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const { isLoading, employeeData, error, fetchEmployeeData, updateEmployee } = useEmployeeData(id);
   const [isEmploymentModalOpen, setIsEmploymentModalOpen] = useState(false);
+  const [isPersonalModalOpen, setIsPersonalModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -32,6 +34,8 @@ const EmployeeProfile = () => {
   const handleEdit = (section: string) => {
     if (section === "employment") {
       setIsEmploymentModalOpen(true);
+    } else if (section === "personal") {
+      setIsPersonalModalOpen(true);
     } else {
       toast.info(`Editing ${section} details`);
     }
@@ -43,6 +47,18 @@ const EmployeeProfile = () => {
       await fetchEmployeeData();
     } catch (error) {
       throw error;
+    }
+  };
+
+  const handleUpdatePersonal = async (data: any) => {
+    try {
+      await updateEmployee("personal", data);
+      await fetchEmployeeData();
+      setIsPersonalModalOpen(false);
+      toast.success("Personal details updated successfully");
+    } catch (error) {
+      console.error("Error updating personal details:", error);
+      toast.error("Failed to update personal details");
     }
   };
 
@@ -68,6 +84,33 @@ const EmployeeProfile = () => {
   if (error || !employeeData) {
     return <ErrorState message={error || "Employee Not Found"} onReturn={() => navigate("/")} />;
   }
+
+  const personalData = {
+    employeeId: employeeData.employee_id,
+    firstName: employeeData.first_name,
+    lastName: employeeData.last_name,
+    email: employeeData.email,
+    phone: employeeData.phone || '',
+    dateOfBirth: employeeData.date_of_birth || '',
+    gender: employeeData.gender || '',
+    bloodGroup: employeeData.blood_group || '',
+    maritalStatus: employeeData.marital_status || '',
+    // Adding empty address objects as placeholders - they'll be populated when we implement address editing
+    presentAddress: {
+      addressLine1: '',
+      country: '',
+      state: '',
+      city: '',
+      zipCode: ''
+    },
+    permanentAddress: {
+      addressLine1: '',
+      country: '',
+      state: '',
+      city: '',
+      zipCode: ''
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -147,6 +190,14 @@ const EmployeeProfile = () => {
             ]
           }}
           onUpdate={handleUpdateEmployment}
+        />
+
+        <PersonalDetailsEditModal
+          isOpen={isPersonalModalOpen}
+          onClose={() => setIsPersonalModalOpen(false)}
+          data={personalData}
+          employeeId={employeeData.id}
+          onUpdate={handleUpdatePersonal}
         />
       </div>
     </DashboardLayout>
