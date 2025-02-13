@@ -18,16 +18,24 @@ export const useEmployeeData = (employeeId: string | undefined) => {
 
     setIsLoading(true);
     setError(null);
+    
     try {
-      const { data, error } = await supabase
+      console.log('Fetching employee data for ID:', employeeId);
+      const { data, error: queryError } = await supabase
         .from('employees')
         .select('*')
         .eq('id', employeeId)
-        .maybeSingle();
+        .single();
 
-      if (error) throw error;
+      if (queryError) {
+        console.error('Supabase query error:', queryError);
+        throw queryError;
+      }
+
+      console.log('Received employee data:', data);
       
       if (!data) {
+        console.error('No employee data found');
         throw new Error('Employee not found');
       }
 
@@ -36,7 +44,7 @@ export const useEmployeeData = (employeeId: string | undefined) => {
       console.error("Error fetching employee data:", error);
       const errorMessage = error.message === 'Invalid UUID' 
         ? 'Invalid employee ID format. Please use a valid UUID.'
-        : error.message === 'Employee not found'
+        : error.code === 'PGRST116'
         ? 'Employee not found. Please check the ID and try again.'
         : 'Failed to fetch employee data';
       setError(errorMessage);

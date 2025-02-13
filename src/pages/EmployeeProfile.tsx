@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
 import { LoadingState, ErrorState } from "@/components/employee/profile/ProfileStates";
@@ -21,8 +21,16 @@ const EmployeeProfile = () => {
     handleEdit,
     handleUpdateEmployment,
     handleUpdatePersonal,
-    calculateYearsOfExperience
+    calculateYearsOfExperience,
+    fetchEmployeeData
   } = useEmployeeProfile(id);
+
+  useEffect(() => {
+    if (id) {
+      console.log('Fetching data for employee:', id);
+      fetchEmployeeData();
+    }
+  }, [id, fetchEmployeeData]);
 
   if (!id) {
     return <ErrorState message="No Employee Selected" onReturn={() => navigate("/")} />;
