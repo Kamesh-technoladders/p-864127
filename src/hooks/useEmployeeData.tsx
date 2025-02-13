@@ -21,9 +21,14 @@ export const useEmployeeData = (employeeId: string | undefined) => {
     
     try {
       console.log('Fetching employee data for ID:', employeeId);
-      const { data, error: queryError } = await supabase
+      const { data: employeeWithRelations, error: queryError } = await supabase
         .from('employees')
-        .select('*')
+        .select(`
+          *,
+          employee_addresses!inner (*),
+          employee_emergency_contacts (*),
+          employee_family_details (*)
+        `)
         .eq('id', employeeId)
         .single();
 
@@ -32,14 +37,38 @@ export const useEmployeeData = (employeeId: string | undefined) => {
         throw queryError;
       }
 
-      console.log('Received employee data:', data);
-      
-      if (!data) {
+      if (!employeeWithRelations) {
         console.error('No employee data found');
         throw new Error('Employee not found');
       }
 
-      setEmployeeData(data);
+      // Transform the data to match our expected format
+      const transformedData = {
+        ...employeeWithRelations,
+        presentAddress: employeeWithRelations.employee_addresses.find(
+          (addr: any) => addr.type === 'present'
+        ) || {
+          addressLine1: '',
+          country: '',
+          state: '',
+          city: '',
+          zipCode: ''
+        },
+        permanentAddress: employeeWithRelations.employee_addresses.find(
+          (addr: any) => addr.type === 'permanent'
+        ) || {
+          addressLine1: '',
+          country: '',
+          state: '',
+          city: '',
+          zipCode: ''
+        },
+        emergencyContacts: employeeWithRelations.employee_emergency_contacts || [],
+        familyDetails: employeeWithRelations.employee_family_details || []
+      };
+
+      console.log('Transformed employee data:', transformedData);
+      setEmployeeData(transformedData);
     } catch (error: any) {
       console.error("Error fetching employee data:", error);
       const errorMessage = error.message === 'Invalid UUID' 
@@ -80,12 +109,88 @@ export const useEmployeeData = (employeeId: string | undefined) => {
             emergencyContacts: data.emergencyContacts || [],
             familyDetails: data.familyDetails || []
           };
-          updateData = { personal: personalInfo };
+          
+          // Update employee basic info
+          const { error: employeeError } = await supabase
+            .from('employees')
+            .update({
+              first_name: personalInfo.firstName,
+              last_name: personalInfo.lastName,
+              email: personalInfo.email,
+              phone: personalInfo.phone,
+              date_of_birth: personalInfo.dateOfBirth,
+              gender: personalInfo.gender,
+              blood_group: personalInfo.bloodGroup,
+              marital_status: personalInfo.maritalStatus
+            })
+            .eq('id', employeeId);
+
+          if (employeeError) throw employeeError;
+
+          // Update present address
+          await supabase
+            .from('employee_addresses')
+            .upsert({
+              employee_id: employeeId,
+              type: 'present',
+              ...personalInfo.presentAddress
+            });
+
+          // Update permanent address
+          await supabase
+            .from('employee_addresses')
+            .upsert({
+              employee_id: employeeId,
+              type: 'permanent',
+              ...personalInfo.permanentAddress
+            });
+
+          // Update emergency contacts
+          if (personalInfo.emergencyContacts) {
+            // Delete existing contacts
+            await supabase
+              .from('employee_emergency_contacts')
+              .delete()
+              .eq('employee_id', employeeId);
+
+            // Insert new contacts
+            if (personalInfo.emergencyContacts.length > 0) {
+              await supabase
+                .from('employee_emergency_contacts')
+                .insert(
+                  personalInfo.emergencyContacts.map(contact => ({
+                    employee_id: employeeId,
+                    ...contact
+                  }))
+                );
+            }
+          }
+
+          // Update family details
+          if (personalInfo.familyDetails) {
+            // Delete existing family details
+            await supabase
+              .from('employee_family_details')
+              .delete()
+              .eq('employee_id', employeeId);
+
+            // Insert new family details
+            if (personalInfo.familyDetails.length > 0) {
+              await supabase
+                .from('employee_family_details')
+                .insert(
+                  personalInfo.familyDetails.map(member => ({
+                    employee_id: employeeId,
+                    ...member
+                  }))
+                );
+            }
+          }
         } else {
           updateData = { [section]: data };
+          await employeeService.updateEmployee(employeeId, updateData);
         }
 
-        await employeeService.updateEmployee(employeeId, updateData);
         await fetchEmployeeData();
         toast.success(`${section} updated successfully`);
       } catch (error) {
