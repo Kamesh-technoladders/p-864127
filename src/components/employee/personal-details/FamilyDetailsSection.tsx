@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2 } from "lucide-react";
+import { Trash2, AlertCircle } from "lucide-react";
 
 interface FamilyMember {
   relationship: string;
@@ -36,21 +36,23 @@ export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
     onFamilyMembersChange(newMembers);
   };
 
+  const isFieldEmpty = (value: string) => value.trim() === "";
+
   return (
     <div>
       <div className="text-[rgba(48,64,159,1)] font-bold">Family Details</div>
       <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
-        Add your family member details here.
+        Add at least one family member with all fields filled.
       </div>
 
       <div className="mt-6">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Relationship</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Occupation</TableHead>
-              <TableHead>Phone Number</TableHead>
+              <TableHead>Relationship<span className="text-red-500">*</span></TableHead>
+              <TableHead>Name<span className="text-red-500">*</span></TableHead>
+              <TableHead>Occupation<span className="text-red-500">*</span></TableHead>
+              <TableHead>Phone Number<span className="text-red-500">*</span></TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -58,40 +60,63 @@ export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
             {familyMembers.map((member, index) => (
               <TableRow key={index}>
                 <TableCell>
-                  <Select
-                    value={member.relationship}
-                    onValueChange={(value) => updateMember(index, "relationship", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select relationship" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="spouse">Spouse</SelectItem>
-                      <SelectItem value="child">Child</SelectItem>
-                      <SelectItem value="parent">Parent</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="relative">
+                    <Select
+                      value={member.relationship}
+                      onValueChange={(value) => updateMember(index, "relationship", value)}
+                    >
+                      <SelectTrigger className={isFieldEmpty(member.relationship) ? "border-red-300" : ""}>
+                        <SelectValue placeholder="Select relationship" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="spouse">Spouse</SelectItem>
+                        <SelectItem value="child">Child</SelectItem>
+                        <SelectItem value="parent">Parent</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {isFieldEmpty(member.relationship) && (
+                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-8 top-3" />
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <Input
-                    value={member.name}
-                    onChange={(e) => updateMember(index, "name", e.target.value)}
-                    placeholder="Enter name"
-                  />
+                  <div className="relative">
+                    <Input
+                      value={member.name}
+                      onChange={(e) => updateMember(index, "name", e.target.value)}
+                      placeholder="Enter name"
+                      className={isFieldEmpty(member.name) ? "border-red-300" : ""}
+                    />
+                    {isFieldEmpty(member.name) && (
+                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-2 top-3" />
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <Input
-                    value={member.occupation}
-                    onChange={(e) => updateMember(index, "occupation", e.target.value)}
-                    placeholder="Enter occupation"
-                  />
+                  <div className="relative">
+                    <Input
+                      value={member.occupation}
+                      onChange={(e) => updateMember(index, "occupation", e.target.value)}
+                      placeholder="Enter occupation"
+                      className={isFieldEmpty(member.occupation) ? "border-red-300" : ""}
+                    />
+                    {isFieldEmpty(member.occupation) && (
+                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-2 top-3" />
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <Input
-                    value={member.phone}
-                    onChange={(e) => updateMember(index, "phone", e.target.value)}
-                    placeholder="Enter phone number"
-                  />
+                  <div className="relative">
+                    <Input
+                      value={member.phone}
+                      onChange={(e) => updateMember(index, "phone", e.target.value)}
+                      placeholder="Enter phone number"
+                      className={isFieldEmpty(member.phone) ? "border-red-300" : ""}
+                    />
+                    {isFieldEmpty(member.phone) && (
+                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-2 top-3" />
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <Button

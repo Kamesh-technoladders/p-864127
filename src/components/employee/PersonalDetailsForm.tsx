@@ -9,6 +9,7 @@ import { FamilyDetailsSection } from "./personal-details/FamilyDetailsSection";
 import { PersonalDetailsFormProps } from "./types";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 interface EmergencyContact {
   relationship: string;
@@ -46,6 +47,23 @@ const personalDetailsSchema = z.object({
   sameAsPresent: z.boolean().optional()
 });
 
+const validateEmergencyContact = (contact: EmergencyContact) => {
+  return (
+    contact.relationship.trim() !== "" &&
+    contact.name.trim() !== "" &&
+    contact.phone.trim() !== ""
+  );
+};
+
+const validateFamilyMember = (member: FamilyMember) => {
+  return (
+    member.relationship.trim() !== "" &&
+    member.name.trim() !== "" &&
+    member.occupation.trim() !== "" &&
+    member.phone.trim() !== ""
+  );
+};
+
 export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete, initialData }) => {
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([
     { relationship: "", name: "", phone: "" }
@@ -77,29 +95,60 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
   });
 
   const validateForm = () => {
-    // Check if at least one emergency contact is filled
-    const hasValidEmergencyContact = emergencyContacts.some(
-      contact => contact.relationship && contact.name && contact.phone
-    );
+    // Validate emergency contacts
+    const hasValidEmergencyContact = emergencyContacts.some(validateEmergencyContact);
+    if (!hasValidEmergencyContact) {
+      toast.error("Please add at least one emergency contact with all fields filled");
+      return false;
+    }
 
-    // Check if at least one family member is filled
-    const hasValidFamilyMember = familyDetails.some(
-      member => member.relationship && member.name && member.occupation && member.phone
+    // Check for incomplete emergency contacts
+    const hasIncompleteEmergencyContact = emergencyContacts.some(
+      contact => 
+        (contact.relationship || contact.name || contact.phone) && 
+        !validateEmergencyContact(contact)
     );
+    if (hasIncompleteEmergencyContact) {
+      toast.error("Please complete all fields for emergency contacts or remove incomplete ones");
+      return false;
+    }
 
-    return hasValidEmergencyContact && hasValidFamilyMember;
+    // Validate family members
+    const hasValidFamilyMember = familyDetails.some(validateFamilyMember);
+    if (!hasValidFamilyMember) {
+      toast.error("Please add at least one family member with all fields filled");
+      return false;
+    }
+
+    // Check for incomplete family members
+    const hasIncompleteFamilyMember = familyDetails.some(
+      member => 
+        (member.relationship || member.name || member.occupation || member.phone) && 
+        !validateFamilyMember(member)
+    );
+    if (hasIncompleteFamilyMember) {
+      toast.error("Please complete all fields for family members or remove incomplete ones");
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = form.handleSubmit((data) => {
-    if (!validateForm()) {
+    const formIsValid = validateForm();
+    if (!formIsValid) {
       onComplete(false);
       return;
     }
 
+    // Filter out empty contacts and family members
+    const validEmergencyContacts = emergencyContacts.filter(validateEmergencyContact);
+    const validFamilyMembers = familyDetails.filter(validateFamilyMember);
+
     const formData = {
       ...data,
-      emergencyContacts,
-      familyDetails
+      emergencyContacts: validEmergencyContacts,
+      familyDetails: validFamilyMembers
     };
 
     console.log('Form submitted:', formData);

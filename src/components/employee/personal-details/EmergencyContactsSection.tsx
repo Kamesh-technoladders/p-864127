@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2 } from "lucide-react";
+import { Trash2, AlertCircle } from "lucide-react";
 
 interface EmergencyContact {
   relationship: string;
@@ -35,20 +35,22 @@ export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> =
     onContactsChange(newContacts);
   };
 
+  const isFieldEmpty = (value: string) => value.trim() === "";
+
   return (
     <div>
       <div className="text-[rgba(48,64,159,1)] font-bold">Emergency Contact</div>
       <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
-        Add emergency contact details here.
+        Add at least one emergency contact with all fields filled.
       </div>
 
       <div className="mt-6">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Relationship</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Phone Number</TableHead>
+              <TableHead>Relationship<span className="text-red-500">*</span></TableHead>
+              <TableHead>Name<span className="text-red-500">*</span></TableHead>
+              <TableHead>Phone Number<span className="text-red-500">*</span></TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -56,33 +58,50 @@ export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> =
             {contacts.map((contact, index) => (
               <TableRow key={index}>
                 <TableCell>
-                  <Select
-                    value={contact.relationship}
-                    onValueChange={(value) => updateContact(index, "relationship", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select relationship" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="spouse">Spouse</SelectItem>
-                      <SelectItem value="parent">Parent</SelectItem>
-                      <SelectItem value="sibling">Sibling</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="relative">
+                    <Select
+                      value={contact.relationship}
+                      onValueChange={(value) => updateContact(index, "relationship", value)}
+                    >
+                      <SelectTrigger className={isFieldEmpty(contact.relationship) ? "border-red-300" : ""}>
+                        <SelectValue placeholder="Select relationship" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="spouse">Spouse</SelectItem>
+                        <SelectItem value="parent">Parent</SelectItem>
+                        <SelectItem value="sibling">Sibling</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {isFieldEmpty(contact.relationship) && (
+                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-8 top-3" />
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <Input
-                    value={contact.name}
-                    onChange={(e) => updateContact(index, "name", e.target.value)}
-                    placeholder="Enter name"
-                  />
+                  <div className="relative">
+                    <Input
+                      value={contact.name}
+                      onChange={(e) => updateContact(index, "name", e.target.value)}
+                      placeholder="Enter name"
+                      className={isFieldEmpty(contact.name) ? "border-red-300" : ""}
+                    />
+                    {isFieldEmpty(contact.name) && (
+                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-2 top-3" />
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <Input
-                    value={contact.phone}
-                    onChange={(e) => updateContact(index, "phone", e.target.value)}
-                    placeholder="Enter phone number"
-                  />
+                  <div className="relative">
+                    <Input
+                      value={contact.phone}
+                      onChange={(e) => updateContact(index, "phone", e.target.value)}
+                      placeholder="Enter phone number"
+                      className={isFieldEmpty(contact.phone) ? "border-red-300" : ""}
+                    />
+                    {isFieldEmpty(contact.phone) && (
+                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-2 top-3" />
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <Button
