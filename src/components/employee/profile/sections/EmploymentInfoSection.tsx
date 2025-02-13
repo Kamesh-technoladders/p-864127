@@ -12,26 +12,34 @@ export const EmploymentInfoSection: React.FC<EmploymentInfoSectionProps> = ({
   employeeId,
   onEdit,
 }) => {
+  const InfoRow = ({ label, value }: { label: string; value: string }) => (
+    <div className="flex items-center">
+      <span className="text-gray-500 w-1/3">{label}</span>
+      <span className="flex-1 text-right">{value}</span>
+      <div className="w-10 flex justify-end"></div>
+    </div>
+  );
+
   return (
     <InfoCard 
       title="Employment Details" 
       icon={Briefcase}
       onEdit={onEdit}
     >
-      <div className="space-y-4 p-2">
+      <div className="space-y-3 p-2">
         <div className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-gray-500">Employee ID</span>
-            <span>{employeeId}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Department</span>
-            <span>Engineering</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Position</span>
-            <span>Software Engineer</span>
-          </div>
+          <InfoRow 
+            label="Employee ID"
+            value={employeeId}
+          />
+          <InfoRow 
+            label="Department"
+            value="Engineering"
+          />
+          <InfoRow 
+            label="Position"
+            value="Software Engineer"
+          />
         </div>
       </div>
     </InfoCard>
