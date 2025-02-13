@@ -22,6 +22,12 @@ interface UploadFieldProps {
   multiple?: boolean;
 }
 
+const formatFileSize = (size: number): string => {
+  if (size < 1024) return size + ' B';
+  if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB';
+  return (size / (1024 * 1024)).toFixed(1) + ' MB';
+};
+
 export const UploadField: React.FC<UploadFieldProps> = ({
   label,
   value,
@@ -70,12 +76,6 @@ export const UploadField: React.FC<UploadFieldProps> = ({
 
   const isImage = currentFile?.type.startsWith('image/');
   const fileSize = currentFile?.size ? formatFileSize(currentFile.size) : '';
-
-  const formatFileSize = (size: number): string => {
-    if (size < 1024) return size + ' B';
-    if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB';
-    return (size / (1024 * 1024)).toFixed(1) + ' MB';
-  };
 
   return (
     <div className="flex flex-col gap-2">
