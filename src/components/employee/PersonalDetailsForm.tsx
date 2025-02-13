@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { BasicInfoSection } from "./personal-details/BasicInfoSection";
@@ -25,43 +25,43 @@ interface FamilyMember {
 }
 
 const addressSchema = z.object({
-  addressLine1: z.string().min(1, "Address is required"),
-  country: z.string().min(1, "Country is required"),
-  state: z.string().min(1, "State is required"),
-  city: z.string().min(1, "City is required"),
-  zipCode: z.string().min(1, "ZIP code is required")
+  addressLine1: z.string().min(1, "Please enter address"),
+  country: z.string().min(1, "Please select country"),
+  state: z.string().min(1, "Please select state"),
+  city: z.string().min(1, "Please select city"),
+  zipCode: z.string().min(1, "Please enter ZIP code")
 });
 
 const personalDetailsSchema = z.object({
-  employeeId: z.string().min(1, "Employee ID is required"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
-  gender: z.string().min(1, "Gender is required"),
-  bloodGroup: z.string().min(1, "Blood group is required"),
-  maritalStatus: z.string().min(1, "Marital status is required"),
+  employeeId: z.string().min(1, "Please enter Employee ID"),
+  firstName: z.string().min(1, "Please enter First Name"),
+  lastName: z.string().min(1, "Please enter Last Name"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().min(10, "Please enter a valid phone number (min. 10 digits)"),
+  dateOfBirth: z.string().min(1, "Please select Date of Birth"),
+  gender: z.string().min(1, "Please select Gender"),
+  bloodGroup: z.string().min(1, "Please select Blood Group"),
+  maritalStatus: z.string().min(1, "Please select Marital Status"),
   presentAddress: addressSchema,
   permanentAddress: addressSchema,
   sameAsPresent: z.boolean().optional()
 });
 
-const validateEmergencyContact = (contact: EmergencyContact) => {
-  return (
-    contact.relationship.trim() !== "" &&
-    contact.name.trim() !== "" &&
-    contact.phone.trim() !== ""
-  );
+const validateEmergencyContact = (contact: EmergencyContact): string[] => {
+  const errors: string[] = [];
+  if (!contact.relationship.trim()) errors.push("Please select relationship");
+  if (!contact.name.trim()) errors.push("Please enter contact name");
+  if (!contact.phone.trim()) errors.push("Please enter contact phone number");
+  return errors;
 };
 
-const validateFamilyMember = (member: FamilyMember) => {
-  return (
-    member.relationship.trim() !== "" &&
-    member.name.trim() !== "" &&
-    member.occupation.trim() !== "" &&
-    member.phone.trim() !== ""
-  );
+const validateFamilyMember = (member: FamilyMember): string[] => {
+  const errors: string[] = [];
+  if (!member.relationship.trim()) errors.push("Please select relationship");
+  if (!member.name.trim()) errors.push("Please enter family member name");
+  if (!member.occupation.trim()) errors.push("Please enter occupation");
+  if (!member.phone.trim()) errors.push("Please enter phone number");
+  return errors;
 };
 
 export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete, initialData }) => {
@@ -71,6 +71,9 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
   const [familyDetails, setFamilyDetails] = useState<FamilyMember[]>([
     { relationship: "", name: "", occupation: "", phone: "" }
   ]);
+  const [showValidation, setShowValidation] = useState(false);
+  const [emergencyContactErrors, setEmergencyContactErrors] = useState<string[][]>([]);
+  const [familyDetailErrors, setFamilyDetailErrors] = useState<string[][]>([]);
 
   const form = useForm({
     defaultValues: {
@@ -91,43 +94,56 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
       },
       sameAsPresent: false
     },
-    resolver: zodResolver(personalDetailsSchema)
+    resolver: zodResolver(personalDetailsSchema),
+    mode: "onChange" // Enable real-time validation
   });
 
-  const validateForm = () => {
-    // Validate emergency contacts
-    const hasValidEmergencyContact = emergencyContacts.some(validateEmergencyContact);
-    if (!hasValidEmergencyContact) {
-      toast.error("Please add at least one emergency contact with all fields filled");
-      return false;
+  // Validate emergency contacts and family details whenever they change
+  useEffect(() => {
+    if (showValidation) {
+      const errors = emergencyContacts.map(contact => validateEmergencyContact(contact));
+      setEmergencyContactErrors(errors);
     }
+  }, [emergencyContacts, showValidation]);
 
-    // Check for incomplete emergency contacts
-    const hasIncompleteEmergencyContact = emergencyContacts.some(
-      contact => 
-        (contact.relationship || contact.name || contact.phone) && 
-        !validateEmergencyContact(contact)
-    );
-    if (hasIncompleteEmergencyContact) {
-      toast.error("Please complete all fields for emergency contacts or remove incomplete ones");
+  useEffect(() => {
+    if (showValidation) {
+      const errors = familyDetails.map(member => validateFamilyMember(member));
+      setFamilyDetailErrors(errors);
+    }
+  }, [familyDetails, showValidation]);
+
+  const validateForm = () => {
+    setShowValidation(true);
+
+    // Validate emergency contacts
+    const emergencyErrors = emergencyContacts.map(contact => validateEmergencyContact(contact));
+    setEmergencyContactErrors(emergencyErrors);
+    const hasValidEmergencyContact = emergencyContacts.some(contact => validateEmergencyContact(contact).length === 0);
+    
+    if (!hasValidEmergencyContact) {
+      toast.error("Please add at least one complete emergency contact");
       return false;
     }
 
     // Validate family members
-    const hasValidFamilyMember = familyDetails.some(validateFamilyMember);
+    const familyErrors = familyDetails.map(member => validateFamilyMember(member));
+    setFamilyDetailErrors(familyErrors);
+    const hasValidFamilyMember = familyDetails.some(member => validateFamilyMember(member).length === 0);
+    
     if (!hasValidFamilyMember) {
-      toast.error("Please add at least one family member with all fields filled");
+      toast.error("Please add at least one complete family member");
       return false;
     }
 
-    // Check for incomplete family members
-    const hasIncompleteFamilyMember = familyDetails.some(
-      member => 
-        (member.relationship || member.name || member.occupation || member.phone) && 
-        !validateFamilyMember(member)
-    );
-    if (hasIncompleteFamilyMember) {
-      toast.error("Please complete all fields for family members or remove incomplete ones");
+    const hasErrors = form.formState.errors;
+    if (Object.keys(hasErrors).length > 0) {
+      // Show specific field errors
+      Object.entries(hasErrors).forEach(([key, value]) => {
+        if (typeof value === 'object' && value?.message) {
+          toast.error(value.message as string);
+        }
+      });
       return false;
     }
 
@@ -142,8 +158,8 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
     }
 
     // Filter out empty contacts and family members
-    const validEmergencyContacts = emergencyContacts.filter(validateEmergencyContact);
-    const validFamilyMembers = familyDetails.filter(validateFamilyMember);
+    const validEmergencyContacts = emergencyContacts.filter(contact => validateEmergencyContact(contact).length === 0);
+    const validFamilyMembers = familyDetails.filter(member => validateFamilyMember(member).length === 0);
 
     const formData = {
       ...data,
@@ -159,18 +175,22 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
     <div className="flex w-[622px] max-w-full flex-col text-sm font-medium ml-[15px]">
       <Form {...form}>
         <form id="personalDetailsForm" onSubmit={handleSubmit} className="space-y-6">
-          <BasicInfoSection form={form} />
+          <BasicInfoSection form={form} showValidation={showValidation} />
           
-          <AddressSection form={form} />
+          <AddressSection form={form} showValidation={showValidation} />
 
           <EmergencyContactsSection
             contacts={emergencyContacts}
             onContactsChange={setEmergencyContacts}
+            errors={emergencyContactErrors}
+            showValidation={showValidation}
           />
 
           <FamilyDetailsSection
             familyMembers={familyDetails}
             onFamilyMembersChange={setFamilyDetails}
+            errors={familyDetailErrors}
+            showValidation={showValidation}
           />
         </form>
       </Form>

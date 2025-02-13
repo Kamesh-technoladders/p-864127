@@ -16,11 +16,15 @@ interface FamilyMember {
 interface FamilyDetailsSectionProps {
   familyMembers: FamilyMember[];
   onFamilyMembersChange: (members: FamilyMember[]) => void;
+  errors?: string[][];
+  showValidation?: boolean;
 }
 
 export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
   familyMembers,
   onFamilyMembersChange,
+  errors = [],
+  showValidation = false,
 }) => {
   const addFamilyMember = () => {
     onFamilyMembersChange([...familyMembers, { relationship: "", name: "", occupation: "", phone: "" }]);
@@ -37,6 +41,9 @@ export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
   };
 
   const isFieldEmpty = (value: string) => value.trim() === "";
+  const hasError = (index: number, field: keyof FamilyMember) => {
+    return showValidation && isFieldEmpty(familyMembers[index][field]);
+  };
 
   return (
     <div>
@@ -65,7 +72,9 @@ export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
                       value={member.relationship}
                       onValueChange={(value) => updateMember(index, "relationship", value)}
                     >
-                      <SelectTrigger className={isFieldEmpty(member.relationship) ? "border-red-300" : ""}>
+                      <SelectTrigger 
+                        className={hasError(index, "relationship") ? "border-red-500" : ""}
+                      >
                         <SelectValue placeholder="Select relationship" />
                       </SelectTrigger>
                       <SelectContent>
@@ -74,8 +83,11 @@ export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
                         <SelectItem value="parent">Parent</SelectItem>
                       </SelectContent>
                     </Select>
-                    {isFieldEmpty(member.relationship) && (
-                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-8 top-3" />
+                    {hasError(index, "relationship") && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <span className="text-xs text-red-500">Please select relationship</span>
+                      </div>
                     )}
                   </div>
                 </TableCell>
@@ -85,10 +97,13 @@ export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
                       value={member.name}
                       onChange={(e) => updateMember(index, "name", e.target.value)}
                       placeholder="Enter name"
-                      className={isFieldEmpty(member.name) ? "border-red-300" : ""}
+                      className={hasError(index, "name") ? "border-red-500" : ""}
                     />
-                    {isFieldEmpty(member.name) && (
-                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-2 top-3" />
+                    {hasError(index, "name") && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <span className="text-xs text-red-500">Please enter name</span>
+                      </div>
                     )}
                   </div>
                 </TableCell>
@@ -98,10 +113,13 @@ export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
                       value={member.occupation}
                       onChange={(e) => updateMember(index, "occupation", e.target.value)}
                       placeholder="Enter occupation"
-                      className={isFieldEmpty(member.occupation) ? "border-red-300" : ""}
+                      className={hasError(index, "occupation") ? "border-red-500" : ""}
                     />
-                    {isFieldEmpty(member.occupation) && (
-                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-2 top-3" />
+                    {hasError(index, "occupation") && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <span className="text-xs text-red-500">Please enter occupation</span>
+                      </div>
                     )}
                   </div>
                 </TableCell>
@@ -111,10 +129,13 @@ export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
                       value={member.phone}
                       onChange={(e) => updateMember(index, "phone", e.target.value)}
                       placeholder="Enter phone number"
-                      className={isFieldEmpty(member.phone) ? "border-red-300" : ""}
+                      className={hasError(index, "phone") ? "border-red-500" : ""}
                     />
-                    {isFieldEmpty(member.phone) && (
-                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-2 top-3" />
+                    {hasError(index, "phone") && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <span className="text-xs text-red-500">Please enter phone number</span>
+                      </div>
                     )}
                   </div>
                 </TableCell>

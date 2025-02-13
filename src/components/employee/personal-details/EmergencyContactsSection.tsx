@@ -15,11 +15,15 @@ interface EmergencyContact {
 interface EmergencyContactsSectionProps {
   contacts: EmergencyContact[];
   onContactsChange: (contacts: EmergencyContact[]) => void;
+  errors?: string[][];
+  showValidation?: boolean;
 }
 
 export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> = ({
   contacts,
   onContactsChange,
+  errors = [],
+  showValidation = false,
 }) => {
   const addEmergencyContact = () => {
     onContactsChange([...contacts, { relationship: "", name: "", phone: "" }]);
@@ -36,6 +40,9 @@ export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> =
   };
 
   const isFieldEmpty = (value: string) => value.trim() === "";
+  const hasError = (index: number, field: keyof EmergencyContact) => {
+    return showValidation && isFieldEmpty(contacts[index][field]);
+  };
 
   return (
     <div>
@@ -63,7 +70,9 @@ export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> =
                       value={contact.relationship}
                       onValueChange={(value) => updateContact(index, "relationship", value)}
                     >
-                      <SelectTrigger className={isFieldEmpty(contact.relationship) ? "border-red-300" : ""}>
+                      <SelectTrigger 
+                        className={hasError(index, "relationship") ? "border-red-500" : ""}
+                      >
                         <SelectValue placeholder="Select relationship" />
                       </SelectTrigger>
                       <SelectContent>
@@ -72,8 +81,11 @@ export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> =
                         <SelectItem value="sibling">Sibling</SelectItem>
                       </SelectContent>
                     </Select>
-                    {isFieldEmpty(contact.relationship) && (
-                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-8 top-3" />
+                    {hasError(index, "relationship") && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <span className="text-xs text-red-500">Please select relationship</span>
+                      </div>
                     )}
                   </div>
                 </TableCell>
@@ -83,10 +95,13 @@ export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> =
                       value={contact.name}
                       onChange={(e) => updateContact(index, "name", e.target.value)}
                       placeholder="Enter name"
-                      className={isFieldEmpty(contact.name) ? "border-red-300" : ""}
+                      className={hasError(index, "name") ? "border-red-500" : ""}
                     />
-                    {isFieldEmpty(contact.name) && (
-                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-2 top-3" />
+                    {hasError(index, "name") && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <span className="text-xs text-red-500">Please enter name</span>
+                      </div>
                     )}
                   </div>
                 </TableCell>
@@ -96,10 +111,13 @@ export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> =
                       value={contact.phone}
                       onChange={(e) => updateContact(index, "phone", e.target.value)}
                       placeholder="Enter phone number"
-                      className={isFieldEmpty(contact.phone) ? "border-red-300" : ""}
+                      className={hasError(index, "phone") ? "border-red-500" : ""}
                     />
-                    {isFieldEmpty(contact.phone) && (
-                      <AlertCircle className="h-4 w-4 text-red-500 absolute right-2 top-3" />
+                    {hasError(index, "phone") && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <span className="text-xs text-red-500">Please enter phone number</span>
+                      </div>
                     )}
                   </div>
                 </TableCell>
