@@ -1,12 +1,14 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GraduationCap, Briefcase } from "lucide-react";
 import { InfoCard } from "../InfoCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EducationView } from "../../education/EducationView";
-import { ExperienceSection } from "./ExperienceSection";
+import { ExperienceSection } from "../../sections/ExperienceSection";
 import { DocumentViewerDialog } from "../../education/DocumentViewerDialog";
 import { toast } from "sonner";
+import { EducationEditModal } from "../../modals/EducationEditModal";
+import { educationService } from "@/services/employee/education.service";
 
 interface EducationSectionProps {
   employeeId: string;
@@ -24,21 +26,40 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
   onEdit,
 }) => {
   const [viewingDocument, setViewingDocument] = useState<Document | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [educationDocuments, setEducationDocuments] = useState<Document[]>([]);
 
-  const educationDocuments = [
-    { name: "SSC Certificate", url: "", type: "SSC" },
-    { name: "HSC Certificate", url: "", type: "HSC" },
-    { name: "Degree Certificate", url: "", type: "Degree" }
-  ];
+  useEffect(() => {
+    fetchEducationDocuments();
+  }, [employeeId]);
+
+  const fetchEducationDocuments = async () => {
+    try {
+      const data = await educationService.fetchEducation(employeeId);
+      const documents = data.map((edu: any) => ({
+        name: `${edu.type.toUpperCase()} Certificate`,
+        url: edu.document_url || "",
+        type: edu.type.toUpperCase()
+      }));
+      setEducationDocuments(documents);
+    } catch (error) {
+      console.error("Error fetching education documents:", error);
+      toast.error("Failed to load education documents");
+    }
+  };
 
   const handleDocumentView = (document: Document) => {
+    if (!document.url) {
+      toast.error("Document not available");
+      return;
+    }
     setViewingDocument(document);
   };
 
   const handleDocumentDownload = async (document: Document) => {
     try {
       if (!document.url) {
-        toast.error("Document URL not available");
+        toast.error("Document not available");
         return;
       }
 
@@ -52,10 +73,16 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
       link.click();
       window.document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
+      toast.success("Document downloaded successfully");
     } catch (error) {
       console.error("Error downloading document:", error);
       toast.error("Failed to download document");
     }
+  };
+
+  const handleEditComplete = () => {
+    setIsEditModalOpen(false);
+    fetchEducationDocuments();
   };
 
   return (
@@ -75,7 +102,7 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
           <TabsContent value="education">
             <EducationView
               documents={educationDocuments}
-              onEdit={onEdit}
+              onEdit={() => setIsEditModalOpen(true)}
               onViewDocument={handleDocumentView}
               onDownloadDocument={handleDocumentDownload}
             />
@@ -89,8 +116,15 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
       <DocumentViewerDialog
         isOpen={!!viewingDocument}
         onClose={() => setViewingDocument(null)}
-        documentUrl={viewingDocument?.url}
+        documentUrl={viewingDocument?.url || ""}
         documentType={viewingDocument?.type || ""}
+      />
+
+      <EducationEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        employeeId={employeeId}
+        onUpdate={handleEditComplete}
       />
     </InfoCard>
   );
