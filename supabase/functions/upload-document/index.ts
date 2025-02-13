@@ -8,6 +8,7 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -16,9 +17,10 @@ serve(async (req) => {
     const formData = await req.formData()
     const file = formData.get('file')
     const type = formData.get('type')
-    const employeeId = formData.get('employeeId')
+    const documentType = formData.get('documentType')
+    const experienceId = formData.get('experienceId')
 
-    if (!file || !type || !employeeId) {
+    if (!file || !type || !experienceId) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
@@ -30,7 +32,10 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const fileName = `${employeeId}/${type}/${crypto.randomUUID()}-${file.name}`
+    // Create a unique file name
+    const fileName = `${experienceId}/${type}/${crypto.randomUUID()}-${file.name}`
+    
+    // Upload file to storage
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('employee-documents')
       .upload(fileName, file, {
@@ -42,40 +47,53 @@ serve(async (req) => {
       throw uploadError
     }
 
-    const { data: documentUrl } = supabase.storage
+    // Get the public URL of the uploaded file
+    const { data: { publicUrl } } = supabase.storage
       .from('employee-documents')
       .getPublicUrl(fileName)
 
-    let tableToUpdate = ''
-    switch (type) {
-      case 'education':
-        tableToUpdate = 'employee_education'
+    // Update the experience record with the document URL
+    let updateData = {}
+    switch (documentType) {
+      case 'offerLetter':
+        updateData = { offer_letter_url: publicUrl }
         break
-      case 'experience':
-        tableToUpdate = 'employee_experiences'
+      case 'separationLetter':
+        updateData = { separation_letter_url: publicUrl }
         break
-      case 'bank':
-        tableToUpdate = 'employee_bank_details'
+      case 'payslips':
+        // For payslips, we append to the existing array
+        const { data: currentExperience } = await supabase
+          .from('employee_experiences')
+          .select('payslips')
+          .eq('id', experienceId)
+          .single()
+        
+        const currentPayslips = currentExperience?.payslips || []
+        updateData = { 
+          payslips: [...currentPayslips, publicUrl]
+        }
         break
       default:
-        throw new Error('Invalid document type')
+        updateData = { document_url: publicUrl }
     }
 
     const { error: updateError } = await supabase
-      .from(tableToUpdate)
-      .update({ document_url: documentUrl.publicUrl })
-      .eq('employee_id', employeeId)
+      .from('employee_experiences')
+      .update(updateData)
+      .eq('id', experienceId)
 
     if (updateError) {
       throw updateError
     }
 
     return new Response(
-      JSON.stringify({ url: documentUrl.publicUrl }),
+      JSON.stringify({ url: publicUrl }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 
   } catch (error) {
+    console.error('Error processing request:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }

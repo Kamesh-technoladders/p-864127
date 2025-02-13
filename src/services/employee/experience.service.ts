@@ -1,7 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { Experience } from "../types/employee.types";
-import { uploadDocument } from "@/utils/uploadDocument";
 
 export const experienceService = {
   async fetchExperiences(employeeId: string) {
@@ -35,7 +34,7 @@ export const experienceService = {
     if (error) throw error;
 
     // Handle document uploads if present
-    if (experience.offerLetter || experience.separationLetter || experience.payslips.length > 0) {
+    if (experience.offerLetter || experience.separationLetter || experience.payslips?.length > 0) {
       await this.uploadExperienceDocuments(employeeId, data.id, experience);
     }
 
@@ -59,7 +58,7 @@ export const experienceService = {
     if (error) throw error;
 
     // Handle document uploads if present
-    if (experience.offerLetter || experience.separationLetter || experience.payslips.length > 0) {
+    if (experience.offerLetter || experience.separationLetter || experience.payslips?.length > 0) {
       await this.uploadExperienceDocuments(employeeId, experienceId, experience);
     }
   },
@@ -82,45 +81,49 @@ export const experienceService = {
     const uploadPromises = [];
 
     if (experience.offerLetter && experience.offerLetter instanceof File) {
+      const formData = new FormData();
+      formData.append('file', experience.offerLetter);
+      formData.append('type', 'experience');
+      formData.append('documentType', 'offerLetter');
+      formData.append('experienceId', experienceId);
+
       uploadPromises.push(
-        uploadDocument(experience.offerLetter, 'experience', employeeId)
-          .then(async (url) => {
-            const { error } = await supabase
-              .from('employee_experiences')
-              .update({ offer_letter_url: url })
-              .eq('id', experienceId);
-            if (error) throw error;
-          })
+        supabase.functions.invoke('upload-document', {
+          body: formData
+        })
       );
     }
 
     if (experience.separationLetter && experience.separationLetter instanceof File) {
+      const formData = new FormData();
+      formData.append('file', experience.separationLetter);
+      formData.append('type', 'experience');
+      formData.append('documentType', 'separationLetter');
+      formData.append('experienceId', experienceId);
+
       uploadPromises.push(
-        uploadDocument(experience.separationLetter, 'experience', employeeId)
-          .then(async (url) => {
-            const { error } = await supabase
-              .from('employee_experiences')
-              .update({ separation_letter_url: url })
-              .eq('id', experienceId);
-            if (error) throw error;
-          })
+        supabase.functions.invoke('upload-document', {
+          body: formData
+        })
       );
     }
 
-    if (experience.payslips.length > 0) {
+    if (experience.payslips?.length > 0) {
       const filePayslips = experience.payslips.filter((file): file is File => file instanceof File);
-      if (filePayslips.length > 0) {
-        const payslipUrls = await Promise.all(
-          filePayslips.map(file => uploadDocument(file, 'experience', employeeId))
-        );
+      
+      uploadPromises.push(
+        ...filePayslips.map(file => {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('type', 'experience');
+          formData.append('documentType', 'payslips');
+          formData.append('experienceId', experienceId);
 
-        uploadPromises.push(
-          supabase
-            .from('employee_experiences')
-            .update({ payslips: payslipUrls })
-            .eq('id', experienceId)
-        );
-      }
+          return supabase.functions.invoke('upload-document', {
+            body: formData
+          });
+        })
+      );
     }
 
     await Promise.all(uploadPromises);

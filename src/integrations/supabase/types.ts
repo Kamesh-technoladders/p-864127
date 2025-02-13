@@ -238,6 +238,7 @@ export type Database = {
           company: string
           created_at: string | null
           document_type: string | null
+          document_url: string | null
           employee_id: string | null
           employment_type: string | null
           end_date: string | null
@@ -255,6 +256,7 @@ export type Database = {
           company: string
           created_at?: string | null
           document_type?: string | null
+          document_url?: string | null
           employee_id?: string | null
           employment_type?: string | null
           end_date?: string | null
@@ -272,6 +274,7 @@ export type Database = {
           company?: string
           created_at?: string | null
           document_type?: string | null
+          document_url?: string | null
           employee_id?: string | null
           employment_type?: string | null
           end_date?: string | null
