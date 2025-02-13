@@ -8,18 +8,24 @@ export const ExperienceDocumentUploads: React.FC<DocumentUploadsProps> = ({
   formData,
   handleFileUpload,
 }) => {
+  const getDisplayValue = (value: File | string | undefined): string | undefined => {
+    if (!value) return undefined;
+    if (value instanceof File) return value.name;
+    return value; // If it's a string (URL), return it as is
+  };
+
   return (
     <div className="space-y-4">
       <UploadField
         label="Offer Letter"
         onUpload={handleFileUpload("offerLetter")}
-        value={formData.offerLetter?.name}
+        value={getDisplayValue(formData.offerLetter)}
       />
 
       <UploadField
         label="Separation Letter"
         onUpload={handleFileUpload("separationLetter")}
-        value={formData.separationLetter?.name}
+        value={getDisplayValue(formData.separationLetter)}
       />
 
       <UploadField

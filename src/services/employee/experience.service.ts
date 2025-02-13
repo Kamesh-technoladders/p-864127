@@ -81,7 +81,7 @@ export const experienceService = {
   ) {
     const uploadPromises = [];
 
-    if (experience.offerLetter) {
+    if (experience.offerLetter && experience.offerLetter instanceof File) {
       uploadPromises.push(
         uploadDocument(experience.offerLetter, 'experience', employeeId)
           .then(async (url) => {
@@ -94,7 +94,7 @@ export const experienceService = {
       );
     }
 
-    if (experience.separationLetter) {
+    if (experience.separationLetter && experience.separationLetter instanceof File) {
       uploadPromises.push(
         uploadDocument(experience.separationLetter, 'experience', employeeId)
           .then(async (url) => {
@@ -108,18 +108,19 @@ export const experienceService = {
     }
 
     if (experience.payslips.length > 0) {
-      const payslipUrls = await Promise.all(
-        experience.payslips.map(file => 
-          uploadDocument(file, 'experience', employeeId)
-        )
-      );
+      const filePayslips = experience.payslips.filter((file): file is File => file instanceof File);
+      if (filePayslips.length > 0) {
+        const payslipUrls = await Promise.all(
+          filePayslips.map(file => uploadDocument(file, 'experience', employeeId))
+        );
 
-      uploadPromises.push(
-        supabase
-          .from('employee_experiences')
-          .update({ payslips: payslipUrls })
-          .eq('id', experienceId)
-      );
+        uploadPromises.push(
+          supabase
+            .from('employee_experiences')
+            .update({ payslips: payslipUrls })
+            .eq('id', experienceId)
+        );
+      }
     }
 
     await Promise.all(uploadPromises);
