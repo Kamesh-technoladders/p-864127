@@ -1,12 +1,18 @@
 
 import React, { useState } from "react";
-import { CreditCard, Download } from "lucide-react";
+import { CreditCard, Download, Copy } from "lucide-react";
 import { InfoCard } from "../InfoCard";
 import { Button } from "@/components/ui/button";
 import { BankDetailsEditModal } from "../../modals/BankDetailsEditModal";
 import { bankDetailsService } from "@/services/employee/bankDetails.service";
 import { BankDetails } from "@/services/types/employee.types";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider
+} from "@/components/ui/tooltip";
 
 interface BankInfoSectionProps {
   employeeId: string;
@@ -44,6 +50,11 @@ export const BankInfoSection: React.FC<BankInfoSectionProps> = ({
     return `●●●● ${last4}`;
   };
 
+  const handleCopy = (text: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${type} copied to clipboard`);
+  };
+
   return (
     <>
       <InfoCard 
@@ -51,7 +62,7 @@ export const BankInfoSection: React.FC<BankInfoSectionProps> = ({
         icon={CreditCard}
         onEdit={() => setIsEditModalOpen(true)}
       >
-        <div className="space-y-4 p-2">
+        <div className="space-y-3 p-2">
           {isLoading ? (
             <div className="flex justify-center py-4">
               <span className="text-gray-500">Loading...</span>
@@ -65,23 +76,57 @@ export const BankInfoSection: React.FC<BankInfoSectionProps> = ({
                       <span className="text-gray-500">Bank Name</span>
                       <span>{bankDetails.bankName}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-500">Account No.</span>
-                      <span>{maskAccountNumber(bankDetails.accountNumber)}</span>
+                      <div className="flex items-center gap-2">
+                        <span>{maskAccountNumber(bankDetails.accountNumber)}</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => handleCopy(bankDetails.accountNumber, 'Account number')}
+                                className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                              >
+                                <Copy className="h-3.5 w-3.5" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Copy account number</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500">Account Type</span>
                       <span className="capitalize">{bankDetails.accountType}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-500">IFSC Code</span>
-                      <span>{bankDetails.ifscCode}</span>
+                      <div className="flex items-center gap-2">
+                        <span>{bankDetails.ifscCode}</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => handleCopy(bankDetails.ifscCode, 'IFSC code')}
+                                className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                              >
+                                <Copy className="h-3.5 w-3.5" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Copy IFSC code</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                     </div>
                   </>
                 )}
               </div>
 
-              <div className="pt-4 border-t border-gray-100">
+              <div className="pt-3 border-t border-gray-100">
                 <h4 className="text-sm font-medium mb-2">Documents</h4>
                 <div className="space-y-2">
                   <Button variant="outline" size="sm" className="w-full justify-start">

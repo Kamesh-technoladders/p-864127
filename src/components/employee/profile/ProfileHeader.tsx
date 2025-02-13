@@ -1,5 +1,13 @@
 
 import React from "react";
+import { Copy } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider
+} from "@/components/ui/tooltip";
 
 interface ProfileHeaderProps {
   employeeId: string;
@@ -15,6 +23,11 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   email,
 }) => {
   const fullName = `${firstName} ${lastName}`;
+
+  const handleCopy = (text: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${type} copied to clipboard`);
+  };
 
   return (
     <div className="relative w-full h-[180px] rounded-xl overflow-hidden mb-6 backdrop-blur-sm">
@@ -32,7 +45,24 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           </div>
           <div className="mb-2 bg-black/20 px-3 py-1.5 rounded-lg backdrop-blur-sm">
             <h1 className="text-lg font-bold text-white">{fullName}</h1>
-            <p className="text-sm text-white/80">{email}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-white/80">{email}</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => handleCopy(email, 'Email')}
+                      className="p-1 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Copy email</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
         </div>
       </div>
