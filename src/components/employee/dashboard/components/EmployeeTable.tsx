@@ -27,6 +27,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   const navigate = useNavigate();
 
   const handleNameClick = (employeeId: string) => {
+    console.log('Navigating to employee profile:', employeeId);
     navigate(`/employee/${employeeId}`);
   };
 
@@ -72,7 +73,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
                 </TableCell>
                 <TableCell>
                   <div 
-                    className="flex items-center gap-3 cursor-pointer"
+                    className="flex items-center gap-3 cursor-pointer hover:text-brand-primary transition-colors"
                     onClick={() => handleNameClick(employee.id)}
                   >
                     <Avatar className="h-8 w-8">

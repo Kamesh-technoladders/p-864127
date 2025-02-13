@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 import { employeeService } from "@/services/employee/employee.service";
 import { toast } from "sonner";
 import { EmployeeData, PersonalInfo } from "@/services/types/employee.types";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useEmployeeData = (employeeId: string | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,12 +19,25 @@ export const useEmployeeData = (employeeId: string | undefined) => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await employeeService.getEmployee(employeeId);
+      const { data, error } = await supabase
+        .from('employees')
+        .select('*')
+        .eq('id', employeeId)
+        .maybeSingle();
+
+      if (error) throw error;
+      
+      if (!data) {
+        throw new Error('Employee not found');
+      }
+
       setEmployeeData(data);
     } catch (error: any) {
       console.error("Error fetching employee data:", error);
-      const errorMessage = error.message === 'Invalid employee ID format' 
+      const errorMessage = error.message === 'Invalid UUID' 
         ? 'Invalid employee ID format. Please use a valid UUID.'
+        : error.message === 'Employee not found'
+        ? 'Employee not found. Please check the ID and try again.'
         : 'Failed to fetch employee data';
       setError(errorMessage);
       toast.error(errorMessage);
