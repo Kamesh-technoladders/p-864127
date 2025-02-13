@@ -40,8 +40,8 @@ export const StatsBar: React.FC<StatsBarProps> = ({
           <div className="flex items-center gap-3">
             {icon}
             <div>
-              <div className="text-sm text-gray-500">{title}</div>
-              <div className="text-xl font-bold">{value}</div>
+              <div className="text-xs text-gray-500">{title}</div>
+              <div className="text-sm font-medium">{value}</div>
             </div>
           </div>
         </Card>
