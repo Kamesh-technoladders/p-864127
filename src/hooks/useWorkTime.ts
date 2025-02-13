@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -18,14 +17,6 @@ export const useWorkTime = (employeeId: string) => {
     setIsLoading(true);
     try {
       const date = new Date();
-      const hours = date.getHours();
-      
-      // Check office hours (10 AM to 6 PM)
-      if (hours < 10 || hours >= 18) {
-        toast.error('Work can only be started between 10 AM and 6 PM');
-        return;
-      }
-
       const newSession = {
         employee_id: employeeId,
         start_time: date.toISOString(),
@@ -41,7 +32,9 @@ export const useWorkTime = (employeeId: string) => {
 
       if (error) {
         console.error('Database error when starting timer:', error);
-        throw error;
+        const errorBody = JSON.parse(error.message);
+        toast.error(errorBody.message || 'Failed to start timer');
+        return;
       }
 
       if (data) {
@@ -61,7 +54,7 @@ export const useWorkTime = (employeeId: string) => {
         });
         toast.success('Timer started successfully');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error starting timer:', error);
       toast.error('Failed to start timer');
     } finally {
