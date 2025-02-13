@@ -36,7 +36,8 @@ export const useEmployeeData = (employeeId: string | undefined) => {
         throw new Error('Employee not found');
       }
 
-      const employeeDetails = employeeWithRelations as EmployeeDetailsResponse;
+      // First cast to unknown, then to our expected type for type safety
+      const employeeDetails = (employeeWithRelations as unknown) as EmployeeDetailsResponse;
 
       // Transform the data to match our expected format
       const transformedData = {
