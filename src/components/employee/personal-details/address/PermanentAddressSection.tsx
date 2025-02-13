@@ -7,9 +7,10 @@ import { AddressFields } from "./AddressFields";
 
 interface PermanentAddressSectionProps {
   form: UseFormReturn<any>;
+  showValidation?: boolean;
 }
 
-export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = ({ form }) => {
+export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = ({ form, showValidation }) => {
   const handleSameAsPresent = (checked: boolean) => {
     if (checked) {
       const presentAddress = form.getValues("presentAddress");
@@ -52,6 +53,7 @@ export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = (
         form={form} 
         prefix="permanentAddress" 
         disabled={form.watch("sameAsPresent")}
+        showValidation={showValidation}
       />
     </div>
   );
