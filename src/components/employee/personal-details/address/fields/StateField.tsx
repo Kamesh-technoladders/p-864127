@@ -10,9 +10,16 @@ interface StateFieldProps {
   prefix: string;
   disabled?: boolean;
   countryCode?: string;
+  onStateChange?: (stateCode: string) => void;
 }
 
-export const StateField: React.FC<StateFieldProps> = ({ form, prefix, disabled, countryCode }) => {
+export const StateField: React.FC<StateFieldProps> = ({ 
+  form, 
+  prefix, 
+  disabled, 
+  countryCode,
+  onStateChange 
+}) => {
   const [states, setStates] = useState<any[]>([]);
 
   useEffect(() => {
@@ -44,7 +51,10 @@ export const StateField: React.FC<StateFieldProps> = ({ form, prefix, disabled, 
             State<span className="text-[#DD0101]">*</span>
           </FormLabel>
           <Select 
-            onValueChange={field.onChange} 
+            onValueChange={(value) => {
+              field.onChange(value);
+              onStateChange?.(value);
+            }} 
             value={field.value}
             disabled={disabled || !countryCode}
           >

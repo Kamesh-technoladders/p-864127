@@ -15,9 +15,15 @@ interface AddressFieldsProps {
 
 export const AddressFields: React.FC<AddressFieldsProps> = ({ form, prefix, disabled }) => {
   const [selectedCountry, setSelectedCountry] = useState<string>('');
+  const [selectedState, setSelectedState] = useState<string>('');
 
   const handleCountryChange = (countryCode: string) => {
     setSelectedCountry(countryCode);
+    setSelectedState(''); // Reset state when country changes
+  };
+
+  const handleStateChange = (stateCode: string) => {
+    setSelectedState(stateCode);
   };
 
   return (
@@ -36,11 +42,18 @@ export const AddressFields: React.FC<AddressFieldsProps> = ({ form, prefix, disa
           prefix={prefix} 
           disabled={disabled}
           countryCode={selectedCountry}
+          onStateChange={handleStateChange}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <CityField form={form} prefix={prefix} disabled={disabled} />
+        <CityField 
+          form={form} 
+          prefix={prefix} 
+          disabled={disabled}
+          countryCode={selectedCountry}
+          stateCode={selectedState}
+        />
         <ZipCodeField form={form} prefix={prefix} disabled={disabled} />
       </div>
     </div>
