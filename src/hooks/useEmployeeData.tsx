@@ -22,15 +22,9 @@ export const useEmployeeData = (employeeId: string | undefined) => {
     try {
       console.log('Fetching employee data for ID:', employeeId);
       const { data: employeeWithRelations, error: queryError } = await supabase
-        .from('employees')
-        .select(`
-          *,
-          employee_addresses (*),
-          employee_emergency_contacts!employee_emergency_contacts_employee_id_fkey (*),
-          employee_family_details!employee_family_details_employee_id_fkey (*)
-        `)
-        .eq('id', employeeId)
-        .single();
+        .rpc('get_employee_details', {
+          p_employee_id: employeeId
+        });
 
       if (queryError) {
         console.error('Supabase query error:', queryError);
@@ -42,53 +36,31 @@ export const useEmployeeData = (employeeId: string | undefined) => {
         throw new Error('Employee not found');
       }
 
-      // Transform employee addresses
-      const addresses = employeeWithRelations.employee_addresses || [];
-      const presentAddressData = addresses.find((addr: any) => addr.type === 'present');
-      const permanentAddressData = addresses.find((addr: any) => addr.type === 'permanent');
-
       // Transform the data to match our expected format
       const transformedData = {
         ...employeeWithRelations,
-        presentAddress: presentAddressData ? {
-          addressLine1: presentAddressData.address_line1,
-          country: presentAddressData.country,
-          state: presentAddressData.state,
-          city: presentAddressData.city,
-          zipCode: presentAddressData.zip_code
-        } : {
+        employeeId: employeeWithRelations.employee_id,
+        firstName: employeeWithRelations.first_name,
+        lastName: employeeWithRelations.last_name,
+        dateOfBirth: employeeWithRelations.date_of_birth,
+        bloodGroup: employeeWithRelations.blood_group,
+        maritalStatus: employeeWithRelations.marital_status,
+        presentAddress: employeeWithRelations.present_address || {
           addressLine1: '',
           country: '',
           state: '',
           city: '',
           zipCode: ''
         },
-        permanentAddress: permanentAddressData ? {
-          addressLine1: permanentAddressData.address_line1,
-          country: permanentAddressData.country,
-          state: permanentAddressData.state,
-          city: permanentAddressData.city,
-          zipCode: permanentAddressData.zip_code
-        } : {
+        permanentAddress: employeeWithRelations.permanent_address || {
           addressLine1: '',
           country: '',
           state: '',
           city: '',
           zipCode: ''
         },
-        // Transform emergency contacts to match frontend format
-        emergencyContacts: (employeeWithRelations.employee_emergency_contacts || []).map((contact: any) => ({
-          name: contact.name,
-          relationship: contact.relationship,
-          phone: contact.phone
-        })),
-        // Transform family details to match frontend format
-        familyDetails: (employeeWithRelations.employee_family_details || []).map((member: any) => ({
-          name: member.name,
-          relationship: member.relationship,
-          occupation: member.occupation,
-          phone: member.phone
-        }))
+        emergencyContacts: employeeWithRelations.emergency_contacts || [],
+        familyDetails: employeeWithRelations.family_details || []
       };
 
       console.log('Transformed employee data:', transformedData);
@@ -151,83 +123,83 @@ export const useEmployeeData = (employeeId: string | undefined) => {
 
           if (employeeError) throw employeeError;
 
-          // Map present address to match database column names
-          const presentAddressData = {
-            employee_id: employeeId,
-            type: 'present',
-            address_line1: personalInfo.presentAddress.addressLine1,
-            country: personalInfo.presentAddress.country,
-            state: personalInfo.presentAddress.state,
-            city: personalInfo.presentAddress.city,
-            zip_code: personalInfo.presentAddress.zipCode
-          };
-
-          // Map permanent address to match database column names
-          const permanentAddressData = {
-            employee_id: employeeId,
-            type: 'permanent',
-            address_line1: personalInfo.permanentAddress.addressLine1,
-            country: personalInfo.permanentAddress.country,
-            state: personalInfo.permanentAddress.state,
-            city: personalInfo.permanentAddress.city,
-            zip_code: personalInfo.permanentAddress.zipCode
-          };
-
-          // Update present address
+          // Delete existing addresses
           await supabase
             .from('employee_addresses')
-            .upsert(presentAddressData);
+            .delete()
+            .eq('employee_id', employeeId);
 
-          // Update permanent address
-          await supabase
-            .from('employee_addresses')
-            .upsert(permanentAddressData);
-
-          // Update emergency contacts
-          if (personalInfo.emergencyContacts) {
-            // Delete existing contacts
-            await supabase
-              .from('employee_emergency_contacts')
-              .delete()
-              .eq('employee_id', employeeId);
-
-            // Insert new contacts
-            if (personalInfo.emergencyContacts.length > 0) {
-              const contactsData = personalInfo.emergencyContacts.map(contact => ({
-                employee_id: employeeId,
-                name: contact.name,
-                relationship: contact.relationship,
-                phone: contact.phone
-              }));
-              
-              await supabase
-                .from('employee_emergency_contacts')
-                .insert(contactsData);
+          // Insert new addresses
+          const addressesToInsert = [
+            {
+              employee_id: employeeId,
+              type: 'present',
+              address_line1: personalInfo.presentAddress.addressLine1,
+              country: personalInfo.presentAddress.country,
+              state: personalInfo.presentAddress.state,
+              city: personalInfo.presentAddress.city,
+              zip_code: personalInfo.presentAddress.zipCode
+            },
+            {
+              employee_id: employeeId,
+              type: 'permanent',
+              address_line1: personalInfo.permanentAddress.addressLine1,
+              country: personalInfo.permanentAddress.country,
+              state: personalInfo.permanentAddress.state,
+              city: personalInfo.permanentAddress.city,
+              zip_code: personalInfo.permanentAddress.zipCode
             }
+          ];
+
+          const { error: addressError } = await supabase
+            .from('employee_addresses')
+            .insert(addressesToInsert);
+
+          if (addressError) throw addressError;
+
+          // Delete existing emergency contacts
+          await supabase
+            .from('employee_emergency_contacts')
+            .delete()
+            .eq('employee_id', employeeId);
+
+          // Insert new emergency contacts
+          if (personalInfo.emergencyContacts.length > 0) {
+            const contactsToInsert = personalInfo.emergencyContacts.map(contact => ({
+              employee_id: employeeId,
+              name: contact.name,
+              relationship: contact.relationship,
+              phone: contact.phone
+            }));
+
+            const { error: contactsError } = await supabase
+              .from('employee_emergency_contacts')
+              .insert(contactsToInsert);
+
+            if (contactsError) throw contactsError;
           }
 
-          // Update family details
-          if (personalInfo.familyDetails) {
-            // Delete existing family details
-            await supabase
-              .from('employee_family_details')
-              .delete()
-              .eq('employee_id', employeeId);
+          // Delete existing family details
+          await supabase
+            .from('employee_family_details')
+            .delete()
+            .eq('employee_id', employeeId);
 
-            // Insert new family details
-            if (personalInfo.familyDetails.length > 0) {
-              const familyData = personalInfo.familyDetails.map(member => ({
-                employee_id: employeeId,
-                name: member.name,
-                relationship: member.relationship,
-                occupation: member.occupation,
-                phone: member.phone
-              }));
-              
-              await supabase
-                .from('employee_family_details')
-                .insert(familyData);
-            }
+          // Insert new family details
+          if (personalInfo.familyDetails.length > 0) {
+            const familyDetailsToInsert = personalInfo.familyDetails.map(member => ({
+              employee_id: employeeId,
+              name: member.name,
+              relationship: member.relationship,
+              occupation: member.occupation,
+              phone: member.phone
+            }));
+
+            const { error: familyError } = await supabase
+              .from('employee_family_details')
+              .insert(familyDetailsToInsert);
+
+            if (familyError) throw familyError;
           }
         } else {
           updateData = { [section]: data };
