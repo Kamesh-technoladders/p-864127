@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Banknote, AlertCircle } from "lucide-react";
@@ -30,7 +30,6 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors, isValid, isDirty }
   } = useForm<BankFormData>({
@@ -39,15 +38,12 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
     defaultValues: initialData || {}
   });
 
-  const formValues = watch();
-
-  useEffect(() => {
-    const isFormComplete = Object.values(formValues).every(value => !!value);
-    onComplete(isFormComplete && isValid && isDirty, formValues);
-  }, [formValues, isValid, isDirty, onComplete]);
-
   const onSubmit = (data: BankFormData) => {
     onComplete(true, data);
+  };
+
+  const handleCancel = () => {
+    onComplete(false);
   };
 
   return (
@@ -137,13 +133,13 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
           />
         </div>
 
-        <DocumentUploads setValue={setValue} formValues={formValues} />
+        <DocumentUploads setValue={setValue} formValues={{}} />
 
         <div className="flex justify-end gap-3 pt-6 border-t">
           <Button
             type="button"
             variant="outline"
-            onClick={() => onComplete(false)}
+            onClick={handleCancel}
             disabled={isSubmitting}
           >
             Cancel
