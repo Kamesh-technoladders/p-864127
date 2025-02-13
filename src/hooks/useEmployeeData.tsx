@@ -25,9 +25,9 @@ export const useEmployeeData = (employeeId: string | undefined) => {
         .from('employees')
         .select(`
           *,
-          employee_addresses!inner (*),
-          employee_emergency_contacts (*),
-          employee_family_details (*)
+          employee_addresses (*),
+          employee_emergency_contacts!employee_emergency_contacts_employee_id_fkey (*),
+          employee_family_details!employee_family_details_employee_id_fkey (*)
         `)
         .eq('id', employeeId)
         .single();
