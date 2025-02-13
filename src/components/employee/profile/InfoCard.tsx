@@ -10,6 +10,7 @@ interface InfoCardProps {
   children: React.ReactNode;
   onEdit?: () => void;
   expandable?: boolean;
+  headerAction?: React.ReactNode;
 }
 
 export const InfoCard: React.FC<InfoCardProps> = ({ 
@@ -17,7 +18,8 @@ export const InfoCard: React.FC<InfoCardProps> = ({
   icon: Icon, 
   children, 
   onEdit,
-  expandable = false 
+  expandable = false,
+  headerAction
 }) => {
   return (
     <Card className={`
@@ -48,16 +50,19 @@ export const InfoCard: React.FC<InfoCardProps> = ({
             <Icon className="w-5 h-5 text-brand-primary" />
             <h3 className="font-medium text-lg">{title}</h3>
           </div>
-          {onEdit && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onEdit}
-              className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100/50"
-            >
-              <Edit className="w-4 h-4" />
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {headerAction}
+            {onEdit && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onEdit}
+                className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100/50"
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
         </div>
         {children}
       </div>
