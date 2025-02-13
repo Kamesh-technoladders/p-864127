@@ -47,23 +47,6 @@ const personalDetailsSchema = z.object({
   sameAsPresent: z.boolean().optional()
 });
 
-const validateEmergencyContact = (contact: EmergencyContact): string[] => {
-  const errors: string[] = [];
-  if (!contact.relationship.trim()) errors.push("Please select relationship");
-  if (!contact.name.trim()) errors.push("Please enter contact name");
-  if (!contact.phone.trim()) errors.push("Please enter contact phone number");
-  return errors;
-};
-
-const validateFamilyMember = (member: FamilyMember): string[] => {
-  const errors: string[] = [];
-  if (!member.relationship.trim()) errors.push("Please select relationship");
-  if (!member.name.trim()) errors.push("Please enter family member name");
-  if (!member.occupation.trim()) errors.push("Please enter occupation");
-  if (!member.phone.trim()) errors.push("Please enter phone number");
-  return errors;
-};
-
 export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete, initialData }) => {
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([
     { relationship: "", name: "", phone: "" }
@@ -95,10 +78,9 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
       sameAsPresent: false
     },
     resolver: zodResolver(personalDetailsSchema),
-    mode: "onChange" // Enable real-time validation
+    mode: "onChange"
   });
 
-  // Validate emergency contacts and family details whenever they change
   useEffect(() => {
     if (showValidation) {
       const errors = emergencyContacts.map(contact => validateEmergencyContact(contact));
@@ -113,8 +95,30 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
     }
   }, [familyDetails, showValidation]);
 
+  const validateEmergencyContact = (contact: EmergencyContact): string[] => {
+    const errors: string[] = [];
+    if (!contact.relationship.trim()) errors.push("Please select relationship");
+    if (!contact.name.trim()) errors.push("Please enter contact name");
+    if (!contact.phone.trim()) errors.push("Please enter contact phone number");
+    return errors;
+  };
+
+  const validateFamilyMember = (member: FamilyMember): string[] => {
+    const errors: string[] = [];
+    if (!member.relationship.trim()) errors.push("Please select relationship");
+    if (!member.name.trim()) errors.push("Please enter family member name");
+    if (!member.occupation.trim()) errors.push("Please enter occupation");
+    if (!member.phone.trim()) errors.push("Please enter phone number");
+    return errors;
+  };
+
   const validateForm = () => {
     setShowValidation(true);
+
+    console.log('Validating form...');
+    console.log('Form errors:', form.formState.errors);
+    console.log('Emergency contacts:', emergencyContacts);
+    console.log('Family details:', familyDetails);
 
     // Validate emergency contacts
     const emergencyErrors = emergencyContacts.map(contact => validateEmergencyContact(contact));
@@ -136,10 +140,10 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
       return false;
     }
 
-    const hasErrors = form.formState.errors;
-    if (Object.keys(hasErrors).length > 0) {
+    const hasErrors = Object.keys(form.formState.errors).length > 0;
+    if (hasErrors) {
       // Show specific field errors
-      Object.entries(hasErrors).forEach(([key, value]) => {
+      Object.entries(form.formState.errors).forEach(([key, value]) => {
         if (typeof value === 'object' && value?.message) {
           toast.error(value.message as string);
         }
@@ -151,6 +155,7 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
   };
 
   const handleSubmit = form.handleSubmit((data) => {
+    console.log('Form submitted with data:', data);
     const formIsValid = validateForm();
     if (!formIsValid) {
       onComplete(false);
@@ -167,7 +172,7 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
       familyDetails: validFamilyMembers
     };
 
-    console.log('Form submitted:', formData);
+    console.log('Form data:', formData);
     onComplete(true, formData);
   });
 

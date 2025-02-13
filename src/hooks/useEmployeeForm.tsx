@@ -26,6 +26,7 @@ export const useEmployeeForm = () => {
   });
 
   const updateSectionProgress = (section: keyof FormProgress, completed: boolean) => {
+    console.log(`Updating progress for ${section}:`, completed);
     setFormProgress((prev) => ({
       ...prev,
       [section]: completed,
@@ -56,11 +57,27 @@ export const useEmployeeForm = () => {
     if (activeTab === "personal") {
       const form = document.getElementById("personalDetailsForm") as HTMLFormElement;
       if (form) {
-        form.requestSubmit();
-      }
-    }
+        // Create a promise that resolves when the form submission is complete
+        const formSubmissionPromise = new Promise<void>((resolve) => {
+          const originalOnComplete = (window as any).onComplete;
+          (window as any).onComplete = (completed: boolean, data: any) => {
+            if (originalOnComplete) {
+              originalOnComplete(completed, data);
+            }
+            resolve();
+          };
+          form.requestSubmit();
+        });
 
-    if (!formProgress[activeTab as keyof FormProgress]) {
+        // Wait for form submission to complete
+        await formSubmissionPromise;
+
+        // Now check if the form is valid
+        if (!formProgress[activeTab as keyof FormProgress]) {
+          return; // The form will show its own validation messages
+        }
+      }
+    } else if (!formProgress[activeTab as keyof FormProgress]) {
       toast.error("Please complete all required fields before proceeding");
       return;
     }
