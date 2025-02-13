@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -34,6 +33,14 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   const handleDelete = (experience: Experience) => {
     setSelectedExperience(experience);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleViewDocument = (docType: string) => {
+    console.log('Viewing document:', docType);
+  };
+
+  const handleDownloadDocument = (docType: string) => {
+    console.log('Downloading document:', docType);
   };
 
   const handleSave = async (formData: Experience) => {
@@ -102,6 +109,8 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
             experience={experience}
             onEdit={() => handleEdit(experience)}
             onDelete={() => handleDelete(experience)}
+            onViewDocument={handleViewDocument}
+            onDownloadDocument={handleDownloadDocument}
           />
         ))}
         

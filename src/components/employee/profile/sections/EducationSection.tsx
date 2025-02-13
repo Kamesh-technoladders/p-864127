@@ -45,12 +45,12 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
       const response = await fetch(document.url);
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = `${document.name}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      const link = window.document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `${document.name}.pdf`;
+      window.document.body.appendChild(link);
+      link.click();
+      window.document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
     } catch (error) {
       console.error("Error downloading document:", error);
