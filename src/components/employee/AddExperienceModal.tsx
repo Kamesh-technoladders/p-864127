@@ -6,28 +6,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { ExperienceForm } from "./experience/ExperienceForm";
-import { DocumentUploads } from "./experience/DocumentUploads";
-import { FormActions } from "./experience/FormActions";
-
-export interface ExperienceData {
-  jobTitle: string;
-  company: string;
-  location: string;
-  employmentType: string;
-  startDate: string;
-  endDate: string;
-  offerLetter?: File;
-  separationLetter?: File;
-  payslips: File[];
-}
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { UploadField } from "./UploadField";
+import { Experience } from "@/services/types/employee.types";
 
 interface AddExperienceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (experience: ExperienceData) => void;
-  initialData?: ExperienceData | null;
+  onSave: (data: Experience) => Promise<void>;
+  initialData?: Experience | null;
 }
 
 export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
@@ -36,7 +31,8 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
   onSave,
   initialData,
 }) => {
-  const [formData, setFormData] = useState<ExperienceData>({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<Partial<Experience>>({
     jobTitle: "",
     company: "",
     location: "",
@@ -45,8 +41,6 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
     endDate: "",
     payslips: [],
   });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -69,121 +63,145 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const validateForm = () => {
-    if (!formData.jobTitle || !formData.company || !formData.location) {
-      toast.error("Please fill in all required fields");
-      return false;
-    }
-
-    if (!formData.startDate || !formData.endDate) {
-      toast.error("Please select both start and end dates");
-      return false;
-    }
-
-    if (new Date(formData.startDate) > new Date(formData.endDate)) {
-      toast.error("Start date cannot be after end date");
-      return false;
-    }
-
-    if (!formData.offerLetter) {
-      toast.error("Please upload offer letter");
-      return false;
-    }
-
-    if (!formData.separationLetter) {
-      toast.error("Please upload separation letter");
-      return false;
-    }
-
-    if (formData.payslips.length === 0) {
-      toast.error("Please upload at least one payslip");
-      return false;
-    }
-
-    return true;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      onSave(formData);
-      onClose();
-      setFormData({
-        jobTitle: "",
-        company: "",
-        location: "",
-        employmentType: "Full Time",
-        startDate: "",
-        endDate: "",
-        payslips: [],
-      });
-    } catch (error) {
-      toast.error("Failed to save experience");
+      await onSave(formData as Experience);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleFileUpload = (field: keyof ExperienceData) => async (file: File) => {
-    if (!file) return;
-
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error("File size should not exceed 5MB");
-      return;
+  const handleFileUpload = (field: keyof Experience) => async (file: File) => {
+    if (field === 'payslips') {
+      setFormData((prev) => ({
+        ...prev,
+        payslips: [...(prev.payslips || []), file],
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: file }));
     }
-
-    const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error("Only PDF, JPG, and PNG files are allowed");
-      return;
-    }
-
-    // Simulate upload delay for progress bar
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        if (field === "payslips") {
-          if (formData.payslips.length >= 3) {
-            toast.error("Maximum 3 payslips allowed");
-            resolve();
-            return;
-          }
-          setFormData((prev) => ({
-            ...prev,
-            payslips: [...prev.payslips, file],
-          }));
-        } else {
-          setFormData((prev) => ({ ...prev, [field]: file }));
-        }
-        resolve();
-      }, 2000);
-    });
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold">
+          <DialogTitle>
             {initialData ? "Edit Experience" : "Add Experience"}
           </DialogTitle>
         </DialogHeader>
+
         <form onSubmit={handleSubmit} className="space-y-6">
-          <ExperienceForm
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
-          <DocumentUploads
-            formData={formData}
-            handleFileUpload={handleFileUpload}
-          />
-          <FormActions onClose={onClose} isSubmitting={isSubmitting} />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Job Title</label>
+              <Input
+                required
+                name="jobTitle"
+                value={formData.jobTitle}
+                onChange={handleInputChange}
+                placeholder="Enter job title"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Company</label>
+              <Input
+                required
+                name="company"
+                value={formData.company}
+                onChange={handleInputChange}
+                placeholder="Enter company name"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Location</label>
+              <Input
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                placeholder="Enter location"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Employment Type</label>
+              <Select
+                value={formData.employmentType}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, employmentType: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Full Time">Full Time</SelectItem>
+                  <SelectItem value="Part Time">Part Time</SelectItem>
+                  <SelectItem value="Contract">Contract</SelectItem>
+                  <SelectItem value="Internship">Internship</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Start Date</label>
+              <Input
+                required
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">End Date</label>
+              <Input
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <UploadField
+              label="Offer Letter"
+              onUpload={handleFileUpload("offerLetter")}
+              value={formData.offerLetter?.name}
+            />
+
+            <UploadField
+              label="Separation Letter"
+              onUpload={handleFileUpload("separationLetter")}
+              value={formData.separationLetter?.name}
+            />
+
+            <UploadField
+              label="Payslips"
+              onUpload={handleFileUpload("payslips")}
+              value={
+                formData.payslips?.length
+                  ? `${formData.payslips.length} files selected`
+                  : undefined
+              }
+              showProgress
+            />
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save"}
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

@@ -2,11 +2,11 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { Experience } from "../types";
+import { Experience } from "@/services/types/employee.types";
 import { ExperienceCard } from "../experience/ExperienceCard";
 import { AddExperienceModal } from "../AddExperienceModal";
 import { DeleteConfirmationDialog } from "../experience/DeleteConfirmationDialog";
-import { employeeService } from "@/services/employee/employee.service";
+import { experienceService } from "@/services/employee/experience.service";
 import { toast } from "sonner";
 
 interface ExperienceSectionProps {
@@ -36,21 +36,17 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     setIsDeleteDialogOpen(true);
   };
 
-  const handleSave = async (formData: any) => {
+  const handleSave = async (formData: Experience) => {
     try {
       if (selectedExperience) {
-        // Update existing experience
-        await employeeService.updateEmployee(employeeId, {
-          experience: data.map((exp) =>
-            exp.id === selectedExperience.id ? { ...formData, id: exp.id } : exp
-          ),
-        });
+        await experienceService.updateExperience(
+          employeeId,
+          selectedExperience.id,
+          formData
+        );
         toast.success("Experience updated successfully");
       } else {
-        // Add new experience
-        await employeeService.updateEmployee(employeeId, {
-          experience: [...data, { ...formData, id: Date.now().toString() }],
-        });
+        await experienceService.createExperience(employeeId, formData);
         toast.success("Experience added successfully");
       }
       onUpdate();
@@ -69,9 +65,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   const handleConfirmDelete = async () => {
     if (selectedExperience) {
       try {
-        await employeeService.updateEmployee(employeeId, {
-          experience: data.filter((exp) => exp.id !== selectedExperience.id),
-        });
+        await experienceService.deleteExperience(employeeId, selectedExperience.id);
         toast.success("Experience deleted successfully");
         onUpdate();
         setIsDeleteDialogOpen(false);
@@ -110,6 +104,12 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
             onDelete={() => handleDelete(experience)}
           />
         ))}
+        
+        {data.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            No experience records found. Click 'Add Experience' to add your work history.
+          </div>
+        )}
       </div>
 
       <AddExperienceModal

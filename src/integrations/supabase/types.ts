@@ -237,6 +237,7 @@ export type Database = {
         Row: {
           company: string
           created_at: string | null
+          document_type: string | null
           employee_id: string | null
           employment_type: string | null
           end_date: string | null
@@ -244,12 +245,16 @@ export type Database = {
           job_title: string
           location: string | null
           offer_letter_url: string | null
+          payslips: string[] | null
           separation_letter_url: string | null
           start_date: string
+          status: string | null
+          upload_date: string | null
         }
         Insert: {
           company: string
           created_at?: string | null
+          document_type?: string | null
           employee_id?: string | null
           employment_type?: string | null
           end_date?: string | null
@@ -257,12 +262,16 @@ export type Database = {
           job_title: string
           location?: string | null
           offer_letter_url?: string | null
+          payslips?: string[] | null
           separation_letter_url?: string | null
           start_date: string
+          status?: string | null
+          upload_date?: string | null
         }
         Update: {
           company?: string
           created_at?: string | null
+          document_type?: string | null
           employee_id?: string | null
           employment_type?: string | null
           end_date?: string | null
@@ -270,8 +279,11 @@ export type Database = {
           job_title?: string
           location?: string | null
           offer_letter_url?: string | null
+          payslips?: string[] | null
           separation_letter_url?: string | null
           start_date?: string
+          status?: string | null
+          upload_date?: string | null
         }
         Relationships: [
           {
