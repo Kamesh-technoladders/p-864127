@@ -1,17 +1,15 @@
 
-import React, { useState, useEffect } from "react";
-import { GraduationCap, FileText, Eye } from "lucide-react";
+import React, { useState } from "react";
+import { GraduationCap, Briefcase, FileText, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { InfoCard } from "../InfoCard";
-import { EducationEditModal } from "../../modals/EducationEditModal";
-import { educationService } from "@/services/employee/education.service";
-import { DocumentViewerDialog } from "../../education/DocumentViewerDialog";
+import { ExperienceCard } from "../../experience/ExperienceCard";
+import { AddExperienceModal } from "../../AddExperienceModal";
+import { DeleteConfirmationDialog } from "../../experience/DeleteConfirmationDialog";
+import { experienceService } from "@/services/employee/experience.service";
+import { Experience } from "@/services/types/employee.types";
 import { toast } from "sonner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider
-} from "@/components/ui/tooltip";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface EducationSectionProps {
   employeeId: string;
@@ -23,131 +21,152 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
   onEdit,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [educationData, setEducationData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedDocument, setSelectedDocument] = useState<{
-    url: string;
-    type: string;
-  } | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
 
-  const fetchEducationData = async () => {
-    try {
-      setIsLoading(true);
-      const data = await educationService.fetchEducation(employeeId);
-      setEducationData(data);
-    } catch (error) {
-      console.error("Error fetching education data:", error);
-      toast.error("Failed to load education data");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (employeeId) {
-      fetchEducationData();
-    }
-  }, [employeeId]);
-
-  const handleEdit = () => {
+  const handleAddExperience = () => {
+    setSelectedExperience(null);
     setIsModalOpen(true);
   };
 
-  const handleViewDocument = (url: string, type: string) => {
-    setSelectedDocument({ url, type });
+  const handleEdit = (experience: Experience) => {
+    setSelectedExperience(experience);
+    setIsModalOpen(true);
   };
 
-  if (isLoading) {
-    return (
-      <InfoCard 
-        title="Education" 
-        icon={GraduationCap}
-        onEdit={handleEdit}
-      >
-        <div className="p-4">Loading...</div>
-      </InfoCard>
-    );
-  }
+  const handleDelete = (experience: Experience) => {
+    setSelectedExperience(experience);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleSave = async (formData: Experience) => {
+    try {
+      if (selectedExperience) {
+        await experienceService.updateExperience(employeeId, selectedExperience.id, formData);
+        toast.success("Experience updated successfully");
+      } else {
+        await experienceService.createExperience(employeeId, formData);
+        toast.success("Experience added successfully");
+      }
+      setIsModalOpen(false);
+      setSelectedExperience(null);
+    } catch (error) {
+      console.error("Error saving experience:", error);
+      toast.error(selectedExperience ? "Failed to update experience" : "Failed to add experience");
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedExperience) {
+      try {
+        await experienceService.deleteExperience(employeeId, selectedExperience.id);
+        toast.success("Experience deleted successfully");
+        setIsDeleteDialogOpen(false);
+        setSelectedExperience(null);
+      } catch (error) {
+        console.error("Error deleting experience:", error);
+        toast.error("Failed to delete experience");
+      }
+    }
+  };
+
+  const renderEducationSection = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium">Documents</h3>
+        <Button variant="outline" size="sm" onClick={onEdit}>Edit</Button>
+      </div>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <FileText className="h-4 w-4" />
+          <span>SSC Certificate</span>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <FileText className="h-4 w-4" />
+          <span>HSC Certificate</span>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <FileText className="h-4 w-4" />
+          <span>Degree Certificate</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderExperienceSection = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium">Work History</h3>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleAddExperience}
+          className="flex items-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Add Experience
+        </Button>
+      </div>
+      <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+        {experiences.map((experience) => (
+          <ExperienceCard
+            key={experience.id}
+            experience={experience}
+            onEdit={() => handleEdit(experience)}
+            onDelete={() => handleDelete(experience)}
+          />
+        ))}
+        {experiences.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            No experience records found. Click 'Add Experience' to add your work history.
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
-    <>
-      <InfoCard 
-        title="Education" 
-        icon={GraduationCap}
-        onEdit={handleEdit}
-      >
-        <div className="space-y-4 p-2">
-          <div className="space-y-3">
-            {educationData?.map((doc: any) => (
-              <div key={doc.id} className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-blue-600" />
-                  <div className="font-medium">{doc.type.toUpperCase()}</div>
-                </div>
-                {doc.document_url ? (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => handleViewDocument(doc.document_url, doc.type)}
-                          className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-full transition-colors"
-                          aria-label="View Document"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>View Document</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ) : (
-                  <span className="text-gray-500">No document uploaded</span>
-                )}
-              </div>
-            ))}
-            {(!educationData || educationData.length === 0) && (
-              <div className="text-center py-4 text-gray-500">
-                No education documents uploaded
-              </div>
-            )}
-          </div>
+    <InfoCard title="Education & Experience" icon={GraduationCap}>
+      <Tabs defaultValue="education" className="w-full">
+        <TabsList className="w-full grid grid-cols-2">
+          <TabsTrigger value="education" className="flex items-center gap-2">
+            <GraduationCap className="h-4 w-4" />
+            Education
+          </TabsTrigger>
+          <TabsTrigger value="experience" className="flex items-center gap-2">
+            <Briefcase className="h-4 w-4" />
+            Experience
+          </TabsTrigger>
+        </TabsList>
+        <div className="mt-4">
+          <TabsContent value="education">
+            {renderEducationSection()}
+          </TabsContent>
+          <TabsContent value="experience">
+            {renderExperienceSection()}
+          </TabsContent>
         </div>
-      </InfoCard>
+      </Tabs>
 
-      <EducationEditModal
+      <AddExperienceModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        employeeId={employeeId}
-        onUpdate={fetchEducationData}
-        initialData={{
-          ssc: educationData?.find((doc: any) => doc.type === 'ssc')?.document_url
-            ? {
-                name: 'SSC Certificate',
-                url: educationData.find((doc: any) => doc.type === 'ssc').document_url
-              }
-            : undefined,
-          hsc: educationData?.find((doc: any) => doc.type === 'hsc')?.document_url
-            ? {
-                name: 'HSC Certificate',
-                url: educationData.find((doc: any) => doc.type === 'hsc').document_url
-              }
-            : undefined,
-          degree: educationData?.find((doc: any) => doc.type === 'degree')?.document_url
-            ? {
-                name: 'Degree Certificate',
-                url: educationData.find((doc: any) => doc.type === 'degree').document_url
-              }
-            : undefined,
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedExperience(null);
         }}
+        onSave={handleSave}
+        initialData={selectedExperience}
       />
 
-      <DocumentViewerDialog
-        isOpen={!!selectedDocument}
-        onClose={() => setSelectedDocument(null)}
-        documentUrl={selectedDocument?.url}
-        documentType={selectedDocument?.type.toUpperCase() || ''}
+      <DeleteConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => {
+          setIsDeleteDialogOpen(false);
+          setSelectedExperience(null);
+        }}
+        onConfirm={handleConfirmDelete}
       />
-    </>
+    </InfoCard>
   );
 };
