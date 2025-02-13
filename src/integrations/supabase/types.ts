@@ -406,16 +406,20 @@ export type Database = {
           date_of_birth: string | null
           department: string | null
           email: string
+          emergency_contacts: Json[] | null
           employee_id: string
           employment_start_date: string | null
           employment_status: string | null
+          family_details: Json[] | null
           first_name: string
           gender: string | null
           id: string
           last_name: string
           marital_status: string | null
+          permanent_address: Json | null
           phone: string | null
           position: string | null
+          present_address: Json | null
           updated_at: string | null
         }
         Insert: {
@@ -424,16 +428,20 @@ export type Database = {
           date_of_birth?: string | null
           department?: string | null
           email: string
+          emergency_contacts?: Json[] | null
           employee_id: string
           employment_start_date?: string | null
           employment_status?: string | null
+          family_details?: Json[] | null
           first_name: string
           gender?: string | null
           id?: string
           last_name: string
           marital_status?: string | null
+          permanent_address?: Json | null
           phone?: string | null
           position?: string | null
+          present_address?: Json | null
           updated_at?: string | null
         }
         Update: {
@@ -442,16 +450,20 @@ export type Database = {
           date_of_birth?: string | null
           department?: string | null
           email?: string
+          emergency_contacts?: Json[] | null
           employee_id?: string
           employment_start_date?: string | null
           employment_status?: string | null
+          family_details?: Json[] | null
           first_name?: string
           gender?: string | null
           id?: string
           last_name?: string
           marital_status?: string | null
+          permanent_address?: Json | null
           phone?: string | null
           position?: string | null
+          present_address?: Json | null
           updated_at?: string | null
         }
         Relationships: []

@@ -12,23 +12,53 @@ export interface Experience {
   payslips: File[];
 }
 
+export interface Address {
+  addressLine1: string;
+  country: string;
+  state: string;
+  city: string;
+  zipCode: string;
+}
+
+export interface EmergencyContact {
+  name: string;
+  relationship: string;
+  phone: string;
+}
+
+export interface FamilyMember {
+  name: string;
+  relationship: string;
+  occupation: string;
+  phone: string;
+}
+
+export interface PersonalDetailsData {
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  gender: string;
+  bloodGroup: string;
+  maritalStatus: string;
+  presentAddress: Address;
+  permanentAddress: Address;
+  emergencyContacts: EmergencyContact[];
+  familyDetails: FamilyMember[];
+}
+
 export interface FormComponentProps<T = any> {
   onComplete: (completed: boolean, data?: T) => void;
   initialData?: T | null;
 }
 
-export interface PersonalDetailsData {
-  // Add specific personal details fields here if needed
-  [key: string]: any;
-}
-
 export interface EducationData {
-  // Add specific education fields here if needed
   [key: string]: any;
 }
 
 export interface BankAccountData {
-  // Add specific bank account fields here if needed
   [key: string]: any;
 }
 
@@ -42,4 +72,3 @@ export interface ExperienceFormProps {
 }
 
 export interface BankAccountFormProps extends FormComponentProps<BankAccountData> {}
-

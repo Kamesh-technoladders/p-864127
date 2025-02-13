@@ -39,9 +39,22 @@ export const useEmployeeData = (employeeId: string | undefined) => {
       }
 
       try {
-        await employeeService.updateEmployee(employeeId, {
-          [section]: data,
-        });
+        const updateData = section === 'personal' ? {
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          date_of_birth: data.dateOfBirth,
+          gender: data.gender,
+          blood_group: data.bloodGroup,
+          marital_status: data.maritalStatus,
+          present_address: data.presentAddress,
+          permanent_address: data.permanentAddress,
+          emergency_contacts: data.emergencyContacts,
+          family_details: data.familyDetails
+        } : { [section]: data };
+
+        await employeeService.updateEmployee(employeeId, updateData);
         await fetchEmployeeData();
         toast.success(`${section} updated successfully`);
       } catch (error) {

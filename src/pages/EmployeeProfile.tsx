@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
@@ -95,21 +94,22 @@ const EmployeeProfile = () => {
     gender: employeeData.gender || '',
     bloodGroup: employeeData.blood_group || '',
     maritalStatus: employeeData.marital_status || '',
-    // Adding empty address objects as placeholders - they'll be populated when we implement address editing
-    presentAddress: {
+    presentAddress: employeeData.present_address || {
       addressLine1: '',
       country: '',
       state: '',
       city: '',
       zipCode: ''
     },
-    permanentAddress: {
+    permanentAddress: employeeData.permanent_address || {
       addressLine1: '',
       country: '',
       state: '',
       city: '',
       zipCode: ''
-    }
+    },
+    emergencyContacts: employeeData.emergency_contacts || [],
+    familyDetails: employeeData.family_details || []
   };
 
   return (
