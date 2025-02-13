@@ -28,22 +28,27 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
   onUpdate,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<PersonalDetailsData | null>(null);
 
-  const handleComplete = async (completed: boolean, formData?: any) => {
-    if (completed && formData) {
-      try {
-        setIsSubmitting(true);
-        await onUpdate(formData);
-        toast.success("Personal details updated successfully");
-        onClose();
-      } catch (error) {
-        console.error("Error updating personal details:", error);
-        toast.error("Failed to update personal details");
-      } finally {
-        setIsSubmitting(false);
-      }
-    } else {
+  const handleComplete = (completed: boolean, data?: PersonalDetailsData) => {
+    if (data) {
+      setFormData(data);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!formData) return;
+    
+    try {
+      setIsSubmitting(true);
+      await onUpdate(formData);
+      toast.success("Personal details updated successfully");
       onClose();
+    } catch (error) {
+      console.error("Error updating personal details:", error);
+      toast.error("Failed to update personal details");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -74,6 +79,14 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
             initialData={data}
             isSubmitting={isSubmitting}
           />
+        </div>
+        <div className="flex justify-end gap-3 p-3 border-t">
+          <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : "Save Changes"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

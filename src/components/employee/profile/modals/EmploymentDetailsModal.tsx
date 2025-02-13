@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { Briefcase, Calendar, ChevronRight, X } from "lucide-react";
 import { TimelineEvent } from "./components/TimelineEvent";
 import { EmploymentForm } from "./components/EmploymentForm";
-import { EmploymentModalActions } from "./components/EmploymentModalActions";
 
 interface TimelineEventType {
   title: string;
@@ -41,25 +40,24 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
   initialData,
   onUpdate,
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(initialData);
-  const [loading, setLoading] = useState(false);
-
-  const handleSave = async () => {
-    try {
-      setLoading(true);
-      await onUpdate(formData);
-      setIsEditing(false);
-      toast.success("Employment details updated successfully");
-    } catch (error) {
-      toast.error("Failed to update employment details");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFieldChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      setIsSubmitting(true);
+      await onUpdate(formData);
+      toast.success("Employment details updated successfully");
+      onClose();
+    } catch (error) {
+      toast.error("Failed to update employment details");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -73,16 +71,14 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
                 Edit Employment Details
               </DialogTitle>
             </div>
-            <div className="flex items-center gap-1">
-              <EmploymentModalActions
-                isEditing={isEditing}
-                loading={loading}
-                onEdit={() => setIsEditing(true)}
-                onCancel={() => setIsEditing(false)}
-                onSave={handleSave}
-                onClose={onClose}
-              />
-            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6 text-white hover:bg-white/20"
+              onClick={onClose}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
           </div>
         </DialogHeader>
 
@@ -94,7 +90,6 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
                 <h3 className="text-sm font-semibold mb-2 text-gray-800">Basic Information</h3>
                 <EmploymentForm
                   formData={formData}
-                  isEditing={isEditing}
                   onChange={handleFieldChange}
                 />
               </div>
@@ -130,6 +125,15 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="flex justify-end gap-3 p-3 border-t">
+          <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : "Save Changes"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
