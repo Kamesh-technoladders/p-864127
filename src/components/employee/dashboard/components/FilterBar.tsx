@@ -12,15 +12,26 @@ import {
   UserCircle,
   Briefcase
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface FilterBarProps {
   searchValue: string;
   onSearchChange: (value: string) => void;
+  selectedStatus: string;
+  onStatusChange: (status: string) => void;
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
   searchValue,
-  onSearchChange
+  onSearchChange,
+  selectedStatus,
+  onStatusChange
 }) => {
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
@@ -45,10 +56,17 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           Job Type
           <ChevronDown className="ml-2 h-4 w-4" />
         </Button>
-        <Button variant="outline" size="sm" className="text-brand-secondary">
-          Status
-          <ChevronDown className="ml-2 h-4 w-4" />
-        </Button>
+        <Select value={selectedStatus} onValueChange={onStatusChange}>
+          <SelectTrigger className="w-[140px]">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="terminated">Terminated</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <div className="flex items-center gap-3">

@@ -16,18 +16,27 @@ interface DashboardViewProps {
 export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) => {
   const { employees, isLoading, error } = useEmployees();
   const [searchValue, setSearchValue] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("all");
 
   const filteredEmployees = useMemo(() => {
-    if (!searchValue.trim() || !employees) return employees;
+    if (!employees) return [];
 
-    const searchLower = searchValue.toLowerCase();
-    return employees.filter((employee) => 
-      employee.first_name.toLowerCase().includes(searchLower) ||
-      employee.last_name.toLowerCase().includes(searchLower) ||
-      employee.email.toLowerCase().includes(searchLower) ||
-      employee.employee_id.toLowerCase().includes(searchLower)
-    );
-  }, [employees, searchValue]);
+    return employees.filter((employee) => {
+      // Search filter
+      const searchLower = searchValue.toLowerCase().trim();
+      const matchesSearch = !searchLower || 
+        employee.first_name.toLowerCase().includes(searchLower) ||
+        employee.last_name.toLowerCase().includes(searchLower) ||
+        employee.email.toLowerCase().includes(searchLower) ||
+        employee.employee_id.toLowerCase().includes(searchLower);
+
+      // Status filter
+      const matchesStatus = selectedStatus === 'all' || 
+        employee.employment_status === selectedStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [employees, searchValue, selectedStatus]);
 
   return (
     <div className="space-y-6">
@@ -45,9 +54,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) =
       <FilterBar 
         searchValue={searchValue}
         onSearchChange={setSearchValue}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
       />
       <EmployeeTable 
-        employees={filteredEmployees || []} 
+        employees={filteredEmployees} 
         isLoading={isLoading} 
         error={error} 
       />
