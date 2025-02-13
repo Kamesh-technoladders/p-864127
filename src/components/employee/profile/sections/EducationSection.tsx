@@ -4,6 +4,8 @@ import { GraduationCap, FileText } from "lucide-react";
 import { InfoCard } from "../InfoCard";
 import { EducationEditModal } from "../../modals/EducationEditModal";
 import { educationService } from "@/services/employee/education.service";
+import { DocumentViewerDialog } from "../../education/DocumentViewerDialog";
+import { toast } from "sonner";
 
 interface EducationSectionProps {
   employeeId: string;
@@ -17,6 +19,10 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [educationData, setEducationData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedDocument, setSelectedDocument] = useState<{
+    url: string;
+    type: string;
+  } | null>(null);
 
   const fetchEducationData = async () => {
     try {
@@ -25,6 +31,7 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
       setEducationData(data);
     } catch (error) {
       console.error("Error fetching education data:", error);
+      toast.error("Failed to load education data");
     } finally {
       setIsLoading(false);
     }
@@ -38,6 +45,10 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
 
   const handleEdit = () => {
     setIsModalOpen(true);
+  };
+
+  const handleViewDocument = (url: string, type: string) => {
+    setSelectedDocument({ url, type });
   };
 
   if (isLoading) {
@@ -67,14 +78,12 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
                 <div>
                   <div className="font-medium">{doc.type.toUpperCase()}</div>
                   {doc.document_url ? (
-                    <a 
-                      href={doc.document_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={() => handleViewDocument(doc.document_url, doc.type)}
                       className="text-blue-600 hover:underline"
                     >
                       View Document
-                    </a>
+                    </button>
                   ) : (
                     <span className="text-gray-500">No document uploaded</span>
                   )}
@@ -115,6 +124,13 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
               }
             : undefined,
         }}
+      />
+
+      <DocumentViewerDialog
+        isOpen={!!selectedDocument}
+        onClose={() => setSelectedDocument(null)}
+        documentUrl={selectedDocument?.url}
+        documentType={selectedDocument?.type.toUpperCase() || ''}
       />
     </>
   );
