@@ -1,10 +1,15 @@
 
 import React, { useState } from "react";
-import { format } from "date-fns";
+import { format, differenceInYears, differenceInMonths } from "date-fns";
 import { FileText, Pencil, Trash2, Eye, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Experience } from "@/services/types/employee.types";
-import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ExperienceCardProps {
   experience: Experience;
@@ -28,7 +33,19 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
     return format(new Date(date), "MMM yyyy");
   };
 
-  const hasDocuments = experience.offerLetter || experience.separationLetter || experience.payslips?.length > 0;
+  const calculateExperience = (startDate: string, endDate: string | null) => {
+    const start = new Date(startDate);
+    const end = endDate ? new Date(endDate) : new Date();
+    const years = differenceInYears(end, start);
+    const months = differenceInMonths(end, start) % 12;
+    
+    if (years === 0) {
+      return `${months} month${months !== 1 ? 's' : ''}`;
+    } else if (months === 0) {
+      return `${years} year${years !== 1 ? 's' : ''}`;
+    }
+    return `${years} year${years !== 1 ? 's' : ''} ${months} month${months !== 1 ? 's' : ''}`;
+  };
 
   const handleDownload = async (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>) => {
     try {
@@ -39,108 +56,88 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
     }
   };
 
-  const renderDocumentActions = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>, label: string) => {
+  const renderDocumentIcon = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>, label: string) => {
     if (!experience[docType]) return null;
     
     return (
-      <div className="flex items-center gap-1 text-xs justify-between p-2 hover:bg-gray-50/80 rounded-lg transition-colors duration-200">
-        <div className="flex items-center gap-2">
-          <FileText className="h-3 w-3 text-gray-400" />
-          <span className="text-gray-600">{label}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 rounded-full hover:bg-white/80 text-gray-500 hover:text-gray-700 transition-colors"
-            onClick={() => onViewDocument(docType)}
-          >
-            <Eye className="h-3 w-3" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 rounded-full hover:bg-white/80 text-gray-500 hover:text-gray-700 transition-colors"
-            onClick={() => handleDownload(docType)}
-            disabled={isDownloading}
-          >
-            <Download className="h-3 w-3" />
-          </Button>
-        </div>
-      </div>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="inline-flex">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 rounded-full hover:bg-gray-100 group"
+              >
+                <FileText className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+              </Button>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="flex flex-col gap-1">
+              <p className="text-xs font-medium">{label}</p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={() => onViewDocument(docType)}
+                >
+                  <Eye className="h-3 w-3 mr-1" />
+                  View
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={() => handleDownload(docType)}
+                  disabled={isDownloading}
+                >
+                  <Download className="h-3 w-3 mr-1" />
+                  Download
+                </Button>
+              </div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-100/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] backdrop-blur-sm transition-all duration-200 hover:shadow-[0_4px_12px_-4px_rgba(0,0,0,0.1)] h-[16rem]">
-      <div className="p-4 border-b border-gray-100/80">
-        <div className="flex justify-between items-start">
-          <div className="space-y-1.5">
-            <h3 className="text-sm font-semibold text-gray-900">
-              {experience.jobTitle}
-            </h3>
-            <p className="text-xs text-gray-600">{experience.company}</p>
-            <p className="text-[10px] text-gray-500">
-              {formatDate(experience.startDate)} - {formatDate(experience.endDate)}
+    <div className="group flex items-center justify-between py-3 px-4 hover:bg-gray-50/80 rounded-lg transition-colors">
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-medium text-gray-900">{experience.jobTitle}</h3>
+            <p className="text-xs text-gray-500">
+              {experience.company} • {calculateExperience(experience.startDate, experience.endDate)}
             </p>
-            <p className="text-[10px] text-gray-500">{experience.location}</p>
-            <p className="text-[10px] text-gray-500">{experience.employmentType}</p>
           </div>
-          <div className="flex gap-1">
+          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onEdit(experience)}
-              className="h-7 w-7 rounded-full hover:bg-gray-100/80 text-gray-500 hover:text-gray-700 transition-colors"
+              className="h-7 w-7 rounded-full hover:bg-gray-100"
             >
-              <Pencil className="h-3.5 w-3.5" />
+              <Pencil className="h-3.5 w-3.5 text-gray-500" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onDelete(experience)}
-              className="h-7 w-7 rounded-full hover:bg-red-50 text-red-500 hover:text-red-600 transition-colors"
+              className="h-7 w-7 rounded-full hover:bg-red-50 text-red-500 hover:text-red-600"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
         </div>
-      </div>
-
-      <div className="p-3 overflow-y-auto scrollbar-elegant h-[calc(100%-8rem)]">
-        {hasDocuments && (
-          <div className="space-y-1">
-            {renderDocumentActions('offerLetter', 'Offer Letter')}
-            {renderDocumentActions('separationLetter', 'Separation Letter')}
-            {experience.payslips?.map((payslip, index) => (
-              <div key={index} className="flex items-center gap-1 text-xs justify-between p-2 hover:bg-gray-50/80 rounded-lg transition-colors duration-200">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-3 w-3 text-gray-400" />
-                  <span className="text-gray-600">Payslip {index + 1}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 w-6 rounded-full hover:bg-white/80 text-gray-500 hover:text-gray-700 transition-colors"
-                    onClick={() => onViewDocument('payslips')}
-                  >
-                    <Eye className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 w-6 rounded-full hover:bg-white/80 text-gray-500 hover:text-gray-700 transition-colors"
-                    onClick={() => handleDownload('payslips')}
-                    disabled={isDownloading}
-                  >
-                    <Download className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="mt-2 flex items-center gap-2">
+          {renderDocumentIcon('offerLetter', 'Offer Letter')}
+          {renderDocumentIcon('separationLetter', 'Separation Letter')}
+          {experience.payslips?.length > 0 && renderDocumentIcon('payslips', 'Payslips')}
+        </div>
       </div>
     </div>
   );

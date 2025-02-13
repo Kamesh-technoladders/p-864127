@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -118,8 +117,8 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   };
 
   return (
-    <div className="p-6 card-container-elegant min-h-[calc(100vh-12rem)] bg-gradient-to-b from-white to-gray-50/30">
-      <div className="flex justify-between items-center mb-4 sticky top-0 bg-white/80 backdrop-blur-sm z-10 pb-4">
+    <div className="p-6 bg-white rounded-lg shadow-sm">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold text-[#30409F]">Experience</h2>
         <Button
           variant="ghost"
@@ -134,21 +133,20 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         </Button>
       </div>
 
-      <div className="space-y-4 h-[calc(100%-4rem)] overflow-y-auto scrollbar-elegant pr-3">
+      <div className="space-y-1">
         {(data || []).map((experience) => (
-          <div key={experience.id} className="transform transition-all duration-200 hover:translate-y-[-2px]">
-            <ExperienceCard
-              experience={experience}
-              onEdit={() => handleEdit(experience)}
-              onDelete={() => handleDelete(experience)}
-              onViewDocument={(docType) => handleViewDocument(docType, experience)}
-              onDownloadDocument={(docType) => handleDownloadDocument(docType, experience)}
-            />
-          </div>
+          <ExperienceCard
+            key={experience.id}
+            experience={experience}
+            onEdit={() => handleEdit(experience)}
+            onDelete={() => handleDelete(experience)}
+            onViewDocument={(docType) => handleViewDocument(docType, experience)}
+            onDownloadDocument={(docType) => handleDownloadDocument(docType, experience)}
+          />
         ))}
         
         {(!data || data.length === 0) && (
-          <div className="text-center py-8 text-gray-500 bg-gray-50/50 rounded-lg border border-dashed border-gray-200">
+          <div className="text-center py-8 text-gray-500">
             No experience records found. Click the plus icon to add your work history.
           </div>
         )}
