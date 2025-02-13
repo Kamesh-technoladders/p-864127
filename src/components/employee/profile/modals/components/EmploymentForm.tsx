@@ -9,13 +9,11 @@ interface EmploymentFormProps {
     department: string;
     position: string;
   };
-  isEditing: boolean;
   onChange: (field: string, value: string) => void;
 }
 
 export const EmploymentForm: React.FC<EmploymentFormProps> = ({
   formData,
-  isEditing,
   onChange,
 }) => {
   return (
@@ -33,11 +31,7 @@ export const EmploymentForm: React.FC<EmploymentFormProps> = ({
         <Input
           value={formData.department}
           onChange={(e) => onChange('department', e.target.value)}
-          readOnly={!isEditing}
-          className={cn(
-            "h-6 text-[11px] transition-colors duration-200",
-            !isEditing && "bg-gray-50"
-          )}
+          className="h-6 text-[11px] transition-colors duration-200"
         />
       </div>
       <div>
@@ -45,11 +39,7 @@ export const EmploymentForm: React.FC<EmploymentFormProps> = ({
         <Input
           value={formData.position}
           onChange={(e) => onChange('position', e.target.value)}
-          readOnly={!isEditing}
-          className={cn(
-            "h-6 text-[11px] transition-colors duration-200",
-            !isEditing && "bg-gray-50"
-          )}
+          className="h-6 text-[11px] transition-colors duration-200"
         />
       </div>
     </div>
