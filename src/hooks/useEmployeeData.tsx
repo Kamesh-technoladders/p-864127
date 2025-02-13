@@ -1,7 +1,7 @@
 
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { EmployeeData, PersonalInfo } from "@/services/types/employee.types";
+import { EmployeeData, PersonalInfo, EmployeeBasicInfo } from "@/services/types/employee.types";
 import { employeeDataService } from "@/services/employee/employeeDataService";
 import { employeeAddressService } from "@/services/employee/employeeAddressService";
 import { employeeContactService } from "@/services/employee/employeeContactService";
@@ -52,10 +52,11 @@ export const useEmployeeData = (employeeId: string | undefined) => {
 
       try {
         if (section === 'employment') {
-          await employeeDataService.updateBasicInfo(employeeId, {
+          const updateData: EmployeeBasicInfo = {
             department: data.department,
             position: data.position
-          });
+          };
+          await employeeDataService.updateBasicInfo(employeeId, updateData);
           await fetchEmployeeData();
           toast.success("Employment details updated successfully");
         } else if (section === 'personal') {

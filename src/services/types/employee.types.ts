@@ -1,3 +1,4 @@
+
 export interface Address {
   addressLine1: string;
   country: string;
@@ -119,12 +120,14 @@ export interface EmployeeDetailsResponse {
 }
 
 export interface EmployeeBasicInfo {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  gender: string;
-  bloodGroup: string;
-  maritalStatus: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  bloodGroup?: string;
+  maritalStatus?: string;
+  department?: string;  // Added this field
+  position?: string;    // Added this field
 }
