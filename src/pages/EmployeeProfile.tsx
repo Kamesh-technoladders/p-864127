@@ -1,77 +1,28 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
-import { ArrowLeft } from "lucide-react";
-import { useEmployeeData } from "@/hooks/useEmployeeData";
-import { ProfileHeader } from "@/components/employee/profile/ProfileHeader";
-import { StatsBar } from "@/components/employee/profile/StatsBar";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { QuickActions } from "@/components/employee/profile/QuickActions";
 import { LoadingState, ErrorState } from "@/components/employee/profile/ProfileStates";
-import { EmploymentDetailsModal } from "@/components/employee/profile/modals/EmploymentDetailsModal";
-import { PersonalInfoSection } from "@/components/employee/profile/sections/PersonalInfoSection";
-import { EmploymentInfoSection } from "@/components/employee/profile/sections/EmploymentInfoSection";
-import { EducationSection } from "@/components/employee/profile/sections/EducationSection";
-import { BankInfoSection } from "@/components/employee/profile/sections/BankInfoSection";
-import { MetricsSection } from "@/components/employee/profile/sections/MetricsSection";
-import { PersonalDetailsEditModal } from "@/components/employee/modals/PersonalDetailsEditModal";
+import { ProfileHeaderSection } from "@/components/employee/profile/ProfileHeaderSection";
+import { ProfileContent } from "@/components/employee/profile/ProfileContent";
+import { useEmployeeProfile } from "@/hooks/useEmployeeProfile";
 
 const EmployeeProfile = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const { isLoading, employeeData, error, fetchEmployeeData, updateEmployee } = useEmployeeData(id);
-  const [isEmploymentModalOpen, setIsEmploymentModalOpen] = useState(false);
-  const [isPersonalModalOpen, setIsPersonalModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (id) {
-      fetchEmployeeData();
-    }
-  }, [id, fetchEmployeeData]);
-
-  const handleEdit = (section: string) => {
-    if (section === "employment") {
-      setIsEmploymentModalOpen(true);
-    } else if (section === "personal") {
-      setIsPersonalModalOpen(true);
-    } else {
-      toast.info(`Editing ${section} details`);
-    }
-  };
-
-  const handleUpdateEmployment = async (data: any) => {
-    try {
-      await updateEmployee("employment", data);
-      await fetchEmployeeData();
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const handleUpdatePersonal = async (data: any) => {
-    try {
-      await updateEmployee("personal", data);
-      await fetchEmployeeData();
-      setIsPersonalModalOpen(false);
-      toast.success("Personal details updated successfully");
-    } catch (error) {
-      console.error("Error updating personal details:", error);
-      toast.error("Failed to update personal details");
-    }
-  };
-
-  const calculateYearsOfExperience = (joinedDate: string) => {
-    const joined = new Date(joinedDate);
-    const now = new Date();
-    const years = now.getFullYear() - joined.getFullYear();
-    const months = now.getMonth() - joined.getMonth();
-    if (months < 0) {
-      return `${years - 1} years`;
-    }
-    return `${years} years`;
-  };
+  const {
+    isLoading,
+    employeeData,
+    error,
+    isEmploymentModalOpen,
+    setIsEmploymentModalOpen,
+    isPersonalModalOpen,
+    setIsPersonalModalOpen,
+    handleEdit,
+    handleUpdateEmployment,
+    handleUpdatePersonal,
+    calculateYearsOfExperience
+  } = useEmployeeProfile(id);
 
   if (!id) {
     return <ErrorState message="No Employee Selected" onReturn={() => navigate("/")} />;
@@ -85,120 +36,20 @@ const EmployeeProfile = () => {
     return <ErrorState message={error || "Employee Not Found"} onReturn={() => navigate("/")} />;
   }
 
-  const personalData = {
-    employeeId: employeeData.employee_id,
-    firstName: employeeData.first_name,
-    lastName: employeeData.last_name,
-    email: employeeData.email,
-    phone: employeeData.phone || '',
-    dateOfBirth: employeeData.date_of_birth || '',
-    gender: employeeData.gender || '',
-    bloodGroup: employeeData.blood_group || '',
-    maritalStatus: employeeData.marital_status || '',
-    presentAddress: employeeData.present_address || {
-      addressLine1: '',
-      country: '',
-      state: '',
-      city: '',
-      zipCode: ''
-    },
-    permanentAddress: employeeData.permanent_address || {
-      addressLine1: '',
-      country: '',
-      state: '',
-      city: '',
-      zipCode: ''
-    },
-    emergencyContacts: employeeData.emergency_contacts || [],
-    familyDetails: employeeData.family_details || []
-  };
-
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gradient-to-b from-white to-[#FFF9E7] p-8">
-        <div className="flex justify-between items-center mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="hover:bg-white/50 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
-          </Button>
-          <QuickActions />
-        </div>
-
-        <ProfileHeader
-          employeeId={employeeData.employee_id}
-          firstName={employeeData.first_name}
-          lastName={employeeData.last_name}
-          email={employeeData.email}
-        />
-
-        <StatsBar
-          joinedDate={new Date(employeeData.created_at).toLocaleDateString()}
-          department="Engineering"
-          designation="Software Engineer"
-          yearsOfExperience={calculateYearsOfExperience(employeeData.created_at)}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
-          <PersonalInfoSection
-            phone={employeeData.phone}
-            dateOfBirth={employeeData.date_of_birth}
-            maritalStatus={employeeData.marital_status}
-            onEdit={() => handleEdit("personal")}
-          />
-
-          <EmploymentInfoSection
-            employeeId={employeeData.employee_id}
-            onEdit={() => handleEdit("employment")}
-          />
-
-          <EducationSection
-            onEdit={() => handleEdit("education")}
-          />
-
-          <BankInfoSection
-            onEdit={() => handleEdit("bank")}
-          />
-
-          <MetricsSection employeeId={employeeData.id} />
-        </div>
-
-        <EmploymentDetailsModal
-          isOpen={isEmploymentModalOpen}
-          onClose={() => setIsEmploymentModalOpen(false)}
-          employeeId={employeeData?.id || ''}
-          initialData={{
-            employeeId: employeeData?.employee_id || '',
-            department: 'Engineering',
-            position: 'Software Engineer',
-            joinedDate: employeeData?.created_at || '',
-            employmentHistory: [
-              {
-                title: 'Senior Developer',
-                date: 'Jan 2023',
-                description: 'Promoted to Senior Developer role',
-                type: 'promotion'
-              },
-              {
-                title: 'Developer',
-                date: 'Jan 2022',
-                description: 'Joined as Developer',
-                type: 'join'
-              }
-            ]
-          }}
-          onUpdate={handleUpdateEmployment}
-        />
-
-        <PersonalDetailsEditModal
-          isOpen={isPersonalModalOpen}
-          onClose={() => setIsPersonalModalOpen(false)}
-          data={personalData}
-          employeeId={employeeData.id}
-          onUpdate={handleUpdatePersonal}
+        <ProfileHeaderSection />
+        <ProfileContent
+          employeeData={employeeData}
+          isEmploymentModalOpen={isEmploymentModalOpen}
+          isPersonalModalOpen={isPersonalModalOpen}
+          setIsEmploymentModalOpen={setIsEmploymentModalOpen}
+          setIsPersonalModalOpen={setIsPersonalModalOpen}
+          handleEdit={handleEdit}
+          handleUpdateEmployment={handleUpdateEmployment}
+          handleUpdatePersonal={handleUpdatePersonal}
+          calculateYearsOfExperience={calculateYearsOfExperience}
         />
       </div>
     </DashboardLayout>
