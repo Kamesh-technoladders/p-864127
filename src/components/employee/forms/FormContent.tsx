@@ -30,7 +30,12 @@ export const FormContent: React.FC<FormContentProps> = ({
           onComplete={(completed: boolean, data?: any) => {
             updateSectionProgress("personal", completed);
             if (completed && data) {
-              updateFormData("personal", data);
+              const personalData = {
+                ...data,
+                emergencyContacts: data.emergencyContacts || [],
+                familyDetails: data.familyDetails || []
+              };
+              updateFormData("personal", personalData);
               handleSaveAndNext();
             } else {
               toast.error("Please fill in all required fields");

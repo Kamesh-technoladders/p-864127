@@ -79,8 +79,14 @@ export const useEmployeeForm = () => {
         setIsSubmitting(true);
         try {
           console.log('Submitting form data:', formData);
+          const personalData = {
+            ...formData.personal!,
+            emergencyContacts: formData.personal?.emergencyContacts || [],
+            familyDetails: formData.personal?.familyDetails || []
+          };
+          
           await employeeService.createEmployee({
-            personal: formData.personal!,
+            personal: personalData,
             education: formData.education,
             experience: formData.experience || [],
             bank: formData.bank!,
