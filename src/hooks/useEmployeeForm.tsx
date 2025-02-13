@@ -45,7 +45,15 @@ export const useEmployeeForm = () => {
     const currentTabProgress = formProgress[activeTab as keyof FormProgress];
     console.log('Tab change requested:', { from: activeTab, to: tabId, currentProgress: currentTabProgress });
 
-    if (!currentTabProgress) {
+    // For education tab, check both education and experience progress
+    if (activeTab === "education") {
+      const isEducationComplete = formProgress.education;
+      const isExperienceComplete = formProgress.experience;
+      if (!isEducationComplete || !isExperienceComplete) {
+        toast.error("Please complete both Education and Experience sections before proceeding");
+        return;
+      }
+    } else if (!currentTabProgress) {
       toast.error("Please complete all required fields before proceeding");
       return;
     }
@@ -65,7 +73,7 @@ export const useEmployeeForm = () => {
       setActiveTab(nextTab);
     } else {
       // On last tab, submit the form
-      const requiredSections = ["personal", "bank"];
+      const requiredSections = ["personal", "education", "experience", "bank"];
       const isRequiredCompleted = requiredSections.every(section => 
         formProgress[section as keyof FormProgress]
       );

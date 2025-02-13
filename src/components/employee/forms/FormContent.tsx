@@ -1,8 +1,8 @@
 
 import React from "react";
 import { PersonalDetailsForm } from "../../employee/PersonalDetailsForm";
-import { EmploymentDetailsForm } from "../../employee/EmploymentDetailsForm";
 import { EducationForm } from "../../employee/EducationForm";
+import { ExperienceForm } from "../../employee/ExperienceForm";
 import { BankAccountForm } from "../../employee/BankAccountForm";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
 import { Experience } from "../types";
@@ -43,19 +43,35 @@ export const FormContent: React.FC<FormContentProps> = ({
       );
     case "education":
       return (
-        <EducationForm
-          onComplete={(completed: boolean, data?: any) => {
-            console.log('Education form completion:', { completed, data });
-            if (completed && data) {
-              updateFormData("education", data);
-              updateSectionProgress("education", true);
-            } else {
-              updateSectionProgress("education", false);
-            }
-          }}
-          initialData={formData.education}
-          employeeId={employeeId}
-        />
+        <div className="space-y-8">
+          <EducationForm
+            onComplete={(completed: boolean, data?: any) => {
+              console.log('Education form completion:', { completed, data });
+              if (completed && data) {
+                updateFormData("education", data);
+                updateSectionProgress("education", true);
+              } else {
+                updateSectionProgress("education", false);
+              }
+            }}
+            initialData={formData.education}
+            employeeId={employeeId}
+          />
+          
+          <ExperienceForm
+            onComplete={(completed: boolean, data?: Experience[]) => {
+              console.log('Experience form completion:', { completed, data });
+              if (completed && data) {
+                updateFormData("experience", data);
+                updateSectionProgress("experience", true);
+              } else {
+                updateSectionProgress("experience", false);
+              }
+            }}
+            experiences={formData.experience}
+            employeeId={employeeId}
+          />
+        </div>
       );
     case "bank":
       return (
