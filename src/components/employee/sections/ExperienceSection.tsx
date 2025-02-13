@@ -36,8 +36,15 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     setIsDeleteDialogOpen(true);
   };
 
+  const getDocumentUrl = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>, experience: Experience): string | null => {
+    const doc = docType === 'payslips' ? experience.payslips?.[0] : experience[docType];
+    if (!doc) return null;
+    if (typeof doc === 'string') return doc;
+    return null;
+  };
+
   const handleViewDocument = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>, experience: Experience) => {
-    const documentUrl = docType === 'payslips' ? experience.payslips?.[0] : experience[docType];
+    const documentUrl = getDocumentUrl(docType, experience);
     if (!documentUrl) {
       toast.error("Document not available");
       return;
@@ -50,7 +57,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
 
   const handleDownloadDocument = async (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>, experience: Experience) => {
     try {
-      const documentUrl = docType === 'payslips' ? experience.payslips?.[0] : experience[docType];
+      const documentUrl = getDocumentUrl(docType, experience);
       if (!documentUrl) {
         toast.error("Document not available");
         return;
