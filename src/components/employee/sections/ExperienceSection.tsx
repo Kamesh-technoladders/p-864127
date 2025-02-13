@@ -8,6 +8,7 @@ import { AddExperienceModal } from "../AddExperienceModal";
 import { DeleteConfirmationDialog } from "../experience/DeleteConfirmationDialog";
 import { experienceService } from "@/services/employee/experience.service";
 import { toast } from "sonner";
+import { DocumentViewerDialog } from "../education/DocumentViewerDialog";
 
 interface ExperienceSectionProps {
   data: Experience[];
@@ -22,9 +23,8 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedExperience, setSelectedExperience] = useState<Experience | null>(
-    null
-  );
+  const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
+  const [viewingDocument, setViewingDocument] = useState<{ url: string; type: string } | null>(null);
 
   const handleEdit = (experience: Experience) => {
     setSelectedExperience(experience);
@@ -36,12 +36,45 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     setIsDeleteDialogOpen(true);
   };
 
-  const handleViewDocument = (docType: string) => {
-    console.log('Viewing document:', docType);
+  const handleViewDocument = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>, experience: Experience) => {
+    const documentUrl = docType === 'payslips' ? experience.payslips?.[0] : experience[docType];
+    if (!documentUrl) {
+      toast.error("Document not available");
+      return;
+    }
+    setViewingDocument({
+      url: documentUrl,
+      type: docType
+    });
   };
 
-  const handleDownloadDocument = (docType: string) => {
-    console.log('Downloading document:', docType);
+  const handleDownloadDocument = async (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>, experience: Experience) => {
+    try {
+      const documentUrl = docType === 'payslips' ? experience.payslips?.[0] : experience[docType];
+      if (!documentUrl) {
+        toast.error("Document not available");
+        return;
+      }
+
+      const response = await fetch(documentUrl);
+      if (!response.ok) {
+        throw new Error('Download failed');
+      }
+      
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `${docType}_${experience.company}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      toast.success("Document downloaded successfully");
+    } catch (error) {
+      console.error("Error downloading document:", error);
+      toast.error("Failed to download document");
+    }
   };
 
   const handleSave = async (formData: Experience) => {
@@ -101,8 +134,8 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
             experience={experience}
             onEdit={() => handleEdit(experience)}
             onDelete={() => handleDelete(experience)}
-            onViewDocument={handleViewDocument}
-            onDownloadDocument={handleDownloadDocument}
+            onViewDocument={(docType) => handleViewDocument(docType, experience)}
+            onDownloadDocument={(docType) => handleDownloadDocument(docType, experience)}
           />
         ))}
         
@@ -130,6 +163,13 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           setSelectedExperience(null);
         }}
         onConfirm={handleConfirmDelete}
+      />
+
+      <DocumentViewerDialog
+        isOpen={!!viewingDocument}
+        onClose={() => setViewingDocument(null)}
+        documentUrl={viewingDocument?.url}
+        documentType={viewingDocument?.type || ""}
       />
     </div>
   );
