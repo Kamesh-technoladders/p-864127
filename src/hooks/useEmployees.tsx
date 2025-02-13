@@ -12,7 +12,7 @@ export interface Employee {
   created_at: string;
   gender?: string;
   blood_group?: string;
-  employment_status?: string;  // Added this field
+  employment_status?: string;
 }
 
 export const useEmployees = () => {
@@ -20,28 +20,28 @@ export const useEmployees = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchEmployees = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('employees')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setEmployees(data || []);
+    } catch (error: any) {
+      console.error('Error fetching employees:', error);
+      setError('Failed to fetch employees');
+      toast.error('Failed to fetch employees');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('employees')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        setEmployees(data || []);
-      } catch (error: any) {
-        console.error('Error fetching employees:', error);
-        setError('Failed to fetch employees');
-        toast.error('Failed to fetch employees');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchEmployees();
   }, []);
 
-  return { employees, isLoading, error };
+  return { employees, isLoading, error, refetch: fetchEmployees };
 };

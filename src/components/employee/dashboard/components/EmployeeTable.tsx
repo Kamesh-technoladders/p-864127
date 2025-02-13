@@ -12,12 +12,60 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2 } from "lucide-react";
 import { Employee } from "@/hooks/useEmployees";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EmployeeTableProps {
   employees: Employee[];
   isLoading: boolean;
   error: string | null;
 }
+
+const StatusCell: React.FC<{ 
+  employeeId: string; 
+  currentStatus: string;
+  onStatusUpdate: () => void;
+}> = ({ employeeId, currentStatus, onStatusUpdate }) => {
+  const updateEmployeeStatus = async (status: string) => {
+    try {
+      const { error } = await supabase
+        .from('employees')
+        .update({ employment_status: status })
+        .eq('id', employeeId);
+        
+      if (error) throw error;
+      onStatusUpdate();
+      toast.success('Status updated successfully');
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast.error('Failed to update status');
+    }
+  };
+
+  return (
+    <Select value={currentStatus || 'active'} onValueChange={updateEmployeeStatus}>
+      <SelectTrigger className="w-[120px]">
+        <SelectValue>
+          <span className={`status-pill status-pill-${(currentStatus || 'active').toLowerCase()}`}>
+            {currentStatus || 'Active'}
+          </span>
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="active">Active</SelectItem>
+        <SelectItem value="inactive">Inactive</SelectItem>
+        <SelectItem value="terminated">Terminated</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+};
 
 export const EmployeeTable: React.FC<EmployeeTableProps> = ({ 
   employees, 
@@ -95,7 +143,11 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
                 <TableCell>{employee.blood_group || '-'}</TableCell>
                 <TableCell>{new Date(employee.created_at).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <span className="status-pill status-pill-invited">Active</span>
+                  <StatusCell 
+                    employeeId={employee.id} 
+                    currentStatus={employee.employment_status || 'active'} 
+                    onStatusUpdate={() => {}} // This will be handled by the useEmployees hook's automatic refresh
+                  />
                 </TableCell>
               </TableRow>
             ))
