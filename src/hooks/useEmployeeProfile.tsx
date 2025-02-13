@@ -61,6 +61,7 @@ export const useEmployeeProfile = (id: string | undefined) => {
     handleEdit,
     handleUpdateEmployment,
     handleUpdatePersonal,
-    calculateYearsOfExperience
+    calculateYearsOfExperience,
+    fetchEmployeeData  // Added this to the return object
   };
 };

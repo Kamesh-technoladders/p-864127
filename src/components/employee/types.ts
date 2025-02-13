@@ -45,8 +45,8 @@ export interface PersonalDetailsData {
   maritalStatus: string;
   presentAddress: Address;
   permanentAddress: Address;
-  emergencyContacts: EmergencyContact[];
-  familyDetails: FamilyMember[];
+  emergencyContacts?: EmergencyContact[];  // Made optional with ?
+  familyDetails?: FamilyMember[];          // Made optional with ?
 }
 
 export interface FormComponentProps<T = any> {
