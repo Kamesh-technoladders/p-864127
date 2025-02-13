@@ -94,7 +94,7 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-3 max-h-[16rem] overflow-hidden">
+    <div className="bg-white rounded-lg border border-gray-200 p-3 max-h-[16rem] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 pr-4">
       <div className="flex justify-between items-start">
         <div className="space-y-1">
           <h3 className="text-sm font-semibold text-gray-900">
@@ -142,7 +142,7 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
           </button>
           
           {isDocsExpanded && (
-            <div className="mt-1 space-y-1 max-h-[8rem] overflow-y-auto pr-1 scrollbar-thin">
+            <div className="mt-1 space-y-1 overflow-y-auto">
               {renderDocumentActions('offerLetter', 'Offer Letter')}
               {renderDocumentActions('separationLetter', 'Separation Letter')}
               {experience.payslips?.map((payslip, index) => (
