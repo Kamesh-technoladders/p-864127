@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { BasicInfoSection } from "./personal-details/BasicInfoSection";
@@ -47,12 +47,27 @@ const personalDetailsSchema = z.object({
 });
 
 export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete, initialData }) => {
-  const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([
-    { relationship: "", name: "", phone: "" }
-  ]);
-  const [familyDetails, setFamilyDetails] = useState<FamilyMember[]>([
-    { relationship: "", name: "", occupation: "", phone: "" }
-  ]);
+  const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
+  const [familyDetails, setFamilyDetails] = useState<FamilyMember[]>([]);
+
+  // Initialize emergency contacts and family details from initialData
+  useEffect(() => {
+    if (initialData) {
+      // Initialize emergency contacts with initial data or one empty contact
+      setEmergencyContacts(
+        initialData.emergencyContacts && initialData.emergencyContacts.length > 0
+          ? initialData.emergencyContacts
+          : [{ relationship: "", name: "", phone: "" }]
+      );
+
+      // Initialize family details with initial data or one empty member
+      setFamilyDetails(
+        initialData.familyDetails && initialData.familyDetails.length > 0
+          ? initialData.familyDetails
+          : [{ relationship: "", name: "", occupation: "", phone: "" }]
+      );
+    }
+  }, [initialData]);
 
   const form = useForm({
     defaultValues: {
@@ -77,17 +92,47 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
   });
 
   const validateForm = () => {
-    // Check if at least one emergency contact is filled
+    // Check if at least one emergency contact is filled completely
     const hasValidEmergencyContact = emergencyContacts.some(
-      contact => contact.relationship && contact.name && contact.phone
+      contact => 
+        contact.name.trim() !== "" && 
+        contact.relationship.trim() !== "" && 
+        contact.phone.trim() !== ""
     );
 
-    // Check if at least one family member is filled
+    // Check if at least one family member is filled completely
     const hasValidFamilyMember = familyDetails.some(
-      member => member.relationship && member.name && member.occupation && member.phone
+      member => 
+        member.name.trim() !== "" && 
+        member.relationship.trim() !== "" && 
+        member.occupation.trim() !== "" && 
+        member.phone.trim() !== ""
     );
 
-    return hasValidEmergencyContact && hasValidFamilyMember;
+    // If no valid entries are found, filter out empty entries
+    if (!hasValidEmergencyContact) {
+      setEmergencyContacts(contacts => 
+        contacts.filter(contact => 
+          contact.name.trim() !== "" || 
+          contact.relationship.trim() !== "" || 
+          contact.phone.trim() !== ""
+        )
+      );
+    }
+
+    if (!hasValidFamilyMember) {
+      setFamilyDetails(members => 
+        members.filter(member => 
+          member.name.trim() !== "" || 
+          member.relationship.trim() !== "" || 
+          member.occupation.trim() !== "" || 
+          member.phone.trim() !== ""
+        )
+      );
+    }
+
+    // Allow form submission even if emergency contacts or family details are empty
+    return true;
   };
 
   const handleSubmit = form.handleSubmit((data) => {
@@ -96,10 +141,26 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
       return;
     }
 
+    // Filter out empty emergency contacts and family details
+    const validEmergencyContacts = emergencyContacts.filter(
+      contact => 
+        contact.name.trim() !== "" && 
+        contact.relationship.trim() !== "" && 
+        contact.phone.trim() !== ""
+    );
+
+    const validFamilyDetails = familyDetails.filter(
+      member => 
+        member.name.trim() !== "" && 
+        member.relationship.trim() !== "" && 
+        member.occupation.trim() !== "" && 
+        member.phone.trim() !== ""
+    );
+
     const formData = {
       ...data,
-      emergencyContacts,
-      familyDetails
+      emergencyContacts: validEmergencyContacts,
+      familyDetails: validFamilyDetails
     };
 
     console.log('Form submitted:', formData);
