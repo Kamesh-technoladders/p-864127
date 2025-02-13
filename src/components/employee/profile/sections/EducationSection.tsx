@@ -9,6 +9,8 @@ import { DocumentViewerDialog } from "../../education/DocumentViewerDialog";
 import { toast } from "sonner";
 import { EducationEditModal } from "../../modals/EducationEditModal";
 import { educationService } from "@/services/employee/education.service";
+import { experienceService } from "@/services/employee/experience.service";
+import { Experience } from "@/services/types/employee.types";
 
 interface EducationSectionProps {
   employeeId: string;
@@ -28,9 +30,11 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
   const [viewingDocument, setViewingDocument] = useState<Document | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [educationDocuments, setEducationDocuments] = useState<Document[]>([]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
 
   useEffect(() => {
     fetchEducationDocuments();
+    fetchExperiences();
   }, [employeeId]);
 
   const fetchEducationDocuments = async () => {
@@ -45,6 +49,29 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
     } catch (error) {
       console.error("Error fetching education documents:", error);
       toast.error("Failed to load education documents");
+    }
+  };
+
+  const fetchExperiences = async () => {
+    try {
+      const data = await experienceService.fetchExperiences(employeeId);
+      // Transform the API response to match the Experience type
+      const transformedData = data.map((exp: any) => ({
+        id: exp.id,
+        jobTitle: exp.job_title,
+        company: exp.company,
+        location: exp.location,
+        employmentType: exp.employment_type,
+        startDate: exp.start_date,
+        endDate: exp.end_date,
+        offerLetter: exp.offer_letter_url,
+        separationLetter: exp.separation_letter_url,
+        payslips: exp.payslips || []
+      }));
+      setExperiences(transformedData);
+    } catch (error) {
+      console.error("Error fetching experiences:", error);
+      toast.error("Failed to load experiences");
     }
   };
 
@@ -85,6 +112,10 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
     fetchEducationDocuments();
   };
 
+  const handleExperienceUpdate = () => {
+    fetchExperiences();
+  };
+
   return (
     <InfoCard title="Education & Experience" icon={GraduationCap}>
       <Tabs defaultValue="education" className="w-full">
@@ -108,7 +139,11 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
             />
           </TabsContent>
           <TabsContent value="experience">
-            <ExperienceSection employeeId={employeeId} />
+            <ExperienceSection 
+              employeeId={employeeId}
+              data={experiences}
+              onUpdate={handleExperienceUpdate}
+            />
           </TabsContent>
         </div>
       </Tabs>
