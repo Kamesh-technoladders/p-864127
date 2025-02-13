@@ -1,4 +1,3 @@
-
 export interface Address {
   addressLine1: string;
   country: string;
@@ -129,4 +128,3 @@ export interface EmployeeBasicInfo {
   bloodGroup: string;
   maritalStatus: string;
 }
-

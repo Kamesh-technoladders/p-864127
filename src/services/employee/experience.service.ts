@@ -65,7 +65,6 @@ export const experienceService = {
   },
 
   async deleteExperience(employeeId: string, experienceId: string) {
-    // Soft delete by updating status
     const { error } = await supabase
       .from('employee_experiences')
       .update({ status: 'inactive' })
@@ -75,7 +74,7 @@ export const experienceService = {
     if (error) throw error;
   },
 
-  private async uploadExperienceDocuments(
+  async uploadExperienceDocuments(
     employeeId: string,
     experienceId: string,
     experience: Experience
