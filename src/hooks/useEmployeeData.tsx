@@ -42,29 +42,53 @@ export const useEmployeeData = (employeeId: string | undefined) => {
         throw new Error('Employee not found');
       }
 
+      // Transform employee addresses
+      const addresses = employeeWithRelations.employee_addresses || [];
+      const presentAddressData = addresses.find((addr: any) => addr.type === 'present');
+      const permanentAddressData = addresses.find((addr: any) => addr.type === 'permanent');
+
       // Transform the data to match our expected format
       const transformedData = {
         ...employeeWithRelations,
-        presentAddress: employeeWithRelations.employee_addresses.find(
-          (addr: any) => addr.type === 'present'
-        ) || {
+        presentAddress: presentAddressData ? {
+          addressLine1: presentAddressData.address_line1,
+          country: presentAddressData.country,
+          state: presentAddressData.state,
+          city: presentAddressData.city,
+          zipCode: presentAddressData.zip_code
+        } : {
           addressLine1: '',
           country: '',
           state: '',
           city: '',
           zipCode: ''
         },
-        permanentAddress: employeeWithRelations.employee_addresses.find(
-          (addr: any) => addr.type === 'permanent'
-        ) || {
+        permanentAddress: permanentAddressData ? {
+          addressLine1: permanentAddressData.address_line1,
+          country: permanentAddressData.country,
+          state: permanentAddressData.state,
+          city: permanentAddressData.city,
+          zipCode: permanentAddressData.zip_code
+        } : {
           addressLine1: '',
           country: '',
           state: '',
           city: '',
           zipCode: ''
         },
-        emergencyContacts: employeeWithRelations.employee_emergency_contacts || [],
-        familyDetails: employeeWithRelations.employee_family_details || []
+        // Transform emergency contacts to match frontend format
+        emergencyContacts: (employeeWithRelations.employee_emergency_contacts || []).map((contact: any) => ({
+          name: contact.name,
+          relationship: contact.relationship,
+          phone: contact.phone
+        })),
+        // Transform family details to match frontend format
+        familyDetails: (employeeWithRelations.employee_family_details || []).map((member: any) => ({
+          name: member.name,
+          relationship: member.relationship,
+          occupation: member.occupation,
+          phone: member.phone
+        }))
       };
 
       console.log('Transformed employee data:', transformedData);
