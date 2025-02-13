@@ -50,14 +50,14 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
   };
 
   return (
-    <div className="w-full bg-white rounded-lg">
-      <div className="flex items-center gap-2 text-[#30409F] mb-6">
-        <Banknote className="h-6 w-6" />
-        <span className="text-base font-semibold">Bank Account Details</span>
+    <div className="w-full rounded-lg">
+      <div className="flex items-center gap-1.5 text-[#30409F] mb-3">
+        <Banknote className="h-4 w-4" />
+        <span className="text-sm font-semibold">Bank Account Details</span>
       </div>
       
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <FormField
             id="accountHolderName"
             label="Account Holder Name"
@@ -99,8 +99,8 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
             placeholder="Enter branch name"
           />
 
-          <div className="relative">
-            <label htmlFor="accountType" className="text-sm font-semibold text-[#303030]">
+          <div className="relative space-y-1">
+            <label htmlFor="accountType" className="text-xs font-semibold text-[#303030]">
               Account Type<span className="text-[#DD0101]">*</span>
             </label>
             <Select
@@ -109,7 +109,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
             >
               <SelectTrigger
                 id="accountType"
-                className="mt-2 h-11 border-[#E4E4E4] rounded-lg hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20"
+                className="h-7 text-xs border-[#E4E4E4] rounded-lg hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20"
               >
                 <SelectValue placeholder="Select account type" />
               </SelectTrigger>
@@ -119,7 +119,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
               </SelectContent>
             </Select>
             {errors.accountType && (
-              <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+              <div className="flex items-center gap-1 mt-1 text-[10px] text-[#DD0101]">
                 <AlertCircle className="h-3 w-3" />
                 <span>{errors.accountType.message}</span>
               </div>
@@ -136,20 +136,24 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
           />
         </div>
 
-        <DocumentUploads setValue={setValue} formValues={{}} />
+        <div className="pt-3">
+          <DocumentUploads setValue={setValue} formValues={{}} />
+        </div>
 
-        <div className="flex justify-end gap-3 pt-6 border-t">
+        <div className="flex justify-end gap-2 pt-3 border-t mt-3">
           <Button
             type="button"
             variant="outline"
             onClick={handleCancel}
             disabled={isSubmitting}
+            className="h-7 text-xs"
           >
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={!isValid || !isDirty || isSubmitting}
+            className="h-7 text-xs"
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </Button>

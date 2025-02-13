@@ -27,7 +27,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   placeholder,
 }) => {
   return (
-    <div className="relative">
+    <div className="relative space-y-1">
       <Label htmlFor={id} className="text-xs font-semibold text-[#303030]">
         {label}{required && <span className="text-[#DD0101]">*</span>}
       </Label>
@@ -36,7 +36,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         type={type}
         {...register(id)}
         className={cn(
-          "mt-1.5 h-9 text-sm border-[#E4E4E4] rounded-lg placeholder:text-[#8E8E8E]",
+          "h-7 text-xs border-[#E4E4E4] rounded-lg placeholder:text-[#8E8E8E]",
           "hover:border-[#30409F]/50 focus:ring-2 focus:ring-[#30409F]/20",
           error && "border-[#DD0101] hover:border-[#DD0101]/80",
           className
@@ -44,7 +44,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         placeholder={placeholder}
       />
       {error && (
-        <div className="flex items-center gap-1 mt-1 text-[10px] text-[#DD0101]">
+        <div className="flex items-center gap-1 mt-0.5 text-[10px] text-[#DD0101]">
           <AlertCircle className="h-3 w-3" />
           <span>{error.message}</span>
         </div>
