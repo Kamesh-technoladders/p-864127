@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { AddressLineField } from "./fields/AddressLineField";
 import { CountryField } from "./fields/CountryField";
@@ -14,13 +14,29 @@ interface AddressFieldsProps {
 }
 
 export const AddressFields: React.FC<AddressFieldsProps> = ({ form, prefix, disabled }) => {
+  const [selectedCountry, setSelectedCountry] = useState<string>('');
+
+  const handleCountryChange = (countryCode: string) => {
+    setSelectedCountry(countryCode);
+  };
+
   return (
     <div className="space-y-6">
       <AddressLineField form={form} prefix={prefix} disabled={disabled} />
 
       <div className="grid grid-cols-2 gap-4">
-        <CountryField form={form} prefix={prefix} disabled={disabled} />
-        <StateField form={form} prefix={prefix} disabled={disabled} />
+        <CountryField 
+          form={form} 
+          prefix={prefix} 
+          disabled={disabled}
+          onCountryChange={handleCountryChange}
+        />
+        <StateField 
+          form={form} 
+          prefix={prefix} 
+          disabled={disabled}
+          countryCode={selectedCountry}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
