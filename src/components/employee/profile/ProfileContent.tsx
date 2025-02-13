@@ -96,7 +96,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
         />
 
         <BankInfoSection
-          onEdit={() => handleEdit("bank")}
+          employeeId={employeeData.id}
         />
 
         <MetricsSection employeeId={employeeData.id} />
