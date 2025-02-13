@@ -1,9 +1,12 @@
 
 import { useState, useCallback } from "react";
-import { employeeService } from "@/services/employee/employee.service";
 import { toast } from "sonner";
-import { EmployeeData, PersonalInfo, EmployeeDetailsResponse } from "@/services/types/employee.types";
-import { supabase } from "@/integrations/supabase/client";
+import { EmployeeData, PersonalInfo } from "@/services/types/employee.types";
+import { employeeDataService } from "@/services/employee/employeeDataService";
+import { employeeAddressService } from "@/services/employee/employeeAddressService";
+import { employeeContactService } from "@/services/employee/employeeContactService";
+import { employeeFamilyService } from "@/services/employee/employeeFamilyService";
+import { transformEmployeeData } from "@/utils/transforms/employeeTransforms";
 
 export const useEmployeeData = (employeeId: string | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,59 +24,9 @@ export const useEmployeeData = (employeeId: string | undefined) => {
     
     try {
       console.log('Fetching employee data for ID:', employeeId);
-      const { data: employeeWithRelations, error: queryError } = await supabase
-        .rpc('get_employee_details', {
-          p_employee_id: employeeId
-        });
-
-      if (queryError) {
-        console.error('Supabase query error:', queryError);
-        throw queryError;
-      }
-
-      if (!employeeWithRelations) {
-        console.error('No employee data found');
-        throw new Error('Employee not found');
-      }
-
-      // First cast to unknown, then to our expected type for type safety
-      const employeeDetails = (employeeWithRelations as unknown) as EmployeeDetailsResponse;
-
-      // Transform the data to match our expected format
-      const transformedData = {
-        id: employeeDetails.id,
-        employeeId: employeeDetails.employee_id,
-        firstName: employeeDetails.first_name,
-        lastName: employeeDetails.last_name,
-        email: employeeDetails.email,
-        phone: employeeDetails.phone || '',
-        dateOfBirth: employeeDetails.date_of_birth || '',
-        gender: employeeDetails.gender || '',
-        bloodGroup: employeeDetails.blood_group || '',
-        maritalStatus: employeeDetails.marital_status || '',
-        department: employeeDetails.department || '',
-        position: employeeDetails.position || '',
-        employmentStatus: employeeDetails.employment_status || '',
-        createdAt: employeeDetails.created_at,
-        updatedAt: employeeDetails.updated_at,
-        presentAddress: employeeDetails.present_address || {
-          addressLine1: '',
-          country: '',
-          state: '',
-          city: '',
-          zipCode: ''
-        },
-        permanentAddress: employeeDetails.permanent_address || {
-          addressLine1: '',
-          country: '',
-          state: '',
-          city: '',
-          zipCode: ''
-        },
-        emergencyContacts: employeeDetails.emergency_contacts || [],
-        familyDetails: employeeDetails.family_details || []
-      };
-
+      const employeeDetails = await employeeDataService.fetchEmployeeDetails(employeeId);
+      const transformedData = transformEmployeeData(employeeDetails);
+      
       console.log('Transformed employee data:', transformedData);
       setEmployeeData(transformedData);
     } catch (error: any) {
@@ -98,8 +51,6 @@ export const useEmployeeData = (employeeId: string | undefined) => {
       }
 
       try {
-        let updateData: Partial<EmployeeData>;
-        
         if (section === 'personal') {
           const personalInfo: PersonalInfo = {
             employeeId: data.employeeId,
@@ -116,105 +67,28 @@ export const useEmployeeData = (employeeId: string | undefined) => {
             emergencyContacts: data.emergencyContacts || [],
             familyDetails: data.familyDetails || []
           };
-          
-          // Update employee basic info
-          const { error: employeeError } = await supabase
-            .from('employees')
-            .update({
-              first_name: personalInfo.firstName,
-              last_name: personalInfo.lastName,
-              email: personalInfo.email,
-              phone: personalInfo.phone,
-              date_of_birth: personalInfo.dateOfBirth,
-              gender: personalInfo.gender,
-              blood_group: personalInfo.bloodGroup,
-              marital_status: personalInfo.maritalStatus
-            })
-            .eq('id', employeeId);
 
-          if (employeeError) throw employeeError;
-
-          // Delete existing addresses
-          await supabase
-            .from('employee_addresses')
-            .delete()
-            .eq('employee_id', employeeId);
-
-          // Insert new addresses
-          const addressesToInsert = [
-            {
-              employee_id: employeeId,
-              type: 'present',
-              address_line1: personalInfo.presentAddress.addressLine1,
-              country: personalInfo.presentAddress.country,
-              state: personalInfo.presentAddress.state,
-              city: personalInfo.presentAddress.city,
-              zip_code: personalInfo.presentAddress.zipCode
-            },
-            {
-              employee_id: employeeId,
-              type: 'permanent',
-              address_line1: personalInfo.permanentAddress.addressLine1,
-              country: personalInfo.permanentAddress.country,
-              state: personalInfo.permanentAddress.state,
-              city: personalInfo.permanentAddress.city,
-              zip_code: personalInfo.permanentAddress.zipCode
-            }
-          ];
-
-          const { error: addressError } = await supabase
-            .from('employee_addresses')
-            .insert(addressesToInsert);
-
-          if (addressError) throw addressError;
-
-          // Delete existing emergency contacts
-          await supabase
-            .from('employee_emergency_contacts')
-            .delete()
-            .eq('employee_id', employeeId);
-
-          // Insert new emergency contacts
-          if (personalInfo.emergencyContacts.length > 0) {
-            const contactsToInsert = personalInfo.emergencyContacts.map(contact => ({
-              employee_id: employeeId,
-              name: contact.name,
-              relationship: contact.relationship,
-              phone: contact.phone
-            }));
-
-            const { error: contactsError } = await supabase
-              .from('employee_emergency_contacts')
-              .insert(contactsToInsert);
-
-            if (contactsError) throw contactsError;
-          }
-
-          // Delete existing family details
-          await supabase
-            .from('employee_family_details')
-            .delete()
-            .eq('employee_id', employeeId);
-
-          // Insert new family details
-          if (personalInfo.familyDetails.length > 0) {
-            const familyDetailsToInsert = personalInfo.familyDetails.map(member => ({
-              employee_id: employeeId,
-              name: member.name,
-              relationship: member.relationship,
-              occupation: member.occupation,
-              phone: member.phone
-            }));
-
-            const { error: familyError } = await supabase
-              .from('employee_family_details')
-              .insert(familyDetailsToInsert);
-
-            if (familyError) throw familyError;
-          }
+          // Update all personal information in parallel
+          await Promise.all([
+            employeeDataService.updateBasicInfo(employeeId, personalInfo),
+            employeeAddressService.updateAddresses(
+              employeeId,
+              personalInfo.presentAddress,
+              personalInfo.permanentAddress
+            ),
+            employeeContactService.updateEmergencyContacts(
+              employeeId,
+              personalInfo.emergencyContacts
+            ),
+            employeeFamilyService.updateFamilyDetails(
+              employeeId,
+              personalInfo.familyDetails
+            )
+          ]);
         } else {
-          updateData = { [section]: data };
-          await employeeService.updateEmployee(employeeId, updateData);
+          const updateData: Partial<EmployeeData> = { [section]: data };
+          // Handle other sections like education, experience, etc.
+          await employeeDataService.updateBasicInfo(employeeId, updateData as any);
         }
 
         await fetchEmployeeData();

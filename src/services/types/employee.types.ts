@@ -115,3 +115,14 @@ export interface EmployeeDetailsResponse {
     phone: string;
   }> | null;
 }
+
+export interface EmployeeBasicInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  gender: string;
+  bloodGroup: string;
+  maritalStatus: string;
+}
