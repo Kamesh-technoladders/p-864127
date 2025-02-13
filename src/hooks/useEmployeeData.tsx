@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 import { employeeService } from "@/services/employee/employee.service";
 import { toast } from "sonner";
-import { EmployeeData, PersonalInfo } from "@/services/types/employee.types";
+import { EmployeeData, PersonalInfo, EmployeeDetailsResponse } from "@/services/types/employee.types";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useEmployeeData = (employeeId: string | undefined) => {
@@ -36,31 +36,41 @@ export const useEmployeeData = (employeeId: string | undefined) => {
         throw new Error('Employee not found');
       }
 
+      const employeeDetails = employeeWithRelations as EmployeeDetailsResponse;
+
       // Transform the data to match our expected format
       const transformedData = {
-        ...employeeWithRelations,
-        employeeId: employeeWithRelations.employee_id,
-        firstName: employeeWithRelations.first_name,
-        lastName: employeeWithRelations.last_name,
-        dateOfBirth: employeeWithRelations.date_of_birth,
-        bloodGroup: employeeWithRelations.blood_group,
-        maritalStatus: employeeWithRelations.marital_status,
-        presentAddress: employeeWithRelations.present_address || {
+        id: employeeDetails.id,
+        employeeId: employeeDetails.employee_id,
+        firstName: employeeDetails.first_name,
+        lastName: employeeDetails.last_name,
+        email: employeeDetails.email,
+        phone: employeeDetails.phone || '',
+        dateOfBirth: employeeDetails.date_of_birth || '',
+        gender: employeeDetails.gender || '',
+        bloodGroup: employeeDetails.blood_group || '',
+        maritalStatus: employeeDetails.marital_status || '',
+        department: employeeDetails.department || '',
+        position: employeeDetails.position || '',
+        employmentStatus: employeeDetails.employment_status || '',
+        createdAt: employeeDetails.created_at,
+        updatedAt: employeeDetails.updated_at,
+        presentAddress: employeeDetails.present_address || {
           addressLine1: '',
           country: '',
           state: '',
           city: '',
           zipCode: ''
         },
-        permanentAddress: employeeWithRelations.permanent_address || {
+        permanentAddress: employeeDetails.permanent_address || {
           addressLine1: '',
           country: '',
           state: '',
           city: '',
           zipCode: ''
         },
-        emergencyContacts: employeeWithRelations.emergency_contacts || [],
-        familyDetails: employeeWithRelations.family_details || []
+        emergencyContacts: employeeDetails.emergency_contacts || [],
+        familyDetails: employeeDetails.family_details || []
       };
 
       console.log('Transformed employee data:', transformedData);
