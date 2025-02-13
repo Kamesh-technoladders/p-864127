@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import { useEmployees } from "@/hooks/useEmployees";
 import { Employee } from "@/hooks/useEmployees";
+import { toast } from "sonner";
 
 interface DashboardViewProps {
   onAddEmployee: () => void;
@@ -56,6 +57,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) =
         onSearchChange={setSearchValue}
         selectedStatus={selectedStatus}
         onStatusChange={setSelectedStatus}
+        employees={employees || []}
       />
       <EmployeeTable 
         employees={filteredEmployees} 
