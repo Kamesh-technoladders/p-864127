@@ -21,7 +21,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
     onComplete(isComplete, experiencesList);
   }, [experiencesList, onComplete, showError]);
 
-  const handleAddExperience = (data: any) => {
+  const handleAddExperience = async (data: Experience): Promise<void> => {
     try {
       setExperiencesList((prev) => {
         let newList;
@@ -51,6 +51,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
           ? "Failed to update experience"
           : "Failed to add experience"
       );
+      throw error; // Re-throw to be handled by the caller
     }
   };
 

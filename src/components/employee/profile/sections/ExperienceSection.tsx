@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GraduationCap, Plus } from "lucide-react";
 import { InfoCard } from "../InfoCard";
@@ -29,7 +28,6 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     try {
       setIsLoading(true);
       const data = await experienceService.fetchExperiences(employeeId);
-      // Map API response to Experience type
       const mappedExperiences: Experience[] = data.map(exp => ({
         id: exp.id,
         jobTitle: exp.job_title,
@@ -38,8 +36,8 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         employmentType: exp.employment_type,
         startDate: exp.start_date,
         endDate: exp.end_date,
-        offerLetter: exp.offer_letter_url,
-        separationLetter: exp.separation_letter_url,
+        offerLetter: exp.offer_letter_url || undefined,
+        separationLetter: exp.separation_letter_url || undefined,
         payslips: exp.payslips || []
       }));
       setExperiences(mappedExperiences);

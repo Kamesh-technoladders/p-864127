@@ -51,9 +51,9 @@ export interface Experience {
   employmentType: string;
   startDate: string;
   endDate: string;
-  offerLetter?: File;
-  separationLetter?: File;
-  payslips: File[];
+  offerLetter?: File | string;
+  separationLetter?: File | string;
+  payslips: (File | string)[];
 }
 
 export interface BankDetails {
