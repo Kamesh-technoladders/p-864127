@@ -1,6 +1,5 @@
 
-import React from "react";
-import { FormData } from "@/utils/progressCalculator";
+import React, { useState, useMemo } from "react";
 import { ProgressStats } from "./components/ProgressStats";
 import { ActionButtons } from "./components/ActionButtons";
 import { FilterBar } from "./components/FilterBar";
@@ -8,6 +7,7 @@ import { EmployeeTable } from "./components/EmployeeTable";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import { useEmployees } from "@/hooks/useEmployees";
+import { Employee } from "@/hooks/useEmployees";
 
 interface DashboardViewProps {
   onAddEmployee: () => void;
@@ -15,6 +15,19 @@ interface DashboardViewProps {
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) => {
   const { employees, isLoading, error } = useEmployees();
+  const [searchValue, setSearchValue] = useState("");
+
+  const filteredEmployees = useMemo(() => {
+    if (!searchValue.trim() || !employees) return employees;
+
+    const searchLower = searchValue.toLowerCase();
+    return employees.filter((employee) => 
+      employee.first_name.toLowerCase().includes(searchLower) ||
+      employee.last_name.toLowerCase().includes(searchLower) ||
+      employee.email.toLowerCase().includes(searchLower) ||
+      employee.employee_id.toLowerCase().includes(searchLower)
+    );
+  }, [employees, searchValue]);
 
   return (
     <div className="space-y-6">
@@ -29,9 +42,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) =
       <div className="flex justify-between items-center">
         <ActionButtons />
       </div>
-      <FilterBar />
+      <FilterBar 
+        searchValue={searchValue}
+        onSearchChange={setSearchValue}
+      />
       <EmployeeTable 
-        employees={employees || []} 
+        employees={filteredEmployees || []} 
         isLoading={isLoading} 
         error={error} 
       />

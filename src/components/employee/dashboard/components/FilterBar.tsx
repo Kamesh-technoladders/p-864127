@@ -13,7 +13,15 @@ import {
   Briefcase
 } from "lucide-react";
 
-export const FilterBar: React.FC = () => {
+interface FilterBarProps {
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+}
+
+export const FilterBar: React.FC<FilterBarProps> = ({
+  searchValue,
+  onSearchChange
+}) => {
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
       <div className="flex items-center gap-3">
@@ -48,8 +56,10 @@ export const FilterBar: React.FC = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search..."
-            className="pl-10 pr-4 py-2 border rounded-lg text-sm"
+            placeholder="Search by name, email, or ID..."
+            className="pl-10 pr-4 py-2 border rounded-lg text-sm w-64"
+            value={searchValue}
+            onChange={(e) => onSearchChange(e.target.value)}
           />
         </div>
         <Button size="icon" variant="outline">
