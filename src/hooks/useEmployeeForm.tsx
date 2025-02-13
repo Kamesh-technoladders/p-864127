@@ -27,14 +27,10 @@ export const useEmployeeForm = () => {
 
   const updateSectionProgress = (section: keyof FormProgress, completed: boolean) => {
     console.log(`Updating progress for ${section}:`, completed);
-    setFormProgress((prev) => {
-      const newProgress = {
-        ...prev,
-        [section]: completed,
-      };
-      console.log('New form progress:', newProgress);
-      return newProgress;
-    });
+    setFormProgress((prev) => ({
+      ...prev,
+      [section]: completed,
+    }));
   };
 
   const updateFormData = (section: keyof FormData, data: any) => {
@@ -43,14 +39,14 @@ export const useEmployeeForm = () => {
       ...prev,
       [section]: data,
     }));
-
-    if (section === 'experience') {
-      updateSectionProgress('experience', Array.isArray(data) && data.length > 0);
-    }
+    updateSectionProgress(section, true);
   };
 
   const handleTabChange = (tabId: string) => {
-    if (!formProgress[activeTab as keyof FormProgress]) {
+    const currentTabProgress = formProgress[activeTab as keyof FormProgress];
+    console.log('Tab change requested:', { from: activeTab, to: tabId, currentProgress: currentTabProgress });
+
+    if (!currentTabProgress) {
       toast.error("Please complete the current section before proceeding");
       return;
     }
@@ -58,32 +54,24 @@ export const useEmployeeForm = () => {
   };
 
   const handleSaveAndNext = async () => {
-    console.log('handleSaveAndNext called');
-    console.log('Current tab:', activeTab);
-    console.log('Form progress:', formProgress);
-    console.log('Form data:', formData);
-
-    if (activeTab === "personal") {
-      const form = document.getElementById("personalDetailsForm") as HTMLFormElement;
-      if (form) {
-        form.requestSubmit();
-        return;
-      }
-    }
+    console.log('Save and Next clicked:', { activeTab, formProgress, formData });
 
     if (!formProgress[activeTab as keyof FormProgress]) {
       toast.error("Please complete all required fields before proceeding");
       return;
     }
 
-    const tabOrder = ["personal", "employment", "education", "bank"];
+    const tabOrder = ["personal", "education", "bank"];
     const currentIndex = tabOrder.indexOf(activeTab);
     
     if (currentIndex < tabOrder.length - 1) {
-      setActiveTab(tabOrder[currentIndex + 1]);
+      // Move to next tab
+      const nextTab = tabOrder[currentIndex + 1];
+      console.log('Moving to next tab:', nextTab);
+      setActiveTab(nextTab);
     } else {
-      // Check if all required sections are completed
-      const requiredSections = ["personal", "employment", "bank"];
+      // On last tab, submit the form
+      const requiredSections = ["personal", "bank"];
       const isRequiredCompleted = requiredSections.every(section => 
         formProgress[section as keyof FormProgress]
       );
@@ -91,7 +79,6 @@ export const useEmployeeForm = () => {
       if (isRequiredCompleted) {
         setIsSubmitting(true);
         try {
-          console.log('Submitting form data:', formData);
           await employeeService.createEmployee({
             personal: {
               ...formData.personal!,
@@ -106,14 +93,10 @@ export const useEmployeeForm = () => {
           
           toast.success("Employee information saved successfully!");
           setIsFormCompleted(true);
-          window.location.reload(); // Refresh to show updated table
+          window.location.reload();
         } catch (error: any) {
           console.error('Error saving employee data:', error);
-          if (error.message && error.message.includes('Employee ID')) {
-            toast.error(error.message);
-          } else {
-            toast.error("Failed to save employee information. Please try again.");
-          }
+          toast.error(error.message || "Failed to save employee information");
         } finally {
           setIsSubmitting(false);
         }

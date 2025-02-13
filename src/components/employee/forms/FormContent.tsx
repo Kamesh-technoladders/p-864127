@@ -22,7 +22,6 @@ export const FormContent: React.FC<FormContentProps> = ({
   updateFormData,
   handleSaveAndNext,
 }) => {
-  // The employeeId will come from formData.personal when needed
   const employeeId = formData.personal?.employeeId || "";
 
   switch (activeTab) {
@@ -30,33 +29,21 @@ export const FormContent: React.FC<FormContentProps> = ({
       return (
         <PersonalDetailsForm
           onComplete={(completed: boolean, data?: any) => {
+            console.log('Personal details form completion:', { completed, data });
             updateSectionProgress("personal", completed);
             if (completed && data) {
               updateFormData("personal", data);
-              handleSaveAndNext();
+              if (completed) handleSaveAndNext();
             }
           }}
           initialData={formData.personal}
-        />
-      );
-    case "employment":
-      return (
-        <EmploymentDetailsForm
-          onComplete={(completed: boolean, data?: any) => {
-            updateSectionProgress("employment", completed);
-            if (completed && data) {
-              updateFormData("employment", data);
-              handleSaveAndNext();
-            }
-          }}
-          initialData={formData.employment}
-          employeeId={employeeId}
         />
       );
     case "education":
       return (
         <EducationForm
           onComplete={(completed: boolean, data?: any) => {
+            console.log('Education form completion:', { completed, data });
             updateSectionProgress("education", completed);
             if (completed && data) {
               updateFormData("education", data);
@@ -70,6 +57,7 @@ export const FormContent: React.FC<FormContentProps> = ({
       return (
         <BankAccountForm
           onComplete={(completed: boolean, data?: any) => {
+            console.log('Bank account form completion:', { completed, data });
             updateSectionProgress("bank", completed);
             if (completed && data) {
               updateFormData("bank", data);

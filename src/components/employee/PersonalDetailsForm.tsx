@@ -127,34 +127,49 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
   const validateAndUpdateProgress = () => {
     const formState = form.getValues();
     const hasValidEmergencyContact = emergencyContacts.some(contact => 
-      validateEmergencyContact(contact).length === 0
+      contact.relationship && contact.name && contact.phone
     );
     const hasValidFamilyMember = familyDetails.some(member => 
-      validateFamilyMember(member).length === 0
+      member.relationship && member.name && member.occupation && member.phone
     );
 
-    const isBasicInfoValid = Object.keys(form.formState.errors).length === 0;
-    const isValid = isBasicInfoValid && hasValidEmergencyContact && hasValidFamilyMember;
-
+    const isValid = form.formState.isValid && hasValidEmergencyContact && hasValidFamilyMember;
+    
     console.log('Form validation state:', {
-      isBasicInfoValid,
+      isFormValid: form.formState.isValid,
       hasValidEmergencyContact,
       hasValidFamilyMember,
-      isValid
+      isValid,
+      formState
     });
 
-    onComplete(isValid, isValid ? {
-      ...formState,
-      emergencyContacts: emergencyContacts.filter(contact => validateEmergencyContact(contact).length === 0),
-      familyDetails: familyDetails.filter(member => validateFamilyMember(member).length === 0)
-    } : undefined);
+    if (isValid) {
+      const validData = {
+        ...formState,
+        emergencyContacts: emergencyContacts.filter(contact => 
+          contact.relationship && contact.name && contact.phone
+        ),
+        familyDetails: familyDetails.filter(member => 
+          member.relationship && member.name && member.occupation && member.phone
+        )
+      };
+      onComplete(true, validData);
+    } else {
+      onComplete(false, undefined);
+    }
   };
 
+  // Watch for form changes and validate
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      validateAndUpdateProgress();
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch, emergencyContacts, familyDetails]);
+
   const handleSubmit = form.handleSubmit((data) => {
-    console.log('Form submitted with data:', data);
     setShowValidation(true);
     
-    const validationResult = validateAndUpdateProgress();
     if (!form.formState.isValid) {
       Object.entries(form.formState.errors).forEach(([key, value]) => {
         if (typeof value === 'object' && value?.message) {
@@ -164,12 +179,11 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
       return;
     }
 
-    // Filter out empty contacts and family members
     const validEmergencyContacts = emergencyContacts.filter(contact => 
-      validateEmergencyContact(contact).length === 0
+      contact.relationship && contact.name && contact.phone
     );
     const validFamilyMembers = familyDetails.filter(member => 
-      validateFamilyMember(member).length === 0
+      member.relationship && member.name && member.occupation && member.phone
     );
 
     if (!validEmergencyContacts.length) {
@@ -188,7 +202,7 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
       familyDetails: validFamilyMembers
     };
 
-    console.log('Form data:', formData);
+    console.log('Submitting form data:', formData);
     onComplete(true, formData);
   });
 
