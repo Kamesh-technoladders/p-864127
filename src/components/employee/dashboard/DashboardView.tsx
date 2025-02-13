@@ -1,7 +1,6 @@
 
 import React, { useState, useMemo } from "react";
 import { ProgressStats } from "./components/ProgressStats";
-import { ActionButtons } from "./components/ActionButtons";
 import { FilterBar } from "./components/FilterBar";
 import { EmployeeTable } from "./components/EmployeeTable";
 import { Button } from "@/components/ui/button";
@@ -49,9 +48,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) =
         </Button>
       </div>
       <ProgressStats employeeCount={employees?.length || 0} />
-      <div className="flex justify-between items-center">
-        <ActionButtons />
-      </div>
       <FilterBar 
         searchValue={searchValue}
         onSearchChange={setSearchValue}

@@ -6,6 +6,7 @@ import {
   FileText,
   FileSpreadsheet,
   Presentation,
+  Download
 } from "lucide-react";
 import {
   Select,
@@ -14,6 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Employee } from "@/hooks/useEmployees";
 import jsPDF from "jspdf";
 import 'jspdf-autotable';
@@ -147,6 +154,20 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     }
   };
 
+  const handleDownload = (format: 'csv' | 'pdf' | 'ppt') => {
+    switch (format) {
+      case 'csv':
+        downloadAsCSV();
+        break;
+      case 'pdf':
+        downloadAsPDF();
+        break;
+      case 'ppt':
+        downloadAsPPT();
+        break;
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
       <div className="flex items-center gap-3">
@@ -174,30 +195,27 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             onChange={(e) => onSearchChange(e.target.value)}
           />
         </div>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          onClick={downloadAsCSV}
-          title="Download as CSV"
-        >
-          <FileSpreadsheet className="h-4 w-4" />
-        </Button>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          onClick={downloadAsPDF}
-          title="Download as PDF"
-        >
-          <FileText className="h-4 w-4" />
-        </Button>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          onClick={downloadAsPPT}
-          title="Download as PPT"
-        >
-          <Presentation className="h-4 w-4" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Download className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => handleDownload('csv')}>
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              Download as CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload('pdf')}>
+              <FileText className="mr-2 h-4 w-4" />
+              Download as PDF
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDownload('ppt')}>
+              <Presentation className="mr-2 h-4 w-4" />
+              Download as PPT
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
