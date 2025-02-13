@@ -5,7 +5,7 @@ import { EducationForm } from "../EducationForm";
 import { ExperienceForm } from "../ExperienceForm";
 import { BankAccountForm } from "../BankAccountForm";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
-import { Experience } from "../types";
+import { Experience, PersonalDetailsData } from "../types";
 import { toast } from "sonner";
 
 interface FormContentProps {
@@ -30,8 +30,18 @@ export const FormContent: React.FC<FormContentProps> = ({
           onComplete={(completed: boolean, data?: any) => {
             updateSectionProgress("personal", completed);
             if (completed && data) {
-              const personalData = {
-                ...data,
+              const personalData: PersonalDetailsData = {
+                employeeId: data.employeeId,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                phone: data.phone,
+                dateOfBirth: data.dateOfBirth,
+                gender: data.gender,
+                bloodGroup: data.bloodGroup,
+                maritalStatus: data.maritalStatus,
+                presentAddress: data.presentAddress,
+                permanentAddress: data.permanentAddress,
                 emergencyContacts: data.emergencyContacts || [],
                 familyDetails: data.familyDetails || []
               };
