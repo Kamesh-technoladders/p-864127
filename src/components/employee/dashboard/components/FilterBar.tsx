@@ -114,35 +114,34 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         bold: true
       });
       
-      // Convert data for PPT table
-      const tableRows = employees.map(emp => ({
-        cells: [
-          { text: emp.employee_id },
-          { text: `${emp.first_name} ${emp.last_name}` },
-          { text: emp.email },
-          { text: emp.gender || '-' },
-          { text: emp.blood_group || '-' },
-          { text: emp.employment_status || 'active' }
-        ]
-      }));
+      // Create table rows
+      const headerRow = [
+        { text: "ID" },
+        { text: "Name" },
+        { text: "Email" },
+        { text: "Gender" },
+        { text: "Blood Group" },
+        { text: "Status" }
+      ];
+
+      const dataRows = employees.map(emp => [
+        { text: emp.employee_id },
+        { text: `${emp.first_name} ${emp.last_name}` },
+        { text: emp.email },
+        { text: emp.gender || '-' },
+        { text: emp.blood_group || '-' },
+        { text: emp.employment_status || 'active' }
+      ]);
       
+      // Add table to slide
       slide.addTable({
-        rows: [
-          [
-            { text: "ID" },
-            { text: "Name" },
-            { text: "Email" },
-            { text: "Gender" },
-            { text: "Blood Group" },
-            { text: "Status" }
-          ],
-          ...tableRows.map(row => row.cells)
-        ],
         x: 0.5,
         y: 1.5,
         w: 9,
         colW: [1.5, 2, 2.5, 1, 1, 1],
         border: { pt: 1, color: "666666" },
+        slideNumber: 1,
+        data: [headerRow, ...dataRows]
       });
       
       const fileName = 'employees.pptx';
