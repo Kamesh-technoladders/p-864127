@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,14 +7,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { BankAccountForm } from "../BankAccountForm";
-import { BankAccountData } from "../types";
+import { BankDetails } from "@/services/types/employee.types";
 import { toast } from "sonner";
-import { employeeService } from "@/services/employee/employee.service";
+import { bankDetailsService } from "@/services/employee/bankDetails.service";
 
 interface BankDetailsEditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  data: BankAccountData;
+  data: BankDetails;
   employeeId: string;
   onUpdate: () => void;
 }
@@ -25,18 +26,21 @@ export const BankDetailsEditModal: React.FC<BankDetailsEditModalProps> = ({
   employeeId,
   onUpdate,
 }) => {
-  const handleComplete = async (completed: boolean, formData?: any) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleComplete = async (completed: boolean, formData?: BankDetails) => {
     if (completed && formData) {
       try {
-        await employeeService.updateEmployee(employeeId, {
-          bank: formData,
-        });
+        setIsSubmitting(true);
+        await bankDetailsService.updateBankDetails(employeeId, formData);
         toast.success("Bank details updated successfully");
         onUpdate();
         onClose();
       } catch (error) {
         console.error("Error updating bank details:", error);
         toast.error("Failed to update bank details");
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -47,7 +51,11 @@ export const BankDetailsEditModal: React.FC<BankDetailsEditModalProps> = ({
         <DialogHeader>
           <DialogTitle>Edit Bank Details</DialogTitle>
         </DialogHeader>
-        <BankAccountForm onComplete={handleComplete} initialData={data} />
+        <BankAccountForm 
+          onComplete={handleComplete} 
+          initialData={data} 
+          isSubmitting={isSubmitting}
+        />
       </DialogContent>
     </Dialog>
   );

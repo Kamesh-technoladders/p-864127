@@ -3,6 +3,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { BankDetails } from "../types/employee.types";
 
 export const bankDetailsService = {
+  async getBankDetails(employeeId: string): Promise<BankDetails> {
+    const { data, error } = await supabase
+      .from('employee_bank_details')
+      .select('*')
+      .eq('employee_id', employeeId)
+      .single();
+
+    if (error) throw error;
+
+    return {
+      accountHolderName: data.account_holder_name,
+      accountNumber: data.account_number,
+      ifscCode: data.ifsc_code,
+      bankName: data.bank_name,
+      branchName: data.branch_name,
+      accountType: data.account_type,
+      bankPhone: data.bank_phone
+    };
+  },
+
   async createBankDetails(employeeId: string, bankDetails: BankDetails) {
     const { error } = await supabase
       .from('employee_bank_details')
