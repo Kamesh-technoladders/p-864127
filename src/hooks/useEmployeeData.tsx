@@ -2,6 +2,7 @@
 import { useState, useCallback } from "react";
 import { employeeService } from "@/services/employee/employee.service";
 import { toast } from "sonner";
+import { EmployeeData, PersonalInfo } from "@/services/types/employee.types";
 
 export const useEmployeeData = (employeeId: string | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,20 +40,28 @@ export const useEmployeeData = (employeeId: string | undefined) => {
       }
 
       try {
-        const updateData = section === 'personal' ? {
-          first_name: data.firstName,
-          last_name: data.lastName,
-          email: data.email,
-          phone: data.phone,
-          date_of_birth: data.dateOfBirth,
-          gender: data.gender,
-          blood_group: data.bloodGroup,
-          marital_status: data.maritalStatus,
-          present_address: data.presentAddress,
-          permanent_address: data.permanentAddress,
-          emergency_contacts: data.emergencyContacts,
-          family_details: data.familyDetails
-        } : { [section]: data };
+        let updateData: Partial<EmployeeData>;
+        
+        if (section === 'personal') {
+          const personalInfo: PersonalInfo = {
+            employeeId: data.employeeId,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            phone: data.phone,
+            dateOfBirth: data.dateOfBirth,
+            gender: data.gender,
+            bloodGroup: data.bloodGroup,
+            maritalStatus: data.maritalStatus,
+            presentAddress: data.presentAddress,
+            permanentAddress: data.permanentAddress,
+            emergencyContacts: data.emergencyContacts || [],
+            familyDetails: data.familyDetails || []
+          };
+          updateData = { personal: personalInfo };
+        } else {
+          updateData = { [section]: data };
+        }
 
         await employeeService.updateEmployee(employeeId, updateData);
         await fetchEmployeeData();
