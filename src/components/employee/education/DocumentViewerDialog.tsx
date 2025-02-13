@@ -1,12 +1,10 @@
 
 import React from "react";
-import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogOverlay
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 
 interface DocumentViewerDialogProps {
   isOpen: boolean;
@@ -48,18 +46,10 @@ export const DocumentViewerDialog: React.FC<DocumentViewerDialogProps> = ({
         before:to-transparent
         before:rounded-xl
       `}>
-        <div className="flex items-center justify-between p-4 border-b border-white/20 backdrop-blur-md bg-white/30">
+        <div className="flex items-center p-4 border-b border-white/20 backdrop-blur-md bg-white/30">
           <h3 className="text-lg font-semibold text-gray-900">
             {documentType} Document
           </h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8 p-0 rounded-full hover:bg-white/20 transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </div>
         <div className="relative w-full h-full bg-white/80">
           <iframe
