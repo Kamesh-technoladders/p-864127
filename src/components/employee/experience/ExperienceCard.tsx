@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { format } from "date-fns";
-import { FileText, Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { FileText, Pencil, Trash2, ChevronDown, ChevronUp, Eye, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Experience } from "@/services/types/employee.types";
 
@@ -9,12 +9,16 @@ interface ExperienceCardProps {
   experience: Experience;
   onEdit: (experience: Experience) => void;
   onDelete: (experience: Experience) => void;
+  onViewDocument: (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter'>) => void;
+  onDownloadDocument: (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter'>) => void;
 }
 
 export const ExperienceCard: React.FC<ExperienceCardProps> = ({
   experience,
   onEdit,
   onDelete,
+  onViewDocument,
+  onDownloadDocument,
 }) => {
   const [isDocsExpanded, setIsDocsExpanded] = useState(false);
 
@@ -24,6 +28,37 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
   };
 
   const hasDocuments = experience.offerLetter || experience.separationLetter || experience.payslips?.length > 0;
+
+  const renderDocumentActions = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter'>, label: string) => {
+    if (!experience[docType]) return null;
+    
+    return (
+      <div className="flex items-center gap-1 text-sm text-blue-600 justify-between p-2 hover:bg-gray-50 rounded-lg">
+        <div className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          <span>{label}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-600 hover:text-gray-900"
+            onClick={() => onViewDocument(docType)}
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-600 hover:text-gray-900"
+            onClick={() => onDownloadDocument(docType)}
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -75,22 +110,32 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
           
           {isDocsExpanded && (
             <div className="mt-2 space-y-2">
-              {experience.offerLetter && (
-                <div className="flex items-center gap-1 text-sm text-blue-600">
-                  <FileText className="h-4 w-4" />
-                  <span>Offer Letter</span>
-                </div>
-              )}
-              {experience.separationLetter && (
-                <div className="flex items-center gap-1 text-sm text-blue-600">
-                  <FileText className="h-4 w-4" />
-                  <span>Separation Letter</span>
-                </div>
-              )}
-              {experience.payslips?.map((_, index) => (
-                <div key={index} className="flex items-center gap-1 text-sm text-blue-600">
-                  <FileText className="h-4 w-4" />
-                  <span>Payslip {index + 1}</span>
+              {renderDocumentActions('offerLetter', 'Offer Letter')}
+              {renderDocumentActions('separationLetter', 'Separation Letter')}
+              {experience.payslips?.map((payslip, index) => (
+                <div key={index} className="flex items-center gap-1 text-sm text-blue-600 justify-between p-2 hover:bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    <span>Payslip {index + 1}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-gray-600 hover:text-gray-900"
+                      onClick={() => onViewDocument('payslips')}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-gray-600 hover:text-gray-900"
+                      onClick={() => onDownloadDocument('payslips')}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
