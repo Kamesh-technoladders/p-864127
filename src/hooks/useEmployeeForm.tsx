@@ -67,11 +67,22 @@ export const useEmployeeForm = () => {
   };
 
   const createEmployee = async () => {
+    if (!formData.personal?.employeeId) {
+      toast.error("Employee ID is required");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
+      console.log('Creating employee with data:', {
+        personal: formData.personal,
+        employeeId: formData.personal.employeeId
+      });
+      
       const employee = await employeeService.createEmployee({
         personal: {
           ...formData.personal!,
+          employeeId: formData.personal.employeeId, // Ensure employeeId is passed
           emergencyContacts: formData.personal?.emergencyContacts || [],
           familyDetails: formData.personal?.familyDetails || []
         },
@@ -80,6 +91,7 @@ export const useEmployeeForm = () => {
         experience: [],
         bank: null,
       });
+      
       console.log('Employee created:', employee);
       setEmployeeUUID(employee.id);
       toast.success("Personal details saved successfully!");
