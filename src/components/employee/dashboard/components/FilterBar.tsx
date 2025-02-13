@@ -3,9 +3,9 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { 
   Search,
-  FilePdf,
+  FileText,
   FileSpreadsheet,
-  FilePpt,
+  FilePresentation,
 } from "lucide-react";
 import {
   Select,
@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/select";
 import { Employee } from "@/hooks/useEmployees";
 import jsPDF from "jspdf";
+import 'jspdf-autotable';
 import pptxgen from "pptxgenjs";
 import { saveAs } from "file-saver";
+import { toast } from "sonner";
 
 interface FilterBarProps {
   searchValue: string;
@@ -69,7 +71,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       doc.text('Employee List', 15, 15);
       
       // Add employee data
-      doc.setFontSize(10);
       const tableData = employees.map(emp => [
         emp.employee_id,
         `${emp.first_name} ${emp.last_name}`,
@@ -79,7 +80,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         emp.employment_status || 'active'
       ]);
       
-      doc.autoTable({
+      (doc as any).autoTable({
         head: [['ID', 'Name', 'Email', 'Gender', 'Blood Group', 'Status']],
         body: tableData,
         startY: 25,
@@ -106,8 +107,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         bold: true
       });
       
-      // Add table
-      const tableData = employees.map(emp => [
+      // Convert data for PPT table
+      const headers = ['ID', 'Name', 'Email', 'Gender', 'Blood Group', 'Status'];
+      const rows = employees.map(emp => [
         emp.employee_id,
         `${emp.first_name} ${emp.last_name}`,
         emp.email,
@@ -115,6 +117,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         emp.blood_group || '-',
         emp.employment_status || 'active'
       ]);
+      
+      const tableData = [headers, ...rows];
       
       slide.addTable(tableData, {
         x: 0.5,
@@ -124,7 +128,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         border: { pt: 1, color: "666666" },
       });
       
-      await pres.writeFile('employees.pptx');
+      const fileName = 'employees.pptx';
+      await pres.writeFile({ fileName });
       toast.success('PPT file downloaded successfully');
     } catch (error) {
       console.error('Error downloading PPT:', error);
@@ -173,7 +178,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           onClick={downloadAsPDF}
           title="Download as PDF"
         >
-          <FilePdf className="h-4 w-4" />
+          <FileText className="h-4 w-4" />
         </Button>
         <Button 
           variant="outline" 
@@ -181,7 +186,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           onClick={downloadAsPPT}
           title="Download as PPT"
         >
-          <FilePpt className="h-4 w-4" />
+          <FilePresentation className="h-4 w-4" />
         </Button>
       </div>
     </div>
