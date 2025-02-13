@@ -52,8 +52,39 @@ export const BankInfoSection: React.FC<BankInfoSectionProps> = ({
 
   const handleCopy = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(`${type} copied to clipboard`);
+    toast.success(`${type} copied`);
   };
+
+  const InfoRow = ({ label, value, copyable, onCopy }: { 
+    label: string; 
+    value: string; 
+    copyable?: boolean;
+    onCopy?: () => void;
+  }) => (
+    <div className="flex items-center">
+      <span className="text-gray-500 w-1/3">{label}</span>
+      <span className="flex-1 text-right">{value}</span>
+      <div className="w-10 flex justify-end">
+        {copyable && onCopy && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={onCopy}
+                  className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Copy</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -72,56 +103,26 @@ export const BankInfoSection: React.FC<BankInfoSectionProps> = ({
               <div className="space-y-2">
                 {bankDetails && (
                   <>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Bank Name</span>
-                      <span>{bankDetails.bankName}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500">Account No.</span>
-                      <div className="flex items-center gap-2">
-                        <span>{maskAccountNumber(bankDetails.accountNumber)}</span>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => handleCopy(bankDetails.accountNumber, 'Account number')}
-                                className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
-                              >
-                                <Copy className="h-3.5 w-3.5" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent side="left">
-                              <p>Copy</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Account Type</span>
-                      <span className="capitalize">{bankDetails.accountType}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500">IFSC Code</span>
-                      <div className="flex items-center gap-2">
-                        <span>{bankDetails.ifscCode}</span>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => handleCopy(bankDetails.ifscCode, 'IFSC code')}
-                                className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
-                              >
-                                <Copy className="h-3.5 w-3.5" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent side="left">
-                              <p>Copy</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    </div>
+                    <InfoRow 
+                      label="Bank Name" 
+                      value={bankDetails.bankName}
+                    />
+                    <InfoRow 
+                      label="Account No." 
+                      value={maskAccountNumber(bankDetails.accountNumber)}
+                      copyable
+                      onCopy={() => handleCopy(bankDetails.accountNumber, 'Account number')}
+                    />
+                    <InfoRow 
+                      label="Account Type" 
+                      value={bankDetails.accountType}
+                    />
+                    <InfoRow 
+                      label="IFSC Code" 
+                      value={bankDetails.ifscCode}
+                      copyable
+                      onCopy={() => handleCopy(bankDetails.ifscCode, 'IFSC code')}
+                    />
                   </>
                 )}
               </div>

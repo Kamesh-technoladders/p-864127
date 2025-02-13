@@ -39,6 +39,37 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     toast.success(`${type} copied`);
   };
 
+  const InfoRow = ({ label, value, copyable, onCopy }: { 
+    label: string; 
+    value: string; 
+    copyable?: boolean;
+    onCopy?: () => void;
+  }) => (
+    <div className="flex items-center">
+      <span className="text-gray-500 w-1/3">{label}</span>
+      <span className="flex-1 text-right">{value}</span>
+      <div className="w-10 flex justify-end">
+        {copyable && onCopy && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={onCopy}
+                  className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Copy</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <InfoCard 
       title="Personal Information" 
@@ -47,49 +78,32 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     >
       <div className="space-y-3 p-2">
         <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-500">Phone</span>
-            <div className="flex items-center gap-2">
-              <span>{phone || 'Not specified'}</span>
-              {phone && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => handleCopy(phone, 'Phone')}
-                        className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="left">
-                      <p>Copy</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-            </div>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Date of Birth</span>
-            <span>{formatDate(dateOfBirth)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Marital Status</span>
-            <span>{maritalStatus || 'Not specified'}</span>
-          </div>
+          <InfoRow 
+            label="Phone" 
+            value={phone || 'Not specified'} 
+            copyable={!!phone}
+            onCopy={() => handleCopy(phone, 'Phone')}
+          />
+          <InfoRow 
+            label="Date of Birth" 
+            value={formatDate(dateOfBirth)}
+          />
+          <InfoRow 
+            label="Marital Status" 
+            value={maritalStatus || 'Not specified'}
+          />
         </div>
         <div className="pt-3 border-t border-gray-100">
           <h4 className="text-sm font-medium mb-2">Additional Information</h4>
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-500">Nationality</span>
-              <span>Indian</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">Languages</span>
-              <span>English, Hindi</span>
-            </div>
+            <InfoRow 
+              label="Nationality" 
+              value="Indian"
+            />
+            <InfoRow 
+              label="Languages" 
+              value="English, Hindi"
+            />
           </div>
         </div>
       </div>
