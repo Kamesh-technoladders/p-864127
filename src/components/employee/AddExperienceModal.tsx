@@ -6,10 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Experience } from "@/services/types/employee.types";
 import { ExperienceFormFields } from "./experience/ExperienceFormFields";
 import { ExperienceDocumentUploads } from "./experience/ExperienceDocumentUploads";
+import { EmploymentModalActions } from "./profile/modals/components/EmploymentModalActions";
 
 interface AddExperienceModalProps {
   isOpen: boolean;
@@ -24,6 +24,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
   onSave,
   initialData,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<Partial<Experience>>({
     jobTitle: "",
@@ -38,6 +39,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
+      setIsEditing(true);
     } else {
       setFormData({
         jobTitle: "",
@@ -48,6 +50,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
         endDate: "",
         payslips: [],
       });
+      setIsEditing(false);
     }
   }, [initialData, isOpen]);
 
@@ -56,8 +59,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
       await onSave(formData as Experience);
@@ -82,14 +84,27 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>
-            {initialData ? "Edit Experience" : "Add Experience"}
-          </DialogTitle>
+      <DialogContent className="max-w-2xl p-0">
+        <DialogHeader className="p-3 bg-gradient-to-r from-[#30409F] to-[#4B5FBD]">
+          <div className="flex justify-between items-center text-white">
+            <DialogTitle className="text-white">
+              {initialData ? "Edit Experience" : "Add Experience"}
+            </DialogTitle>
+            <EmploymentModalActions
+              isEditing={isEditing}
+              loading={isSubmitting}
+              onEdit={() => setIsEditing(true)}
+              onCancel={() => {
+                setIsEditing(false);
+                if (!initialData) onClose();
+              }}
+              onSave={handleSubmit}
+              onClose={onClose}
+            />
+          </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="p-6">
           <ExperienceFormFields
             formData={formData}
             handleInputChange={handleInputChange}
@@ -100,16 +115,7 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
             formData={formData}
             handleFileUpload={handleFileUpload}
           />
-
-          <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save"}
-            </Button>
-          </div>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

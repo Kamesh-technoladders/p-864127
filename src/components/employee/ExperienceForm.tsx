@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 import { AddExperienceModal } from "./AddExperienceModal";
@@ -51,7 +52,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
           ? "Failed to update experience"
           : "Failed to add experience"
       );
-      throw error; // Re-throw to be handled by the caller
+      throw error;
     }
   };
 
@@ -67,6 +68,16 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
     }
     setSelectedExperience(experience);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleViewDocument = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>) => {
+    // Handle document viewing
+    console.log('Viewing document:', docType);
+  };
+
+  const handleDownloadDocument = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>) => {
+    // Handle document downloading
+    console.log('Downloading document:', docType);
   };
 
   const confirmDelete = () => {
@@ -95,6 +106,8 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
           experience={experience}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onViewDocument={handleViewDocument}
+          onDownloadDocument={handleDownloadDocument}
         />
       ))}
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { FileText, Pencil, Trash2, ChevronDown, ChevronUp, Eye, Download } from "lucide-react";
@@ -9,8 +8,8 @@ interface ExperienceCardProps {
   experience: Experience;
   onEdit: (experience: Experience) => void;
   onDelete: (experience: Experience) => void;
-  onViewDocument: (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter'>) => void;
-  onDownloadDocument: (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter'>) => void;
+  onViewDocument: (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>) => void;
+  onDownloadDocument: (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>) => void;
 }
 
 export const ExperienceCard: React.FC<ExperienceCardProps> = ({
@@ -29,7 +28,7 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
 
   const hasDocuments = experience.offerLetter || experience.separationLetter || experience.payslips?.length > 0;
 
-  const renderDocumentActions = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter'>, label: string) => {
+  const renderDocumentActions = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>, label: string) => {
     if (!experience[docType]) return null;
     
     return (
