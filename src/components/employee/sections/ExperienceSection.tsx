@@ -118,7 +118,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg border border-gray-200">
+    <div className="p-6 bg-white rounded-lg border border-gray-200 h-[calc(100vh-12rem)]">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-[#30409F]">Experience</h2>
         <Button
@@ -134,7 +134,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         </Button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 h-[calc(100%-3rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 pr-2">
         {(data || []).map((experience) => (
           <ExperienceCard
             key={experience.id}
