@@ -6,22 +6,13 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import {
-  Edit2,
-  Save,
-  X,
-  Briefcase,
-  Building2,
-  BadgeCheck,
-  Clock,
-  Calendar,
-  ChevronRight,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Briefcase, Calendar, ChevronRight } from "lucide-react";
+import { TimelineEvent } from "./components/TimelineEvent";
+import { EmploymentForm } from "./components/EmploymentForm";
+import { EmploymentModalActions } from "./components/EmploymentModalActions";
 
-interface TimelineEvent {
+interface TimelineEventType {
   title: string;
   date: string;
   description: string;
@@ -37,7 +28,7 @@ interface EmploymentDetailsModalProps {
     department: string;
     position: string;
     joinedDate: string;
-    employmentHistory: TimelineEvent[];
+    employmentHistory: TimelineEventType[];
   };
   onUpdate: (data: any) => Promise<void>;
 }
@@ -66,17 +57,8 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
     }
   };
 
-  const getTimelineIcon = (type: string) => {
-    switch (type) {
-      case 'promotion':
-        return <BadgeCheck className="w-3 h-3 text-green-500" />;
-      case 'join':
-        return <Briefcase className="w-3 h-3 text-blue-500" />;
-      case 'role-change':
-        return <Building2 className="w-3 h-3 text-purple-500" />;
-      default:
-        return <Clock className="w-3 h-3" />;
-    }
+  const handleFieldChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -91,49 +73,14 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
               </h2>
             </div>
             <div className="flex items-center gap-1">
-              {!isEditing ? (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsEditing(true)}
-                    className="h-6 px-2 hover:bg-white/20 text-white"
-                  >
-                    <Edit2 className="w-3 h-3 mr-1" />
-                    Edit
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-6 w-6 text-white hover:bg-white/20"
-                    onClick={onClose}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsEditing(false)}
-                    className="h-6 px-2 hover:bg-white/20 text-white"
-                  >
-                    <X className="w-3 h-3 mr-1" />
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleSave}
-                    disabled={loading}
-                    className="h-6 px-2 hover:bg-white/20 text-white"
-                  >
-                    <Save className="w-3 h-3 mr-1" />
-                    Save
-                  </Button>
-                </>
-              )}
+              <EmploymentModalActions
+                isEditing={isEditing}
+                loading={loading}
+                onEdit={() => setIsEditing(true)}
+                onCancel={() => setIsEditing(false)}
+                onSave={handleSave}
+                onClose={onClose}
+              />
             </div>
           </div>
         </DialogHeader>
@@ -144,40 +91,11 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
             <div className="space-y-3">
               <div className="bg-white/50 rounded-lg p-3 backdrop-blur-sm border border-white/20 transition-all duration-300 hover:shadow-lg">
                 <h3 className="text-sm font-semibold mb-2 text-gray-800">Basic Information</h3>
-                <div className="space-y-2">
-                  <div>
-                    <label className="text-[10px] text-gray-600 mb-0.5 block">Employee ID</label>
-                    <Input
-                      value={formData.employeeId}
-                      readOnly
-                      className="h-6 text-[11px] bg-gray-50"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] text-gray-600 mb-0.5 block">Department</label>
-                    <Input
-                      value={formData.department}
-                      onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                      readOnly={!isEditing}
-                      className={cn(
-                        "h-6 text-[11px] transition-colors duration-200",
-                        !isEditing && "bg-gray-50"
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] text-gray-600 mb-0.5 block">Position</label>
-                    <Input
-                      value={formData.position}
-                      onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                      readOnly={!isEditing}
-                      className={cn(
-                        "h-6 text-[11px] transition-colors duration-200",
-                        !isEditing && "bg-gray-50"
-                      )}
-                    />
-                  </div>
-                </div>
+                <EmploymentForm
+                  formData={formData}
+                  isEditing={isEditing}
+                  onChange={handleFieldChange}
+                />
               </div>
 
               <div className="bg-white/50 rounded-lg p-3 backdrop-blur-sm border border-white/20 transition-all duration-300 hover:shadow-lg">
@@ -202,25 +120,11 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
               <h3 className="text-sm font-semibold mb-3 text-gray-800">Career Timeline</h3>
               <div className="space-y-4">
                 {formData.employmentHistory.map((event, index) => (
-                  <div key={index} className="relative">
-                    {index !== formData.employmentHistory.length - 1 && (
-                      <div className="absolute left-[11px] top-[20px] w-0.5 h-[calc(100%+4px)] bg-gradient-to-b from-purple-500 to-purple-100" />
-                    )}
-                    <div className="flex gap-2">
-                      <div className="relative z-10 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-md">
-                        {getTimelineIcon(event.type)}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="text-[11px] font-medium text-gray-900">{event.title}</h4>
-                            <p className="text-[10px] text-gray-600">{event.description}</p>
-                          </div>
-                          <span className="text-[10px] text-gray-500">{event.date}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <TimelineEvent
+                    key={index}
+                    {...event}
+                    isLast={index === formData.employmentHistory.length - 1}
+                  />
                 ))}
               </div>
             </div>
