@@ -11,14 +11,14 @@ interface AddressSectionProps {
 export const AddressSection: React.FC<AddressSectionProps> = ({ form }) => {
   return (
     <div className="space-y-6">
-      <div>
+      <div className="mb-6">
         <div className="text-[rgba(48,64,159,1)] font-bold">Contact Info</div>
         <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
           Add your address details here.
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-12">
+      <div className="grid grid-cols-2 gap-8">
         <PresentAddressSection form={form} />
         <PermanentAddressSection form={form} />
       </div>
