@@ -26,6 +26,7 @@ interface EmployeeTableProps {
   employees: Employee[];
   isLoading: boolean;
   error: string | null;
+  onRefresh: () => void;
 }
 
 const StatusCell: React.FC<{ 
@@ -70,7 +71,8 @@ const StatusCell: React.FC<{
 export const EmployeeTable: React.FC<EmployeeTableProps> = ({ 
   employees, 
   isLoading, 
-  error 
+  error,
+  onRefresh 
 }) => {
   const navigate = useNavigate();
 
@@ -146,7 +148,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
                   <StatusCell 
                     employeeId={employee.id} 
                     currentStatus={employee.employment_status || 'active'} 
-                    onStatusUpdate={() => {}} // This will be handled by the useEmployees hook's automatic refresh
+                    onStatusUpdate={onRefresh}
                   />
                 </TableCell>
               </TableRow>

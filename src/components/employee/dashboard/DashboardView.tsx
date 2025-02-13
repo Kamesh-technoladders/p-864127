@@ -14,7 +14,7 @@ interface DashboardViewProps {
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) => {
-  const { employees, isLoading, error } = useEmployees();
+  const { employees, isLoading, error, refetch } = useEmployees();
   const [searchValue, setSearchValue] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
 
@@ -60,7 +60,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) =
       <EmployeeTable 
         employees={filteredEmployees} 
         isLoading={isLoading} 
-        error={error} 
+        error={error}
+        onRefresh={refetch}
       />
     </div>
   );
