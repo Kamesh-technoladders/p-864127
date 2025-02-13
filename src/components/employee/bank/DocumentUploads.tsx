@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { UploadField } from "../UploadField";
@@ -26,28 +27,40 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const docs = await documentService.getEmployeeDocuments(employeeId, 'bank');
-        const docMap = docs.reduce((acc, doc) => {
-          acc[doc.document_type] = {
-            id: doc.id,
-            name: doc.file_name,
-            type: doc.mime_type,
-            url: doc.file_path
-          };
-          return acc;
-        }, {} as Record<string, UploadedFile>);
-        setDocuments(docMap);
+        // Only fetch documents if we have a valid employeeId
+        if (employeeId && employeeId.trim()) {
+          const docs = await documentService.getEmployeeDocuments(employeeId, 'bank');
+          const docMap = docs.reduce((acc, doc) => {
+            // Map the document types consistently
+            const key = doc.document_type === 'cancelled_cheque' ? 'cancelled_cheque' : 'passbook';
+            acc[key] = {
+              id: doc.id,
+              name: doc.file_name,
+              type: doc.mime_type,
+              url: doc.file_path
+            };
+            return acc;
+          }, {} as Record<string, UploadedFile>);
+          setDocuments(docMap);
+        }
       } catch (error) {
         console.error("Error fetching documents:", error);
       }
     };
 
-    if (employeeId) {
-      fetchDocuments();
-    }
+    fetchDocuments();
   }, [employeeId]);
 
   const handleFileUpload = (fieldName: "cancelledCheque" | "passbookCopy") => async (file: File) => {
+    if (!employeeId || !employeeId.trim()) {
+      toast({
+        title: "Error",
+        description: "Employee ID is required to upload documents",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
       toast({
         title: "Invalid file type",
@@ -67,6 +80,7 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
     }
 
     try {
+      // Map the field names to document types consistently
       const documentType = fieldName === 'cancelledCheque' ? 'cancelled_cheque' : 'passbook';
       await uploadDocument(file, 'bank', employeeId, documentType);
       setValue(fieldName, file);
@@ -74,7 +88,8 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({
       // Refresh documents after upload
       const docs = await documentService.getEmployeeDocuments(employeeId, 'bank');
       const docMap = docs.reduce((acc, doc) => {
-        acc[doc.document_type] = {
+        const key = doc.document_type === 'cancelled_cheque' ? 'cancelled_cheque' : 'passbook';
+        acc[key] = {
           id: doc.id,
           name: doc.file_name,
           type: doc.mime_type,
