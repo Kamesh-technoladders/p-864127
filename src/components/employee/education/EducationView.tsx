@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { DocumentList } from "./DocumentList";
+import { Pencil } from "lucide-react";
 
 interface Document {
   name: string;
@@ -26,7 +27,14 @@ export const EducationView: React.FC<EducationViewProps> = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium">Documents</h3>
-        <Button variant="outline" size="sm" onClick={onEdit}>Edit</Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onEdit}
+          className="h-6 w-6 text-gray-500 hover:text-gray-700"
+        >
+          <Pencil className="h-3 w-3" />
+        </Button>
       </div>
       <DocumentList
         documents={documents}
