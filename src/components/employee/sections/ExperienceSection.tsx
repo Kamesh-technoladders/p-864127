@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -8,6 +9,7 @@ import { DeleteConfirmationDialog } from "../experience/DeleteConfirmationDialog
 import { experienceService } from "@/services/employee/experience.service";
 import { toast } from "sonner";
 import { DocumentViewerDialog } from "../education/DocumentViewerDialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ExperienceSectionProps {
   data: Experience[];
@@ -117,8 +119,8 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-sm">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-6 bg-white rounded-lg shadow-sm h-[280px]">
+      <div className="flex justify-between items-center mb-4 sticky top-0 bg-white">
         <h2 className="text-lg font-semibold text-[#30409F]">Experience</h2>
         <Button
           variant="ghost"
@@ -133,24 +135,26 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         </Button>
       </div>
 
-      <div className="space-y-1">
-        {(data || []).map((experience) => (
-          <ExperienceCard
-            key={experience.id}
-            experience={experience}
-            onEdit={() => handleEdit(experience)}
-            onDelete={() => handleDelete(experience)}
-            onViewDocument={(docType) => handleViewDocument(docType, experience)}
-            onDownloadDocument={(docType) => handleDownloadDocument(docType, experience)}
-          />
-        ))}
-        
-        {(!data || data.length === 0) && (
-          <div className="text-center py-8 text-gray-500">
-            No experience records found. Click the plus icon to add your work history.
-          </div>
-        )}
-      </div>
+      <ScrollArea className="h-[200px] pr-4">
+        <div className="space-y-1">
+          {(data || []).map((experience) => (
+            <ExperienceCard
+              key={experience.id}
+              experience={experience}
+              onEdit={() => handleEdit(experience)}
+              onDelete={() => handleDelete(experience)}
+              onViewDocument={(docType) => handleViewDocument(docType, experience)}
+              onDownloadDocument={(docType) => handleDownloadDocument(docType, experience)}
+            />
+          ))}
+          
+          {(!data || data.length === 0) && (
+            <div className="text-center py-8 text-gray-500">
+              No experience records found. Click the plus icon to add your work history.
+            </div>
+          )}
+        </div>
+      </ScrollArea>
 
       <AddExperienceModal
         isOpen={isModalOpen}
