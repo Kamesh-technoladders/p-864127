@@ -29,8 +29,12 @@ export const employeeService = {
       // Create education records
       await educationService.createEducation(employee.id, data.education);
 
-      // Create experiences
-      await experienceService.createExperiences(employee.id, data.experience);
+      // Create experience records
+      if (data.experience && data.experience.length > 0) {
+        for (const exp of data.experience) {
+          await experienceService.createExperience(employee.id, exp);
+        }
+      }
 
       return employee;
     } catch (error: any) {
@@ -57,7 +61,13 @@ export const employeeService = {
       }
 
       if (data.experience) {
-        await experienceService.updateExperiences(employeeId, data.experience);
+        for (const exp of data.experience) {
+          if (exp.id) {
+            await experienceService.updateExperience(employeeId, exp.id, exp);
+          } else {
+            await experienceService.createExperience(employeeId, exp);
+          }
+        }
       }
 
       return true;
