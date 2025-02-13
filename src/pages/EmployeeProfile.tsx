@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/employee/layout/DashboardLayout";
@@ -118,7 +119,7 @@ const EmployeeProfile = () => {
         <div className="flex justify-between items-center mb-6">
           <Button
             variant="ghost"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             className="hover:bg-white/50 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
