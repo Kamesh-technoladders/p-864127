@@ -1,59 +1,42 @@
-import React, { useState, useEffect } from "react";
-import { GraduationCap, Plus } from "lucide-react";
-import { InfoCard } from "../InfoCard";
-import { Button } from "@/components/ui/button";
-import { experienceService } from "@/services/employee/experience.service";
-import { Experience } from "@/services/types/employee.types";
-import { ExperienceCard } from "../../experience/ExperienceCard";
-import { AddExperienceModal } from "../../AddExperienceModal";
-import { DeleteConfirmationDialog } from "../../experience/DeleteConfirmationDialog";
-import { toast } from "sonner";
+
+import React, { useState, useEffect } from 'react';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Experience } from '@/services/types/employee.types';
+import { ExperienceCard } from '../../experience/ExperienceCard';
+import { AddExperienceModal } from '../../AddExperienceModal';
+import { DeleteConfirmationDialog } from '../../experience/DeleteConfirmationDialog';
+import { experienceService } from '@/services/employee/experience.service';
+import { toast } from 'sonner';
 
 interface ExperienceSectionProps {
   employeeId: string;
-  onEdit: () => void;
 }
 
-export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
-  employeeId,
-  onEdit,
-}) => {
+export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ employeeId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
   const [experiences, setExperiences] = useState<Experience[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchExperiences();
+  }, [employeeId]);
 
   const fetchExperiences = async () => {
     try {
-      setIsLoading(true);
       const data = await experienceService.fetchExperiences(employeeId);
-      const mappedExperiences: Experience[] = data.map(exp => ({
-        id: exp.id,
-        jobTitle: exp.job_title,
-        company: exp.company,
-        location: exp.location,
-        employmentType: exp.employment_type,
-        startDate: exp.start_date,
-        endDate: exp.end_date,
-        offerLetter: exp.offer_letter_url || undefined,
-        separationLetter: exp.separation_letter_url || undefined,
-        payslips: exp.payslips || []
-      }));
-      setExperiences(mappedExperiences);
+      setExperiences(data);
     } catch (error) {
-      console.error("Error fetching experiences:", error);
-      toast.error("Failed to load experience data");
-    } finally {
-      setIsLoading(false);
+      console.error('Error fetching experiences:', error);
+      toast.error('Failed to load experiences');
     }
   };
 
-  useEffect(() => {
-    if (employeeId) {
-      fetchExperiences();
-    }
-  }, [employeeId]);
+  const handleAddExperience = () => {
+    setSelectedExperience(null);
+    setIsModalOpen(true);
+  };
 
   const handleEdit = (experience: Experience) => {
     setSelectedExperience(experience);
@@ -65,21 +48,31 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     setIsDeleteDialogOpen(true);
   };
 
+  const handleViewDocument = (docType: string) => {
+    // Handle document viewing
+    console.log('Viewing document:', docType);
+  };
+
+  const handleDownloadDocument = (docType: string) => {
+    // Handle document downloading
+    console.log('Downloading document:', docType);
+  };
+
   const handleSave = async (formData: Experience) => {
     try {
       if (selectedExperience) {
         await experienceService.updateExperience(employeeId, selectedExperience.id, formData);
-        toast.success("Experience updated successfully");
+        toast.success('Experience updated successfully');
       } else {
         await experienceService.createExperience(employeeId, formData);
-        toast.success("Experience added successfully");
+        toast.success('Experience added successfully');
       }
-      fetchExperiences();
       setIsModalOpen(false);
       setSelectedExperience(null);
+      fetchExperiences();
     } catch (error) {
-      console.error("Error saving experience:", error);
-      toast.error("Failed to save experience");
+      console.error('Error saving experience:', error);
+      toast.error(selectedExperience ? 'Failed to update experience' : 'Failed to add experience');
     }
   };
 
@@ -87,66 +80,48 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     if (selectedExperience) {
       try {
         await experienceService.deleteExperience(employeeId, selectedExperience.id);
-        toast.success("Experience deleted successfully");
-        fetchExperiences();
+        toast.success('Experience deleted successfully');
         setIsDeleteDialogOpen(false);
         setSelectedExperience(null);
+        fetchExperiences();
       } catch (error) {
-        console.error("Error deleting experience:", error);
-        toast.error("Failed to delete experience");
+        console.error('Error deleting experience:', error);
+        toast.error('Failed to delete experience');
       }
     }
   };
 
-  if (isLoading) {
-    return (
-      <InfoCard 
-        title="Experience" 
-        icon={GraduationCap}
-        onEdit={onEdit}
-      >
-        <div className="p-4">Loading...</div>
-      </InfoCard>
-    );
-  }
-
   return (
-    <>
-      <InfoCard 
-        title="Experience" 
-        icon={GraduationCap}
-        headerAction={
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-            onClick={() => {
-              setSelectedExperience(null);
-              setIsModalOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4" />
-            Add Experience
-          </Button>
-        }
-      >
-        <div className="max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 space-y-4 p-2">
-          {experiences.map((experience) => (
-            <ExperienceCard
-              key={experience.id}
-              experience={experience}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))}
-          
-          {experiences.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              No experience records found. Click 'Add Experience' to add your work history.
-            </div>
-          )}
-        </div>
-      </InfoCard>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium">Work History</h3>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleAddExperience}
+          className="flex items-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Add Experience
+        </Button>
+      </div>
+      <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+        {experiences.map((experience) => (
+          <ExperienceCard
+            key={experience.id}
+            experience={experience}
+            onEdit={() => handleEdit(experience)}
+            onDelete={() => handleDelete(experience)}
+            onViewDocument={handleViewDocument}
+            onDownloadDocument={handleDownloadDocument}
+          />
+        ))}
+        {experiences.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            No experience records found. Click 'Add Experience' to add your work history.
+          </div>
+        )}
+      </div>
 
       <AddExperienceModal
         isOpen={isModalOpen}
@@ -166,6 +141,6 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         }}
         onConfirm={handleConfirmDelete}
       />
-    </>
+    </div>
   );
 };
