@@ -34,59 +34,59 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
   calculateYearsOfExperience
 }) => {
   const personalData = {
-    employeeId: employeeData.employee_id,
-    firstName: employeeData.first_name,
-    lastName: employeeData.last_name,
+    employeeId: employeeData.employeeId,
+    firstName: employeeData.firstName,
+    lastName: employeeData.lastName,
     email: employeeData.email,
     phone: employeeData.phone || '',
-    dateOfBirth: employeeData.date_of_birth || '',
+    dateOfBirth: employeeData.dateOfBirth || '',
     gender: employeeData.gender || '',
-    bloodGroup: employeeData.blood_group || '',
-    maritalStatus: employeeData.marital_status || '',
-    presentAddress: employeeData.present_address || {
+    bloodGroup: employeeData.bloodGroup || '',
+    maritalStatus: employeeData.maritalStatus || '',
+    presentAddress: employeeData.presentAddress || {
       addressLine1: '',
       country: '',
       state: '',
       city: '',
       zipCode: ''
     },
-    permanentAddress: employeeData.permanent_address || {
+    permanentAddress: employeeData.permanentAddress || {
       addressLine1: '',
       country: '',
       state: '',
       city: '',
       zipCode: ''
     },
-    emergencyContacts: employeeData.emergency_contacts || [],
-    familyDetails: employeeData.family_details || []
+    emergencyContacts: employeeData.emergencyContacts || [],
+    familyDetails: employeeData.familyDetails || []
   };
 
   return (
     <>
       <ProfileHeader
-        employeeId={employeeData.employee_id}
-        firstName={employeeData.first_name}
-        lastName={employeeData.last_name}
+        employeeId={employeeData.employeeId}
+        firstName={employeeData.firstName}
+        lastName={employeeData.lastName}
         email={employeeData.email}
       />
 
       <StatsBar
-        joinedDate={new Date(employeeData.created_at).toLocaleDateString()}
-        department="Engineering"
-        designation="Software Engineer"
-        yearsOfExperience={calculateYearsOfExperience(employeeData.created_at)}
+        joinedDate={employeeData.createdAt}
+        department={employeeData.department || "Engineering"}
+        designation={employeeData.position || "Software Engineer"}
+        yearsOfExperience={calculateYearsOfExperience(employeeData.createdAt)}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
         <PersonalInfoSection
           phone={employeeData.phone}
-          dateOfBirth={employeeData.date_of_birth}
-          maritalStatus={employeeData.marital_status}
+          dateOfBirth={employeeData.dateOfBirth}
+          maritalStatus={employeeData.maritalStatus}
           onEdit={() => handleEdit("personal")}
         />
 
         <EmploymentInfoSection
-          employeeId={employeeData.employee_id}
+          employeeId={employeeData.employeeId}
           onEdit={() => handleEdit("employment")}
         />
 
@@ -106,10 +106,10 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
         onClose={() => setIsEmploymentModalOpen(false)}
         employeeId={employeeData?.id || ''}
         initialData={{
-          employeeId: employeeData?.employee_id || '',
+          employeeId: employeeData?.employeeId || '',
           department: 'Engineering',
           position: 'Software Engineer',
-          joinedDate: employeeData?.created_at || '',
+          joinedDate: employeeData?.createdAt || '',
           employmentHistory: [
             {
               title: 'Senior Developer',

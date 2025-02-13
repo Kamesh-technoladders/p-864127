@@ -27,7 +27,7 @@ export const transformEmployeeData = (employeeDetails: EmployeeDetailsResponse) 
     lastName: employeeDetails.last_name || '',
     email: employeeDetails.email || '',
     phone: employeeDetails.phone || '',
-    dateOfBirth: employeeDetails.date_of_birth ? format(new Date(employeeDetails.date_of_birth), 'yyyy-MM-dd') : '',
+    dateOfBirth: employeeDetails.date_of_birth || '',  // Changed to keep original date format
     gender: employeeDetails.gender || '',
     bloodGroup: employeeDetails.blood_group || '',
     maritalStatus: employeeDetails.marital_status || '',

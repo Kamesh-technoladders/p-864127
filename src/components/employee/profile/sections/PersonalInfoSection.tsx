@@ -19,7 +19,8 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   const formatDate = (dateStr: string) => {
     if (!dateStr) return 'Not specified';
     try {
-      return new Date(dateStr).toLocaleDateString();
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-GB'); // Format as DD/MM/YYYY
     } catch (error) {
       console.error('Error formatting date:', dateStr, error);
       return 'Invalid date';
