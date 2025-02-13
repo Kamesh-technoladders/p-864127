@@ -27,10 +27,14 @@ export const useEmployeeForm = () => {
 
   const updateSectionProgress = (section: keyof FormProgress, completed: boolean) => {
     console.log(`Updating progress for ${section}:`, completed);
-    setFormProgress((prev) => ({
-      ...prev,
-      [section]: completed,
-    }));
+    setFormProgress((prev) => {
+      const newProgress = {
+        ...prev,
+        [section]: completed,
+      };
+      console.log('New form progress:', newProgress);
+      return newProgress;
+    });
   };
 
   const updateFormData = (section: keyof FormData, data: any) => {
@@ -54,30 +58,20 @@ export const useEmployeeForm = () => {
   };
 
   const handleSaveAndNext = async () => {
+    console.log('handleSaveAndNext called');
+    console.log('Current tab:', activeTab);
+    console.log('Form progress:', formProgress);
+    console.log('Form data:', formData);
+
     if (activeTab === "personal") {
       const form = document.getElementById("personalDetailsForm") as HTMLFormElement;
       if (form) {
-        // Create a promise that resolves when the form submission is complete
-        const formSubmissionPromise = new Promise<void>((resolve) => {
-          const originalOnComplete = (window as any).onComplete;
-          (window as any).onComplete = (completed: boolean, data: any) => {
-            if (originalOnComplete) {
-              originalOnComplete(completed, data);
-            }
-            resolve();
-          };
-          form.requestSubmit();
-        });
-
-        // Wait for form submission to complete
-        await formSubmissionPromise;
-
-        // Now check if the form is valid
-        if (!formProgress[activeTab as keyof FormProgress]) {
-          return; // The form will show its own validation messages
-        }
+        form.requestSubmit();
+        return;
       }
-    } else if (!formProgress[activeTab as keyof FormProgress]) {
+    }
+
+    if (!formProgress[activeTab as keyof FormProgress]) {
       toast.error("Please complete all required fields before proceeding");
       return;
     }

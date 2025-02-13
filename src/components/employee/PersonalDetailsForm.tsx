@@ -81,11 +81,22 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
     mode: "onChange"
   });
 
+  // Watch form values and validation state
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      console.log('Form values changed:', value);
+      validateAndUpdateProgress();
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
+
+  // Add validation for emergency contacts and family members
   useEffect(() => {
     if (showValidation) {
       const errors = emergencyContacts.map(contact => validateEmergencyContact(contact));
       setEmergencyContactErrors(errors);
     }
+    validateAndUpdateProgress();
   }, [emergencyContacts, showValidation]);
 
   useEffect(() => {
@@ -93,6 +104,7 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
       const errors = familyDetails.map(member => validateFamilyMember(member));
       setFamilyDetailErrors(errors);
     }
+    validateAndUpdateProgress();
   }, [familyDetails, showValidation]);
 
   const validateEmergencyContact = (contact: EmergencyContact): string[] => {
@@ -112,59 +124,63 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
     return errors;
   };
 
-  const validateForm = () => {
+  const validateAndUpdateProgress = () => {
+    const formState = form.getValues();
+    const hasValidEmergencyContact = emergencyContacts.some(contact => 
+      validateEmergencyContact(contact).length === 0
+    );
+    const hasValidFamilyMember = familyDetails.some(member => 
+      validateFamilyMember(member).length === 0
+    );
+
+    const isBasicInfoValid = Object.keys(form.formState.errors).length === 0;
+    const isValid = isBasicInfoValid && hasValidEmergencyContact && hasValidFamilyMember;
+
+    console.log('Form validation state:', {
+      isBasicInfoValid,
+      hasValidEmergencyContact,
+      hasValidFamilyMember,
+      isValid
+    });
+
+    onComplete(isValid, isValid ? {
+      ...formState,
+      emergencyContacts: emergencyContacts.filter(contact => validateEmergencyContact(contact).length === 0),
+      familyDetails: familyDetails.filter(member => validateFamilyMember(member).length === 0)
+    } : undefined);
+  };
+
+  const handleSubmit = form.handleSubmit((data) => {
+    console.log('Form submitted with data:', data);
     setShowValidation(true);
-
-    console.log('Validating form...');
-    console.log('Form errors:', form.formState.errors);
-    console.log('Emergency contacts:', emergencyContacts);
-    console.log('Family details:', familyDetails);
-
-    // Validate emergency contacts
-    const emergencyErrors = emergencyContacts.map(contact => validateEmergencyContact(contact));
-    setEmergencyContactErrors(emergencyErrors);
-    const hasValidEmergencyContact = emergencyContacts.some(contact => validateEmergencyContact(contact).length === 0);
     
-    if (!hasValidEmergencyContact) {
-      toast.error("Please add at least one complete emergency contact");
-      return false;
-    }
-
-    // Validate family members
-    const familyErrors = familyDetails.map(member => validateFamilyMember(member));
-    setFamilyDetailErrors(familyErrors);
-    const hasValidFamilyMember = familyDetails.some(member => validateFamilyMember(member).length === 0);
-    
-    if (!hasValidFamilyMember) {
-      toast.error("Please add at least one complete family member");
-      return false;
-    }
-
-    const hasErrors = Object.keys(form.formState.errors).length > 0;
-    if (hasErrors) {
-      // Show specific field errors
+    const validationResult = validateAndUpdateProgress();
+    if (!form.formState.isValid) {
       Object.entries(form.formState.errors).forEach(([key, value]) => {
         if (typeof value === 'object' && value?.message) {
           toast.error(value.message as string);
         }
       });
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmit = form.handleSubmit((data) => {
-    console.log('Form submitted with data:', data);
-    const formIsValid = validateForm();
-    if (!formIsValid) {
-      onComplete(false);
       return;
     }
 
     // Filter out empty contacts and family members
-    const validEmergencyContacts = emergencyContacts.filter(contact => validateEmergencyContact(contact).length === 0);
-    const validFamilyMembers = familyDetails.filter(member => validateFamilyMember(member).length === 0);
+    const validEmergencyContacts = emergencyContacts.filter(contact => 
+      validateEmergencyContact(contact).length === 0
+    );
+    const validFamilyMembers = familyDetails.filter(member => 
+      validateFamilyMember(member).length === 0
+    );
+
+    if (!validEmergencyContacts.length) {
+      toast.error("Please add at least one complete emergency contact");
+      return;
+    }
+
+    if (!validFamilyMembers.length) {
+      toast.error("Please add at least one complete family member");
+      return;
+    }
 
     const formData = {
       ...data,
