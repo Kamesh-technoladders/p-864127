@@ -1,7 +1,7 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { format } from "date-fns";
-import { FileText, Pencil, Trash2 } from "lucide-react";
+import { FileText, Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Experience } from "@/services/types/employee.types";
 
@@ -16,10 +16,14 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const [isDocsExpanded, setIsDocsExpanded] = useState(false);
+
   const formatDate = (date: string) => {
     if (!date) return "Present";
     return format(new Date(date), "MMM yyyy");
   };
+
+  const hasDocuments = experience.offerLetter || experience.separationLetter || experience.payslips?.length > 0;
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -55,29 +59,42 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
         </div>
       </div>
 
-      {(experience.offerLetter || experience.separationLetter || experience.payslips?.length > 0) && (
+      {hasDocuments && (
         <div className="mt-4 pt-4 border-t border-gray-100">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">Documents</h4>
-          <div className="flex flex-wrap gap-3">
-            {experience.offerLetter && (
-              <div className="flex items-center gap-1 text-sm text-blue-600">
-                <FileText className="h-4 w-4" />
-                <span>Offer Letter</span>
-              </div>
+          <button
+            onClick={() => setIsDocsExpanded(!isDocsExpanded)}
+            className="flex items-center justify-between w-full text-sm font-medium text-gray-900"
+          >
+            <span>Documents</span>
+            {isDocsExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
             )}
-            {experience.separationLetter && (
-              <div className="flex items-center gap-1 text-sm text-blue-600">
-                <FileText className="h-4 w-4" />
-                <span>Separation Letter</span>
-              </div>
-            )}
-            {experience.payslips?.map((_, index) => (
-              <div key={index} className="flex items-center gap-1 text-sm text-blue-600">
-                <FileText className="h-4 w-4" />
-                <span>Payslip {index + 1}</span>
-              </div>
-            ))}
-          </div>
+          </button>
+          
+          {isDocsExpanded && (
+            <div className="mt-2 space-y-2">
+              {experience.offerLetter && (
+                <div className="flex items-center gap-1 text-sm text-blue-600">
+                  <FileText className="h-4 w-4" />
+                  <span>Offer Letter</span>
+                </div>
+              )}
+              {experience.separationLetter && (
+                <div className="flex items-center gap-1 text-sm text-blue-600">
+                  <FileText className="h-4 w-4" />
+                  <span>Separation Letter</span>
+                </div>
+              )}
+              {experience.payslips?.map((_, index) => (
+                <div key={index} className="flex items-center gap-1 text-sm text-blue-600">
+                  <FileText className="h-4 w-4" />
+                  <span>Payslip {index + 1}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

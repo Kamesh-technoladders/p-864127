@@ -4,11 +4,11 @@ import { GraduationCap, Plus } from "lucide-react";
 import { InfoCard } from "../InfoCard";
 import { Button } from "@/components/ui/button";
 import { experienceService } from "@/services/employee/experience.service";
-import { format } from "date-fns";
-import { AddExperienceModal } from "../../AddExperienceModal";
 import { Experience } from "@/services/types/employee.types";
-import { toast } from "sonner";
+import { ExperienceCard } from "../../experience/ExperienceCard";
+import { AddExperienceModal } from "../../AddExperienceModal";
 import { DeleteConfirmationDialog } from "../../experience/DeleteConfirmationDialog";
+import { toast } from "sonner";
 
 interface ExperienceSectionProps {
   employeeId: string;
@@ -44,6 +44,16 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     }
   }, [employeeId]);
 
+  const handleEdit = (experience: Experience) => {
+    setSelectedExperience(experience);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (experience: Experience) => {
+    setSelectedExperience(experience);
+    setIsDeleteDialogOpen(true);
+  };
+
   const handleSave = async (formData: Experience) => {
     try {
       if (selectedExperience) {
@@ -60,16 +70,6 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
       console.error("Error saving experience:", error);
       toast.error("Failed to save experience");
     }
-  };
-
-  const handleEdit = (experience: Experience) => {
-    setSelectedExperience(experience);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (experience: Experience) => {
-    setSelectedExperience(experience);
-    setIsDeleteDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -104,7 +104,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
       <InfoCard 
         title="Experience" 
         icon={GraduationCap}
-        action={
+        headerAction={
           <Button
             variant="outline"
             size="sm"
@@ -119,38 +119,14 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           </Button>
         }
       >
-        <div className="space-y-4 p-2">
+        <div className="max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 space-y-4 p-2">
           {experiences.map((experience) => (
-            <div key={experience.id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-medium">{experience.jobTitle}</h4>
-                  <p className="text-sm text-gray-600">{experience.company}</p>
-                  <p className="text-sm text-gray-500">
-                    {format(new Date(experience.startDate), 'MMM yyyy')} - 
-                    {experience.endDate 
-                      ? format(new Date(experience.endDate), ' MMM yyyy')
-                      : ' Present'}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(experience)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(experience)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <ExperienceCard
+              key={experience.id}
+              experience={experience}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           ))}
           
           {experiences.length === 0 && (

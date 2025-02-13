@@ -1,10 +1,9 @@
 
 import React, { useState, useEffect } from "react";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, FileText } from "lucide-react";
 import { InfoCard } from "../InfoCard";
 import { EducationEditModal } from "../../modals/EducationEditModal";
 import { educationService } from "@/services/employee/education.service";
-import { format } from "date-fns";
 
 interface EducationSectionProps {
   employeeId: string;
@@ -41,19 +40,10 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
     setIsModalOpen(true);
   };
 
-  const formatDate = (date: string) => {
-    if (!date) return 'Not specified';
-    try {
-      return format(new Date(date), 'MMM yyyy');
-    } catch (error) {
-      return 'Invalid date';
-    }
-  };
-
   if (isLoading) {
     return (
       <InfoCard 
-        title="Education & Experience" 
+        title="Education" 
         icon={GraduationCap}
         onEdit={handleEdit}
       >
@@ -65,26 +55,16 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
   return (
     <>
       <InfoCard 
-        title="Education & Experience" 
+        title="Education" 
         icon={GraduationCap}
         onEdit={handleEdit}
       >
         <div className="space-y-4 p-2">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-500">Institute</span>
-              <span>{educationData?.[0]?.institute || 'Not specified'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">Year Completed</span>
-              <span>{educationData?.[0]?.year_completed ? formatDate(educationData[0].year_completed) : 'Not specified'}</span>
-            </div>
-          </div>
-          <div className="pt-4 border-t border-gray-100">
-            <h4 className="text-sm font-medium mb-2">Documents</h4>
-            <div className="space-y-3">
-              {educationData?.map((doc: any) => (
-                <div key={doc.id} className="text-sm">
+          <div className="space-y-3">
+            {educationData?.map((doc: any) => (
+              <div key={doc.id} className="flex items-center gap-2 text-sm">
+                <FileText className="h-4 w-4 text-blue-600" />
+                <div>
                   <div className="font-medium">{doc.type.toUpperCase()}</div>
                   {doc.document_url ? (
                     <a 
@@ -99,8 +79,13 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
                     <span className="text-gray-500">No document uploaded</span>
                   )}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+            {(!educationData || educationData.length === 0) && (
+              <div className="text-center py-4 text-gray-500">
+                No education documents uploaded
+              </div>
+            )}
           </div>
         </div>
       </InfoCard>
@@ -111,8 +96,6 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
         employeeId={employeeId}
         onUpdate={fetchEducationData}
         initialData={{
-          institute: educationData?.[0]?.institute,
-          yearCompleted: educationData?.[0]?.year_completed,
           ssc: educationData?.find((doc: any) => doc.type === 'ssc')?.document_url
             ? {
                 name: 'SSC Certificate',
