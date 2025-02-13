@@ -5,7 +5,6 @@ import {
   Search,
   FileText,
   FileSpreadsheet,
-  Presentation,
   Download
 } from "lucide-react";
 import {
@@ -24,7 +23,6 @@ import {
 import { Employee } from "@/hooks/useEmployees";
 import jsPDF from "jspdf";
 import 'jspdf-autotable';
-import pptxgen from "pptxgenjs";
 import { saveAs } from "file-saver";
 import { toast } from "sonner";
 
@@ -101,66 +99,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     }
   };
 
-  const downloadAsPPT = async () => {
-    try {
-      const pres = new pptxgen();
-      const slide = pres.addSlide();
-      
-      // Add title
-      slide.addText("Employee List", {
-        x: 1,
-        y: 0.5,
-        fontSize: 24,
-        bold: true
-      });
-      
-      // Create table rows
-      const headerRow = [
-        { text: "ID" },
-        { text: "Name" },
-        { text: "Email" },
-        { text: "Gender" },
-        { text: "Blood Group" },
-        { text: "Status" }
-      ];
-
-      const dataRows = employees.map(emp => [
-        { text: emp.employee_id },
-        { text: `${emp.first_name} ${emp.last_name}` },
-        { text: emp.email },
-        { text: emp.gender || '-' },
-        { text: emp.blood_group || '-' },
-        { text: emp.employment_status || 'active' }
-      ]);
-      
-      // Add table to slide with corrected configuration
-      slide.addTable({
-        w: "90%",
-        colW: [1.5, 2, 2.5, 1, 1, 1],
-        rows: [headerRow, ...dataRows],
-        border: { pt: 1, color: "666666" },
-        y: 1.5,
-        align: "center"
-      });
-      
-      await pres.writeFile({ fileName: 'employees.pptx' });
-      toast.success('PPT file downloaded successfully');
-    } catch (error) {
-      console.error('Error downloading PPT:', error);
-      toast.error('Failed to download PPT file');
-    }
-  };
-
-  const handleDownload = (format: 'csv' | 'pdf' | 'ppt') => {
+  const handleDownload = (format: 'csv' | 'pdf') => {
     switch (format) {
       case 'csv':
         downloadAsCSV();
         break;
       case 'pdf':
         downloadAsPDF();
-        break;
-      case 'ppt':
-        downloadAsPPT();
         break;
     }
   };
@@ -208,10 +153,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               <DropdownMenuItem onClick={() => handleDownload('pdf')}>
                 <FileText className="mr-2 h-4 w-4" />
                 Download as PDF
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDownload('ppt')}>
-                <Presentation className="mr-2 h-4 w-4" />
-                Download as PPT
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
