@@ -5,7 +5,7 @@ import {
   Search,
   FileText,
   FileSpreadsheet,
-  FilePresentation,
+  Presentation,
 } from "lucide-react";
 import {
   Select,
@@ -108,19 +108,29 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       });
       
       // Convert data for PPT table
-      const headers = ['ID', 'Name', 'Email', 'Gender', 'Blood Group', 'Status'];
-      const rows = employees.map(emp => [
-        emp.employee_id,
-        `${emp.first_name} ${emp.last_name}`,
-        emp.email,
-        emp.gender || '-',
-        emp.blood_group || '-',
-        emp.employment_status || 'active'
-      ]);
+      const tableRows = employees.map(emp => ({
+        cells: [
+          { text: emp.employee_id },
+          { text: `${emp.first_name} ${emp.last_name}` },
+          { text: emp.email },
+          { text: emp.gender || '-' },
+          { text: emp.blood_group || '-' },
+          { text: emp.employment_status || 'active' }
+        ]
+      }));
       
-      const tableData = [headers, ...rows];
-      
-      slide.addTable(tableData, {
+      slide.addTable({
+        rows: [
+          [
+            { text: "ID" },
+            { text: "Name" },
+            { text: "Email" },
+            { text: "Gender" },
+            { text: "Blood Group" },
+            { text: "Status" }
+          ],
+          ...tableRows.map(row => row.cells)
+        ],
         x: 0.5,
         y: 1.5,
         w: 9,
@@ -186,7 +196,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           onClick={downloadAsPPT}
           title="Download as PPT"
         >
-          <FilePresentation className="h-4 w-4" />
+          <Presentation className="h-4 w-4" />
         </Button>
       </div>
     </div>
