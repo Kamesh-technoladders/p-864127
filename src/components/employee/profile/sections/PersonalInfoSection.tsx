@@ -36,7 +36,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
 
   const handleCopy = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(`${type} copied to clipboard`);
+    toast.success(`${type} copied`);
   };
 
   return (
@@ -56,14 +56,14 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
-                        onClick={() => handleCopy(phone, 'Phone number')}
+                        onClick={() => handleCopy(phone, 'Phone')}
                         className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
                       >
                         <Copy className="h-3.5 w-3.5" />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Copy phone number</p>
+                    <TooltipContent side="left">
+                      <p>Copy</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

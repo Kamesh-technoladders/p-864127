@@ -26,7 +26,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
   const handleCopy = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(`${type} copied to clipboard`);
+    toast.success(`${type} copied`);
   };
 
   return (
@@ -57,8 +57,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                       <Copy className="h-3.5 w-3.5" />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Copy email</p>
+                  <TooltipContent side="top">
+                    <p>Copy</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

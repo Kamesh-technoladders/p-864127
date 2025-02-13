@@ -90,8 +90,8 @@ export const BankInfoSection: React.FC<BankInfoSectionProps> = ({
                                 <Copy className="h-3.5 w-3.5" />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Copy account number</p>
+                            <TooltipContent side="left">
+                              <p>Copy</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -115,8 +115,8 @@ export const BankInfoSection: React.FC<BankInfoSectionProps> = ({
                                 <Copy className="h-3.5 w-3.5" />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Copy IFSC code</p>
+                            <TooltipContent side="left">
+                              <p>Copy</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
