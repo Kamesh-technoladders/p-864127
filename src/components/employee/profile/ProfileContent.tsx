@@ -7,6 +7,7 @@ import { EmploymentInfoSection } from "./sections/EmploymentInfoSection";
 import { EducationSection } from "./sections/EducationSection";
 import { BankInfoSection } from "./sections/BankInfoSection";
 import { MetricsSection } from "./sections/MetricsSection";
+import { ExperienceSection } from "./sections/ExperienceSection";
 import { EmploymentDetailsModal } from "./modals/EmploymentDetailsModal";
 import { PersonalDetailsEditModal } from "../modals/PersonalDetailsEditModal";
 
@@ -100,6 +101,13 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
         />
 
         <MetricsSection employeeId={employeeData.id} />
+      </div>
+
+      <div className="mt-4">
+        <ExperienceSection
+          employeeId={employeeData.id}
+          onEdit={() => handleEdit("experience")}
+        />
       </div>
 
       <EmploymentDetailsModal
