@@ -39,7 +39,6 @@ export const useEmployeeForm = () => {
       ...prev,
       [section]: data,
     }));
-    updateSectionProgress(section, true);
   };
 
   const handleTabChange = (tabId: string) => {
@@ -47,7 +46,7 @@ export const useEmployeeForm = () => {
     console.log('Tab change requested:', { from: activeTab, to: tabId, currentProgress: currentTabProgress });
 
     if (!currentTabProgress) {
-      toast.error("Please complete the current section before proceeding");
+      toast.error("Please complete all required fields before proceeding");
       return;
     }
     setActiveTab(tabId);
@@ -55,11 +54,6 @@ export const useEmployeeForm = () => {
 
   const handleSaveAndNext = async () => {
     console.log('Save and Next clicked:', { activeTab, formProgress, formData });
-
-    if (!formProgress[activeTab as keyof FormProgress]) {
-      toast.error("Please complete all required fields before proceeding");
-      return;
-    }
 
     const tabOrder = ["personal", "education", "bank"];
     const currentIndex = tabOrder.indexOf(activeTab);

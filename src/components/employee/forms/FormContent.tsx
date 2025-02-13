@@ -30,10 +30,12 @@ export const FormContent: React.FC<FormContentProps> = ({
         <PersonalDetailsForm
           onComplete={(completed: boolean, data?: any) => {
             console.log('Personal details form completion:', { completed, data });
-            updateSectionProgress("personal", completed);
             if (completed && data) {
               updateFormData("personal", data);
-              if (completed) handleSaveAndNext();
+              updateSectionProgress("personal", true);
+              handleSaveAndNext();
+            } else {
+              updateSectionProgress("personal", false);
             }
           }}
           initialData={formData.personal}
@@ -44,9 +46,11 @@ export const FormContent: React.FC<FormContentProps> = ({
         <EducationForm
           onComplete={(completed: boolean, data?: any) => {
             console.log('Education form completion:', { completed, data });
-            updateSectionProgress("education", completed);
             if (completed && data) {
               updateFormData("education", data);
+              updateSectionProgress("education", true);
+            } else {
+              updateSectionProgress("education", false);
             }
           }}
           initialData={formData.education}
@@ -58,9 +62,11 @@ export const FormContent: React.FC<FormContentProps> = ({
         <BankAccountForm
           onComplete={(completed: boolean, data?: any) => {
             console.log('Bank account form completion:', { completed, data });
-            updateSectionProgress("bank", completed);
             if (completed && data) {
               updateFormData("bank", data);
+              updateSectionProgress("bank", true);
+            } else {
+              updateSectionProgress("bank", false);
             }
           }}
           initialData={formData.bank}

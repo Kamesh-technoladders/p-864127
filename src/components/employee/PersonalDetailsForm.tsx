@@ -162,7 +162,9 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
   // Watch for form changes and validate
   useEffect(() => {
     const subscription = form.watch(() => {
-      validateAndUpdateProgress();
+      setTimeout(() => {
+        validateAndUpdateProgress();
+      }, 0);
     });
     return () => subscription.unsubscribe();
   }, [form.watch, emergencyContacts, familyDetails]);
