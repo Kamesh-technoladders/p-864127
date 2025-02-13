@@ -23,7 +23,20 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   const fetchExperiences = async () => {
     try {
       const data = await experienceService.fetchExperiences(employeeId);
-      setExperiences(data);
+      // Transform the API response to match the Experience type
+      const transformedData = data.map((exp: any) => ({
+        id: exp.id,
+        jobTitle: exp.job_title,
+        company: exp.company,
+        location: exp.location,
+        employmentType: exp.employment_type,
+        startDate: exp.start_date,
+        endDate: exp.end_date,
+        offerLetter: exp.offer_letter_url,
+        separationLetter: exp.separation_letter_url,
+        payslips: exp.payslips || []
+      }));
+      setExperiences(transformedData);
     } catch (error) {
       console.error('Error fetching experiences:', error);
       toast.error('Failed to load experiences');
@@ -86,6 +99,8 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           experience={experience}
           onViewDocument={(docType) => handleViewDocument(docType, experience)}
           onDownloadDocument={(docType) => handleDownloadDocument(docType, experience)}
+          onEdit={() => {}} // Add empty handlers for required props
+          onDelete={() => {}}
         />
       ))}
       

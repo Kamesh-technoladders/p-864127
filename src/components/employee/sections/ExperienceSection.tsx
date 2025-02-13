@@ -17,7 +17,7 @@ interface ExperienceSectionProps {
 }
 
 export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
-  data,
+  data = [], // Add default empty array to prevent undefined.map error
   employeeId,
   onUpdate,
 }) => {
@@ -135,7 +135,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
       </div>
 
       <div className="space-y-4">
-        {data.map((experience) => (
+        {(data || []).map((experience) => (
           <ExperienceCard
             key={experience.id}
             experience={experience}
@@ -146,7 +146,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           />
         ))}
         
-        {data.length === 0 && (
+        {(!data || data.length === 0) && (
           <div className="text-center py-8 text-gray-500">
             No experience records found. Click the plus icon to add your work history.
           </div>
@@ -175,7 +175,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
       <DocumentViewerDialog
         isOpen={!!viewingDocument}
         onClose={() => setViewingDocument(null)}
-        documentUrl={viewingDocument?.url}
+        documentUrl={viewingDocument?.url || ""}
         documentType={viewingDocument?.type || ""}
       />
     </div>
