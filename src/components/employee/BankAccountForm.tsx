@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +27,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isValid }
+    formState: { errors, isValid, dirtyFields }
   } = useForm<BankFormData>({
     resolver: zodResolver(bankAccountSchema),
     mode: "onChange",
@@ -36,11 +37,36 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
   const formValues = watch();
 
   useEffect(() => {
-    const isFormComplete = Object.values(formValues).every(value => !!value);
+    // Check if all required fields are filled
+    const requiredFields = [
+      'accountHolderName',
+      'accountNumber',
+      'ifscCode',
+      'bankName',
+      'branchName',
+      'accountType',
+      'bankPhone',
+      'cancelledCheque',
+      'passbookCopy'
+    ];
+
+    const isFormComplete = requiredFields.every(field => {
+      const value = formValues[field as keyof BankFormData];
+      return value !== undefined && value !== null && value !== '';
+    });
+
+    console.log('Bank form state:', {
+      isFormComplete,
+      isValid,
+      formValues,
+      errors
+    });
+
     onComplete(isFormComplete && isValid, formValues);
   }, [formValues, isValid, onComplete]);
 
   const onSubmit = (data: BankFormData) => {
+    console.log('Form submitted:', data);
     toast({
       title: "Bank Account Details",
       description: "Bank account details saved successfully!",
