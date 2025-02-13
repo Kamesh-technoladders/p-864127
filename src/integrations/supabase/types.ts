@@ -473,7 +473,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_employee_details: {
+        Args: {
+          p_employee_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
