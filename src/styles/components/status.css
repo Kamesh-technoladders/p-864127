@@ -1,0 +1,13 @@
+
+/* Status Pills */
+.status-pill {
+  @apply px-1.5 py-0.5 rounded text-[10px] font-medium;
+}
+
+.status-pill-invited {
+  @apply bg-status-invited/10 text-status-invited;
+}
+
+.status-pill-absent {
+  @apply bg-status-absent/10 text-status-absent;
+}

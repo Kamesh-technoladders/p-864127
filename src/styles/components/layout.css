@@ -1,0 +1,64 @@
+
+/* Card Layouts */
+.card-compact {
+  @apply p-2 space-y-1.5;
+}
+
+/* Modals */
+.modal-header {
+  @apply text-sm font-semibold mb-2;
+}
+
+.modal-content {
+  @apply space-y-2;
+}
+
+/* Navigation */
+.nav-link {
+  @apply text-xs py-1 px-1.5;
+}
+
+/* Lists */
+.list-item-compact {
+  @apply py-1 px-1.5;
+}
+
+/* Icons */
+.icon-compact {
+  @apply w-3.5 h-3.5;
+}
+
+/* Tooltips */
+.tooltip-compact {
+  @apply text-[10px] py-0.5 px-1.5;
+}
+
+/* Breadcrumbs */
+.breadcrumb-item {
+  @apply text-[10px];
+}
+
+/* Tabs */
+.tab-compact {
+  @apply text-xs py-1 px-2;
+}
+
+/* Badges */
+.badge-compact {
+  @apply text-[10px] px-1.5 py-0.5;
+}
+
+/* Input Groups */
+.input-group-compact {
+  @apply space-x-0.5;
+}
+
+/* Dropdown Menus */
+.dropdown-item-compact {
+  @apply text-xs py-1 px-2;
+}
+
+/* Section Headers */
+.section-header-compact {
+  @apply text-xs font-semibold mb-1.5;
+}
