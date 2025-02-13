@@ -7,6 +7,19 @@ export interface Address {
   zipCode: string;
 }
 
+export interface EmergencyContact {
+  relationship: string;
+  name: string;
+  phone: string;
+}
+
+export interface FamilyDetail {
+  relationship: string;
+  name: string;
+  occupation: string;
+  phone: string;
+}
+
 export interface PersonalInfo {
   employeeId: string;
   firstName: string;
@@ -19,6 +32,8 @@ export interface PersonalInfo {
   maritalStatus: string;
   presentAddress: Address;
   permanentAddress: Address;
+  emergencyContacts: EmergencyContact[];
+  familyDetails: FamilyDetail[];
 }
 
 export interface EmploymentInfo {

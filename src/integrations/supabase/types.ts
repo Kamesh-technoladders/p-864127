@@ -185,6 +185,48 @@ export type Database = {
           },
         ]
       }
+      employee_emergency_contacts: {
+        Row: {
+          created_at: string | null
+          employee_id: string
+          id: string
+          name: string
+          phone: string
+          relationship: string
+        }
+        Insert: {
+          created_at?: string | null
+          employee_id: string
+          id?: string
+          name: string
+          phone: string
+          relationship: string
+        }
+        Update: {
+          created_at?: string | null
+          employee_id?: string
+          id?: string
+          name?: string
+          phone?: string
+          relationship?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_emergency_contacts_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_employee"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_experiences: {
         Row: {
           company: string
@@ -228,6 +270,51 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "employee_experiences_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_family_details: {
+        Row: {
+          created_at: string | null
+          employee_id: string
+          id: string
+          name: string
+          occupation: string
+          phone: string
+          relationship: string
+        }
+        Insert: {
+          created_at?: string | null
+          employee_id: string
+          id?: string
+          name: string
+          occupation: string
+          phone: string
+          relationship: string
+        }
+        Update: {
+          created_at?: string | null
+          employee_id?: string
+          id?: string
+          name?: string
+          occupation?: string
+          phone?: string
+          relationship?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_family_details_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_employee"
             columns: ["employee_id"]
             isOneToOne: false
             referencedRelation: "employees"
