@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ProfileHeader } from "./ProfileHeader";
 import { StatsBar } from "./StatsBar";
@@ -20,6 +19,7 @@ interface ProfileContentProps {
   handleUpdateEmployment: (data: any) => Promise<void>;
   handleUpdatePersonal: (data: any) => Promise<void>;
   calculateYearsOfExperience: (date: string) => string;
+  calculateTotalExperience: () => number;
 }
 
 export const ProfileContent: React.FC<ProfileContentProps> = ({
@@ -31,7 +31,8 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
   handleEdit,
   handleUpdateEmployment,
   handleUpdatePersonal,
-  calculateYearsOfExperience
+  calculateYearsOfExperience,
+  calculateTotalExperience
 }) => {
   const personalData = {
     employeeId: employeeData.employeeId,
@@ -62,7 +63,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
   };
 
   return (
-    <>
+    <div className="space-y-8">
       <ProfileHeader
         employeeId={employeeData.employeeId}
         firstName={employeeData.firstName}
@@ -71,10 +72,10 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
       />
 
       <StatsBar
-        joinedDate={employeeData.createdAt}
+        joinedDate={employeeData.joinedDate}
         department={employeeData.department || "Engineering"}
         designation={employeeData.position || "Software Engineer"}
-        yearsOfExperience={calculateYearsOfExperience(employeeData.createdAt)}
+        yearsOfExperience={calculateTotalExperience()}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
@@ -136,6 +137,6 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
         employeeId={employeeData.id}
         onUpdate={handleUpdatePersonal}
       />
-    </>
+    </div>
   );
 };

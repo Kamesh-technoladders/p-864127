@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useEmployeeData } from "./useEmployeeData";
 import { toast } from "sonner";
+import { differenceInMonths } from "date-fns";
 
 export const useEmployeeProfile = (id: string | undefined) => {
   const { isLoading, employeeData, error, fetchEmployeeData, updateEmployee } = useEmployeeData(id);
@@ -39,6 +40,22 @@ export const useEmployeeProfile = (id: string | undefined) => {
     }
   };
 
+  const calculateTotalExperience = () => {
+    if (!employeeData?.experience || employeeData.experience.length === 0) {
+      return "0.0 years";
+    }
+
+    let totalMonths = 0;
+    employeeData.experience.forEach((exp) => {
+      const start = new Date(exp.startDate);
+      const end = exp.endDate ? new Date(exp.endDate) : new Date();
+      totalMonths += differenceInMonths(end, start);
+    });
+
+    const years = totalMonths / 12;
+    return `${years.toFixed(1)} years`;
+  };
+
   const calculateYearsOfExperience = (joinedDate: string) => {
     const joined = new Date(joinedDate);
     const now = new Date();
@@ -62,6 +79,7 @@ export const useEmployeeProfile = (id: string | undefined) => {
     handleUpdateEmployment,
     handleUpdatePersonal,
     calculateYearsOfExperience,
-    fetchEmployeeData  // Added this to the return object
+    calculateTotalExperience,
+    fetchEmployeeData
   };
 };

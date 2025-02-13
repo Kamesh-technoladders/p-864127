@@ -30,7 +30,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({
     { title: "Joined Date", value: formatDate(joinedDate), icon: <Users className="w-5 h-5" /> },
     { title: "Department", value: department || "Not specified", icon: <Building2 className="w-5 h-5" /> },
     { title: "Designation", value: designation || "Not specified", icon: <BadgeCheck className="w-5 h-5" /> },
-    { title: "Experience", value: yearsOfExperience || "Not specified", icon: <Clock className="w-5 h-5" /> },
+    { title: "Total Experience", value: yearsOfExperience || "0.0 years", icon: <Clock className="w-5 h-5" /> },
   ];
 
   return (
