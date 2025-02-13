@@ -23,7 +23,7 @@ export const InfoCard: React.FC<InfoCardProps> = ({
 }) => {
   return (
     <Card className={`
-      p-6 
+      p-4 
       bg-white/80 
       backdrop-blur-sm 
       hover:shadow-lg 
@@ -45,10 +45,10 @@ export const InfoCard: React.FC<InfoCardProps> = ({
       hover:before:opacity-100
     `}>
       <div className="relative z-10">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-3">
           <div className="flex items-center gap-2">
-            <Icon className="w-5 h-5 text-brand-primary" />
-            <h3 className="font-medium text-lg">{title}</h3>
+            <Icon className="w-4 h-4 text-brand-primary" />
+            <h3 className="text-sm font-medium">{title}</h3>
           </div>
           <div className="flex items-center gap-2">
             {headerAction}
@@ -59,12 +59,12 @@ export const InfoCard: React.FC<InfoCardProps> = ({
                 onClick={onEdit}
                 className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100/50"
               >
-                <Edit className="w-4 h-4" />
+                <Edit className="w-3.5 h-3.5" />
               </Button>
             )}
           </div>
         </div>
-        {children}
+        <div className="text-sm">{children}</div>
       </div>
     </Card>
   );

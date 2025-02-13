@@ -17,11 +17,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onAddEmployee }) =
   const { employees, isLoading, error } = useEmployees();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-brand-primary">People</h1>
+        <h1 className="text-2xl font-bold text-brand-primary">People</h1>
         <Button onClick={onAddEmployee} className="bg-red-600 hover:bg-red-700">
-          <UserPlus className="w-4 h-4 mr-2" />
+          <UserPlus className="w-3.5 h-3.5 mr-2" />
           Add Employee
         </Button>
       </div>
