@@ -127,23 +127,37 @@ export const useEmployeeData = (employeeId: string | undefined) => {
 
           if (employeeError) throw employeeError;
 
+          // Map present address to match database column names
+          const presentAddressData = {
+            employee_id: employeeId,
+            type: 'present',
+            address_line1: personalInfo.presentAddress.addressLine1,
+            country: personalInfo.presentAddress.country,
+            state: personalInfo.presentAddress.state,
+            city: personalInfo.presentAddress.city,
+            zip_code: personalInfo.presentAddress.zipCode
+          };
+
+          // Map permanent address to match database column names
+          const permanentAddressData = {
+            employee_id: employeeId,
+            type: 'permanent',
+            address_line1: personalInfo.permanentAddress.addressLine1,
+            country: personalInfo.permanentAddress.country,
+            state: personalInfo.permanentAddress.state,
+            city: personalInfo.permanentAddress.city,
+            zip_code: personalInfo.permanentAddress.zipCode
+          };
+
           // Update present address
           await supabase
             .from('employee_addresses')
-            .upsert({
-              employee_id: employeeId,
-              type: 'present',
-              ...personalInfo.presentAddress
-            });
+            .upsert(presentAddressData);
 
           // Update permanent address
           await supabase
             .from('employee_addresses')
-            .upsert({
-              employee_id: employeeId,
-              type: 'permanent',
-              ...personalInfo.permanentAddress
-            });
+            .upsert(permanentAddressData);
 
           // Update emergency contacts
           if (personalInfo.emergencyContacts) {
@@ -155,14 +169,16 @@ export const useEmployeeData = (employeeId: string | undefined) => {
 
             // Insert new contacts
             if (personalInfo.emergencyContacts.length > 0) {
+              const contactsData = personalInfo.emergencyContacts.map(contact => ({
+                employee_id: employeeId,
+                name: contact.name,
+                relationship: contact.relationship,
+                phone: contact.phone
+              }));
+              
               await supabase
                 .from('employee_emergency_contacts')
-                .insert(
-                  personalInfo.emergencyContacts.map(contact => ({
-                    employee_id: employeeId,
-                    ...contact
-                  }))
-                );
+                .insert(contactsData);
             }
           }
 
@@ -176,14 +192,17 @@ export const useEmployeeData = (employeeId: string | undefined) => {
 
             // Insert new family details
             if (personalInfo.familyDetails.length > 0) {
+              const familyData = personalInfo.familyDetails.map(member => ({
+                employee_id: employeeId,
+                name: member.name,
+                relationship: member.relationship,
+                occupation: member.occupation,
+                phone: member.phone
+              }));
+              
               await supabase
                 .from('employee_family_details')
-                .insert(
-                  personalInfo.familyDetails.map(member => ({
-                    employee_id: employeeId,
-                    ...member
-                  }))
-                );
+                .insert(familyData);
             }
           }
         } else {
