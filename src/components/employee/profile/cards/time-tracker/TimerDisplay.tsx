@@ -25,8 +25,8 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
       )} />
       <div className="absolute inset-2 rounded-full border border-brand-accent/20" />
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-4xl font-bold tracking-tight">{formatTime(elapsedTime)}</div>
-        <div className="text-sm text-gray-500 mt-2">
+        <div className="text-3xl font-bold tracking-normal">{formatTime(elapsedTime)}</div>
+        <div className="text-sm text-gray-500 mt-1">
           {status === 'running' ? 'Currently Working' : 
            status === 'paused' ? 'Paused' : 
            'Work Time'}
