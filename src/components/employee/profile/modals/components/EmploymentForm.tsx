@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 
 interface EmploymentFormProps {
   formData: {
@@ -32,6 +31,7 @@ export const EmploymentForm: React.FC<EmploymentFormProps> = ({
           value={formData.department}
           onChange={(e) => onChange('department', e.target.value)}
           className="h-6 text-[11px] transition-colors duration-200"
+          placeholder="Enter department"
         />
       </div>
       <div>
@@ -40,6 +40,7 @@ export const EmploymentForm: React.FC<EmploymentFormProps> = ({
           value={formData.position}
           onChange={(e) => onChange('position', e.target.value)}
           className="h-6 text-[11px] transition-colors duration-200"
+          placeholder="Enter position"
         />
       </div>
     </div>

@@ -48,12 +48,20 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
   };
 
   const handleSave = async () => {
+    if (!formData.department.trim() || !formData.position.trim()) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
-      await onUpdate(formData);
-      toast.success("Employment details updated successfully");
+      await onUpdate({
+        department: formData.department,
+        position: formData.position
+      });
       onClose();
     } catch (error) {
+      console.error("Error updating employment details:", error);
       toast.error("Failed to update employment details");
     } finally {
       setIsSubmitting(false);

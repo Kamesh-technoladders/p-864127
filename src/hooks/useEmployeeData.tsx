@@ -51,7 +51,14 @@ export const useEmployeeData = (employeeId: string | undefined) => {
       }
 
       try {
-        if (section === 'personal') {
+        if (section === 'employment') {
+          await employeeDataService.updateBasicInfo(employeeId, {
+            department: data.department,
+            position: data.position
+          });
+          await fetchEmployeeData();
+          toast.success("Employment details updated successfully");
+        } else if (section === 'personal') {
           const personalInfo: PersonalInfo = {
             employeeId: data.employeeId,
             firstName: data.firstName,
@@ -68,7 +75,6 @@ export const useEmployeeData = (employeeId: string | undefined) => {
             familyDetails: data.familyDetails || []
           };
 
-          // Update all personal information in parallel
           await Promise.all([
             employeeDataService.updateBasicInfo(employeeId, personalInfo),
             employeeAddressService.updateAddresses(
@@ -85,14 +91,14 @@ export const useEmployeeData = (employeeId: string | undefined) => {
               personalInfo.familyDetails
             )
           ]);
+          await fetchEmployeeData();
+          toast.success("Personal details updated successfully");
         } else {
           const updateData: Partial<EmployeeData> = { [section]: data };
-          // Handle other sections like education, experience, etc.
           await employeeDataService.updateBasicInfo(employeeId, updateData as any);
+          await fetchEmployeeData();
+          toast.success(`${section} updated successfully`);
         }
-
-        await fetchEmployeeData();
-        toast.success(`${section} updated successfully`);
       } catch (error) {
         console.error(`Error updating ${section}:`, error);
         toast.error(`Failed to update ${section}`);
