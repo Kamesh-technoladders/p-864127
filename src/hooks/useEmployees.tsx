@@ -12,6 +12,7 @@ export interface Employee {
   created_at: string;
   gender?: string;
   blood_group?: string;
+  employment_status?: string;  // Added this field
 }
 
 export const useEmployees = () => {
