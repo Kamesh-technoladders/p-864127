@@ -21,7 +21,7 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
   onViewDocument,
   onDownloadDocument,
 }) => {
-  const [isDocsExpanded, setIsDocsExpanded] = useState(false);
+  const [isDocsExpanded, setIsDocsExpanded] = useState(true); // Set to true by default since we're always showing docs
   const [isDownloading, setIsDownloading] = useState(false);
 
   const formatDate = (date: string) => {
@@ -94,8 +94,8 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-3 max-h-[16rem] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 pr-4">
-      <div className="flex justify-between items-start">
+    <div className="bg-white rounded-lg border border-gray-200 h-[16rem] flex flex-col">
+      <div className="p-3 border-b border-gray-100 flex justify-between items-start">
         <div className="space-y-1">
           <h3 className="text-sm font-semibold text-gray-900">
             {experience.jobTitle}
@@ -127,55 +127,41 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
         </div>
       </div>
 
-      {hasDocuments && (
-        <div className="mt-2 pt-2 border-t border-gray-100">
-          <button
-            onClick={() => setIsDocsExpanded(!isDocsExpanded)}
-            className="flex items-center justify-between w-full text-xs font-medium text-gray-900 hover:bg-gray-50 rounded-lg p-1"
-          >
-            <span>Documents</span>
-            {isDocsExpanded ? (
-              <ChevronUp className="h-3 w-3" />
-            ) : (
-              <ChevronDown className="h-3 w-3" />
-            )}
-          </button>
-          
-          {isDocsExpanded && (
-            <div className="mt-1 space-y-1 overflow-y-auto">
-              {renderDocumentActions('offerLetter', 'Offer Letter')}
-              {renderDocumentActions('separationLetter', 'Separation Letter')}
-              {experience.payslips?.map((payslip, index) => (
-                <div key={index} className="flex items-center gap-1 text-xs justify-between p-2 hover:bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-3 w-3" />
-                    <span className="text-gray-700">Payslip {index + 1}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 text-gray-600 hover:text-gray-900"
-                      onClick={() => onViewDocument('payslips')}
-                    >
-                      <Eye className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 text-gray-600 hover:text-gray-900"
-                      onClick={() => handleDownload('payslips')}
-                      disabled={isDownloading}
-                    >
-                      <Download className="h-3 w-3" />
-                    </Button>
-                  </div>
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 p-3">
+        {hasDocuments && (
+          <div className="space-y-1">
+            {renderDocumentActions('offerLetter', 'Offer Letter')}
+            {renderDocumentActions('separationLetter', 'Separation Letter')}
+            {experience.payslips?.map((payslip, index) => (
+              <div key={index} className="flex items-center gap-1 text-xs justify-between p-2 hover:bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-3 w-3" />
+                  <span className="text-gray-700">Payslip {index + 1}</span>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 text-gray-600 hover:text-gray-900"
+                    onClick={() => onViewDocument('payslips')}
+                  >
+                    <Eye className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 text-gray-600 hover:text-gray-900"
+                    onClick={() => handleDownload('payslips')}
+                    disabled={isDownloading}
+                  >
+                    <Download className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
