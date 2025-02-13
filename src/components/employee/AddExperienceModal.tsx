@@ -61,12 +61,15 @@ export const AddExperienceModal: React.FC<AddExperienceModalProps> = ({
     setIsSubmitting(true);
     try {
       await onSave(formData as Experience);
+      onClose();
+    } catch (error) {
+      console.error("Error saving experience:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleFileUpload = (field: keyof Experience) => (file: File) => {
+  const handleFileUpload = (field: keyof Experience) => async (file: File): Promise<void> => {
     if (field === 'payslips') {
       setFormData((prev) => ({
         ...prev,

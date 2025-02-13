@@ -18,7 +18,7 @@ import { BankDetails } from "@/services/types/employee.types";
 
 interface BankAccountFormProps {
   onComplete: (completed: boolean, formData?: BankDetails) => void;
-  initialData?: BankDetails;
+  initialData?: BankDetails | null;
   isSubmitting?: boolean;
 }
 
@@ -35,11 +35,14 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
   } = useForm<BankFormData>({
     resolver: zodResolver(bankAccountSchema),
     mode: "onChange",
-    defaultValues: initialData || {}
+    defaultValues: initialData ? {
+      ...initialData,
+      accountType: initialData.accountType as "savings" | "current"
+    } : undefined
   });
 
   const onSubmit = (data: BankFormData) => {
-    onComplete(true, data);
+    onComplete(true, data as BankDetails);
   };
 
   const handleCancel = () => {
@@ -101,7 +104,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
               Account Type<span className="text-[#DD0101]">*</span>
             </label>
             <Select
-              onValueChange={(value) => setValue("accountType", value as "savings" | "current")}
+              onValueChange={(value: "savings" | "current") => setValue("accountType", value)}
               defaultValue={initialData?.accountType}
             >
               <SelectTrigger

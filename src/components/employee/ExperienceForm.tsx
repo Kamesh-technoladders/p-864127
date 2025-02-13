@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
-import { AddExperienceModal, ExperienceData } from "./AddExperienceModal";
+import { AddExperienceModal } from "./AddExperienceModal";
 import { toast } from "sonner";
 import { Experience, ExperienceFormProps } from "./types";
 import { ExperienceCard } from "./experience/ExperienceCard";
@@ -22,7 +21,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ onComplete, expe
     onComplete(isComplete, experiencesList);
   }, [experiencesList, onComplete, showError]);
 
-  const handleAddExperience = (data: ExperienceData) => {
+  const handleAddExperience = (data: any) => {
     try {
       setExperiencesList((prev) => {
         let newList;
