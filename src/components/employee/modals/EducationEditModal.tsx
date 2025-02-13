@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { UploadField } from "../UploadField";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { educationService } from "@/services/employee/education.service";
 
@@ -21,8 +20,6 @@ interface EducationEditModalProps {
     ssc?: { name: string; url: string };
     hsc?: { name: string; url: string };
     degree?: { name: string; url: string };
-    institute?: string;
-    yearCompleted?: string;
   };
 }
 
@@ -35,8 +32,6 @@ export const EducationEditModal: React.FC<EducationEditModalProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [formData, setFormData] = React.useState({
-    institute: initialData?.institute || '',
-    yearCompleted: initialData?.yearCompleted || '',
     ssc: null as File | null,
     hsc: null as File | null,
     degree: null as File | null,
@@ -44,11 +39,6 @@ export const EducationEditModal: React.FC<EducationEditModalProps> = ({
 
   const handleFileUpload = (field: 'ssc' | 'hsc' | 'degree') => async (file: File) => {
     setFormData(prev => ({ ...prev, [field]: file }));
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
@@ -74,27 +64,6 @@ export const EducationEditModal: React.FC<EducationEditModalProps> = ({
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Institute Name</label>
-              <Input
-                name="institute"
-                value={formData.institute}
-                onChange={handleInputChange}
-                placeholder="Enter institute name"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Year Completed</label>
-              <Input
-                name="yearCompleted"
-                type="date"
-                value={formData.yearCompleted}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
           <div className="space-y-4">
             <UploadField
               label="SSC Certificate"
