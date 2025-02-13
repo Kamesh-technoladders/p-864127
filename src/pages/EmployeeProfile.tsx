@@ -22,6 +22,7 @@ const EmployeeProfile = () => {
     handleUpdateEmployment,
     handleUpdatePersonal,
     calculateYearsOfExperience,
+    calculateTotalExperience,
     fetchEmployeeData
   } = useEmployeeProfile(id);
 
@@ -60,6 +61,7 @@ const EmployeeProfile = () => {
           handleUpdateEmployment={handleUpdateEmployment}
           handleUpdatePersonal={handleUpdatePersonal}
           calculateYearsOfExperience={calculateYearsOfExperience}
+          calculateTotalExperience={calculateTotalExperience}
         />
       </div>
     </DashboardLayout>

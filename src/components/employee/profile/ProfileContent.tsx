@@ -1,3 +1,4 @@
+
 import React from "react";
 import { ProfileHeader } from "./ProfileHeader";
 import { StatsBar } from "./StatsBar";
@@ -19,7 +20,7 @@ interface ProfileContentProps {
   handleUpdateEmployment: (data: any) => Promise<void>;
   handleUpdatePersonal: (data: any) => Promise<void>;
   calculateYearsOfExperience: (date: string) => string;
-  calculateTotalExperience: () => number;
+  calculateTotalExperience: () => string;
 }
 
 export const ProfileContent: React.FC<ProfileContentProps> = ({
