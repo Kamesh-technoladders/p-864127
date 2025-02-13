@@ -1,3 +1,4 @@
+
 import React from "react";
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -10,10 +11,9 @@ const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
 interface BasicInfoSectionProps {
   form: UseFormReturn<any>;
-  showValidation?: boolean;
 }
 
-export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ form, showValidation }) => {
+export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ form }) => {
   return (
     <div>
       <div className="text-[rgba(48,64,159,1)] font-bold">Basic Info</div>

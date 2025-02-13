@@ -1,16 +1,16 @@
 
 import React from "react";
-import { PersonalDetailsForm } from "../../employee/PersonalDetailsForm";
-import { EducationForm } from "../../employee/EducationForm";
-import { ExperienceForm } from "../../employee/ExperienceForm";
-import { BankAccountForm } from "../../employee/BankAccountForm";
+import { PersonalDetailsForm } from "../PersonalDetailsForm";
+import { EducationForm } from "../EducationForm";
+import { ExperienceForm } from "../ExperienceForm";
+import { BankAccountForm } from "../BankAccountForm";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
 import { Experience } from "../types";
+import { toast } from "sonner";
 
 interface FormContentProps {
   activeTab: string;
   formData: FormData;
-  employeeUUID: string;
   updateSectionProgress: (section: keyof FormProgress, completed: boolean) => void;
   updateFormData: (section: keyof FormData, data: any) => void;
   handleSaveAndNext: () => void;
@@ -19,25 +19,21 @@ interface FormContentProps {
 export const FormContent: React.FC<FormContentProps> = ({
   activeTab,
   formData,
-  employeeUUID,
   updateSectionProgress,
   updateFormData,
   handleSaveAndNext,
 }) => {
-  const displayId = formData.personal?.employeeId || "";
-
   switch (activeTab) {
     case "personal":
       return (
         <PersonalDetailsForm
           onComplete={(completed: boolean, data?: any) => {
-            console.log('Personal details form completion:', { completed, data });
+            updateSectionProgress("personal", completed);
             if (completed && data) {
               updateFormData("personal", data);
-              updateSectionProgress("personal", true);
               handleSaveAndNext();
             } else {
-              updateSectionProgress("personal", false);
+              toast.error("Please fill in all required fields");
             }
           }}
           initialData={formData.personal}
@@ -45,50 +41,38 @@ export const FormContent: React.FC<FormContentProps> = ({
       );
     case "education":
       return (
-        <div className="space-y-8">
+        <>
           <EducationForm
             onComplete={(completed: boolean, data?: any) => {
-              console.log('Education form completion:', { completed, data });
+              updateSectionProgress("education", completed);
               if (completed && data) {
                 updateFormData("education", data);
-                updateSectionProgress("education", true);
-              } else {
-                updateSectionProgress("education", false);
               }
             }}
             initialData={formData.education}
-            employeeId={employeeUUID}
           />
-          
+          <div className="shrink-0 h-px mt-[29px] border-[rgba(239,242,255,1)] border-solid border-2" />
           <ExperienceForm
             onComplete={(completed: boolean, data?: Experience[]) => {
-              console.log('Experience form completion:', { completed, data });
+              updateSectionProgress("experience", completed);
               if (completed && data) {
                 updateFormData("experience", data);
-                updateSectionProgress("experience", true);
-              } else {
-                updateSectionProgress("experience", false);
               }
             }}
             experiences={formData.experience}
-            employeeId={employeeUUID}
           />
-        </div>
+        </>
       );
     case "bank":
       return (
         <BankAccountForm
           onComplete={(completed: boolean, data?: any) => {
-            console.log('Bank account form completion:', { completed, data });
+            updateSectionProgress("bank", completed);
             if (completed && data) {
               updateFormData("bank", data);
-              updateSectionProgress("bank", true);
-            } else {
-              updateSectionProgress("bank", false);
             }
           }}
           initialData={formData.bank}
-          employeeId={employeeUUID}
         />
       );
     default:

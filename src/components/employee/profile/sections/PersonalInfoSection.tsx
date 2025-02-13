@@ -7,10 +7,6 @@ interface PersonalInfoSectionProps {
   phone: string;
   dateOfBirth: string;
   maritalStatus: string;
-  gender: string;
-  bloodGroup: string;
-  state: string;
-  country: string;
   onEdit: () => void;
 }
 
@@ -18,10 +14,6 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   phone,
   dateOfBirth,
   maritalStatus,
-  gender,
-  bloodGroup,
-  state,
-  country,
   onEdit,
 }) => {
   return (
@@ -42,27 +34,19 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Marital Status</span>
-            <span className="capitalize">{maritalStatus}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Gender</span>
-            <span className="capitalize">{gender}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Blood Group</span>
-            <span>{bloodGroup}</span>
+            <span>{maritalStatus}</span>
           </div>
         </div>
         <div className="pt-4 border-t border-gray-100">
-          <h4 className="text-sm font-medium mb-2">Location Information</h4>
+          <h4 className="text-sm font-medium mb-2">Additional Information</h4>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-500">State</span>
-              <span className="capitalize">{state}</span>
+              <span className="text-gray-500">Nationality</span>
+              <span>Indian</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Country</span>
-              <span className="capitalize">{country}</span>
+              <span className="text-gray-500">Languages</span>
+              <span>English, Hindi</span>
             </div>
           </div>
         </div>

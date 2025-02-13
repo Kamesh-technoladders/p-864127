@@ -6,22 +6,21 @@ import { PermanentAddressSection } from "./address/PermanentAddressSection";
 
 interface AddressSectionProps {
   form: UseFormReturn<any>;
-  showValidation?: boolean;
 }
 
-export const AddressSection: React.FC<AddressSectionProps> = ({ form, showValidation }) => {
+export const AddressSection: React.FC<AddressSectionProps> = ({ form }) => {
   return (
     <div className="space-y-6">
-      <div className="mb-6">
+      <div>
         <div className="text-[rgba(48,64,159,1)] font-bold">Contact Info</div>
         <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
           Add your address details here.
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
-        <PresentAddressSection form={form} showValidation={showValidation} />
-        <PermanentAddressSection form={form} showValidation={showValidation} />
+      <div className="grid grid-cols-2 gap-12">
+        <PresentAddressSection form={form} />
+        <PermanentAddressSection form={form} />
       </div>
     </div>
   );

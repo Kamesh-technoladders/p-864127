@@ -16,18 +16,14 @@ import { FormField } from "./bank/FormField";
 import { DocumentUploads } from "./bank/DocumentUploads";
 import { bankAccountSchema, type BankFormData } from "./bank/bankAccountSchema";
 
-export const BankAccountForm: React.FC<BankAccountFormProps> = ({ 
-  onComplete, 
-  initialData, 
-  employeeId 
-}) => {
+export const BankAccountForm: React.FC<BankAccountFormProps> = ({ onComplete, initialData }) => {
   const { toast } = useToast();
   const {
     register,
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isValid, dirtyFields }
+    formState: { errors, isValid }
   } = useForm<BankFormData>({
     resolver: zodResolver(bankAccountSchema),
     mode: "onChange",
@@ -37,36 +33,11 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
   const formValues = watch();
 
   useEffect(() => {
-    // Check if all required fields are filled
-    const requiredFields = [
-      'accountHolderName',
-      'accountNumber',
-      'ifscCode',
-      'bankName',
-      'branchName',
-      'accountType',
-      'bankPhone',
-      'cancelledCheque',
-      'passbookCopy'
-    ];
-
-    const isFormComplete = requiredFields.every(field => {
-      const value = formValues[field as keyof BankFormData];
-      return value !== undefined && value !== null && value !== '';
-    });
-
-    console.log('Bank form state:', {
-      isFormComplete,
-      isValid,
-      formValues,
-      errors
-    });
-
+    const isFormComplete = Object.values(formValues).every(value => !!value);
     onComplete(isFormComplete && isValid, formValues);
   }, [formValues, isValid, onComplete]);
 
   const onSubmit = (data: BankFormData) => {
-    console.log('Form submitted:', data);
     toast({
       title: "Bank Account Details",
       description: "Bank account details saved successfully!",
@@ -156,11 +127,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
           type="tel"
         />
 
-        <DocumentUploads 
-          setValue={setValue} 
-          formValues={formValues}
-          employeeId={employeeId}
-        />
+        <DocumentUploads setValue={setValue} formValues={formValues} />
       </form>
     </div>
   );

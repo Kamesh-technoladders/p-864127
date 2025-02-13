@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -13,14 +14,12 @@ export const useWorkTime = (employeeId: string) => {
   const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
 
   const startTimer = async () => {
-    console.log('Starting timer for employee:', employeeId);
     setIsLoading(true);
     try {
-      const date = new Date();
       const newSession = {
         employee_id: employeeId,
-        start_time: date.toISOString(),
-        date: date.toISOString().split('T')[0],
+        start_time: new Date().toISOString(),
+        date: new Date().toISOString().split('T')[0],
         status: 'running' as WorkTimeSession['status'],
       };
 
@@ -30,15 +29,9 @@ export const useWorkTime = (employeeId: string) => {
         .select()
         .single();
 
-      if (error) {
-        console.error('Database error when starting timer:', error);
-        const errorBody = JSON.parse(error.message);
-        toast.error(errorBody.message || 'Failed to start timer');
-        return;
-      }
+      if (error) throw error;
 
       if (data) {
-        console.log('Timer started successfully:', data);
         setActiveSession({
           id: data.id,
           start_time: data.start_time,
@@ -48,13 +41,11 @@ export const useWorkTime = (employeeId: string) => {
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
-          total_pause_duration_minutes: data.total_pause_duration_minutes,
-          overtime_minutes: data.overtime_minutes,
-          regular_hours_completed: data.regular_hours_completed
+          total_pause_duration_minutes: data.total_pause_duration_minutes
         });
-        toast.success('Timer started successfully');
       }
-    } catch (error: any) {
+      toast.success('Timer started successfully');
+    } catch (error) {
       console.error('Error starting timer:', error);
       toast.error('Failed to start timer');
     } finally {
@@ -63,11 +54,7 @@ export const useWorkTime = (employeeId: string) => {
   };
 
   const pauseTimer = async (reason: string) => {
-    if (!activeSession) {
-      console.error('No active session to pause');
-      return;
-    }
-    console.log('Pausing timer with reason:', reason);
+    if (!activeSession) return;
     setIsLoading(true);
     try {
       const { data, error } = await supabase
@@ -81,13 +68,9 @@ export const useWorkTime = (employeeId: string) => {
         .select()
         .single();
 
-      if (error) {
-        console.error('Database error when pausing timer:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       if (data) {
-        console.log('Timer paused successfully:', data);
         setActiveSession({
           id: data.id,
           start_time: data.start_time,
@@ -97,12 +80,10 @@ export const useWorkTime = (employeeId: string) => {
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
-          total_pause_duration_minutes: data.total_pause_duration_minutes,
-          overtime_minutes: data.overtime_minutes,
-          regular_hours_completed: data.regular_hours_completed
+          total_pause_duration_minutes: data.total_pause_duration_minutes
         });
-        toast.success('Timer paused');
       }
+      toast.success('Timer paused');
     } catch (error) {
       console.error('Error pausing timer:', error);
       toast.error('Failed to pause timer');
@@ -112,11 +93,7 @@ export const useWorkTime = (employeeId: string) => {
   };
 
   const resumeTimer = async () => {
-    if (!activeSession) {
-      console.error('No active session to resume');
-      return;
-    }
-    console.log('Resuming timer');
+    if (!activeSession) return;
     setIsLoading(true);
     try {
       const { data, error } = await supabase
@@ -129,13 +106,9 @@ export const useWorkTime = (employeeId: string) => {
         .select()
         .single();
 
-      if (error) {
-        console.error('Database error when resuming timer:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       if (data) {
-        console.log('Timer resumed successfully:', data);
         setActiveSession({
           id: data.id,
           start_time: data.start_time,
@@ -145,12 +118,10 @@ export const useWorkTime = (employeeId: string) => {
           pause_reason: data.pause_reason,
           pause_start_time: data.pause_start_time,
           pause_end_time: data.pause_end_time,
-          total_pause_duration_minutes: data.total_pause_duration_minutes,
-          overtime_minutes: data.overtime_minutes,
-          regular_hours_completed: data.regular_hours_completed
+          total_pause_duration_minutes: data.total_pause_duration_minutes
         });
-        toast.success('Timer resumed');
       }
+      toast.success('Timer resumed');
     } catch (error) {
       console.error('Error resuming timer:', error);
       toast.error('Failed to resume timer');
@@ -160,11 +131,7 @@ export const useWorkTime = (employeeId: string) => {
   };
 
   const resetTimer = async () => {
-    if (!activeSession) {
-      console.error('No active session to reset');
-      return;
-    }
-    console.log('Resetting timer');
+    if (!activeSession) return;
     setIsLoading(true);
     try {
       const { data, error } = await supabase
@@ -177,12 +144,8 @@ export const useWorkTime = (employeeId: string) => {
         .select()
         .single();
 
-      if (error) {
-        console.error('Database error when resetting timer:', error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log('Timer reset successfully');
       setActiveSession(null);
       toast.success('Timer reset');
     } catch (error) {

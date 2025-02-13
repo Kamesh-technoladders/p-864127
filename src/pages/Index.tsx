@@ -6,7 +6,6 @@ import { FormContent } from "@/components/employee/forms/FormContent";
 import { DashboardView } from "@/components/employee/dashboard/DashboardView";
 import { useEmployeeForm } from "@/hooks/useEmployeeForm";
 import { calculateProgress, getProgressMessage } from "@/utils/progressCalculator";
-import { ProgressBar } from "@/components/employee/ProgressBar";
 
 const Index = () => {
   const [showForm, setShowForm] = useState(false);
@@ -14,7 +13,6 @@ const Index = () => {
     activeTab,
     formProgress,
     formData,
-    employeeUUID,
     isFormCompleted,
     updateSectionProgress,
     updateFormData,
@@ -39,6 +37,10 @@ const Index = () => {
     setShowForm(false);
   };
 
+  const handleFormComplete = () => {
+    setShowForm(false);
+  };
+
   return (
     <DashboardLayout>
       {showForm ? (
@@ -52,11 +54,6 @@ const Index = () => {
               Cancel
             </button>
           </div>
-          <ProgressBar
-            percentage={progress}
-            title="Form Completion Progress"
-            subtitle={progressMessage}
-          />
           <FormContainer
             tabs={tabs}
             onTabChange={handleTabChange}
@@ -66,7 +63,6 @@ const Index = () => {
             <FormContent
               activeTab={activeTab}
               formData={formData}
-              employeeUUID={employeeUUID}
               updateSectionProgress={updateSectionProgress}
               updateFormData={updateFormData}
               handleSaveAndNext={handleSaveAndNext}

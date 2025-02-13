@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, AlertCircle } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 interface EmergencyContact {
   relationship: string;
@@ -15,15 +15,11 @@ interface EmergencyContact {
 interface EmergencyContactsSectionProps {
   contacts: EmergencyContact[];
   onContactsChange: (contacts: EmergencyContact[]) => void;
-  errors?: string[][];
-  showValidation?: boolean;
 }
 
 export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> = ({
   contacts,
   onContactsChange,
-  errors = [],
-  showValidation = false,
 }) => {
   const addEmergencyContact = () => {
     onContactsChange([...contacts, { relationship: "", name: "", phone: "" }]);
@@ -39,25 +35,20 @@ export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> =
     onContactsChange(newContacts);
   };
 
-  const isFieldEmpty = (value: string) => value.trim() === "";
-  const hasError = (index: number, field: keyof EmergencyContact) => {
-    return showValidation && isFieldEmpty(contacts[index][field]);
-  };
-
   return (
     <div>
       <div className="text-[rgba(48,64,159,1)] font-bold">Emergency Contact</div>
       <div className="text-[rgba(80,80,80,1)] text-xs mt-1">
-        Add at least one emergency contact with all fields filled.
+        Add emergency contact details here.
       </div>
 
       <div className="mt-6">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Relationship<span className="text-red-500">*</span></TableHead>
-              <TableHead>Name<span className="text-red-500">*</span></TableHead>
-              <TableHead>Phone Number<span className="text-red-500">*</span></TableHead>
+              <TableHead>Relationship</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Phone Number</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -65,61 +56,33 @@ export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> =
             {contacts.map((contact, index) => (
               <TableRow key={index}>
                 <TableCell>
-                  <div className="relative">
-                    <Select
-                      value={contact.relationship}
-                      onValueChange={(value) => updateContact(index, "relationship", value)}
-                    >
-                      <SelectTrigger 
-                        className={hasError(index, "relationship") ? "border-red-500" : ""}
-                      >
-                        <SelectValue placeholder="Select relationship" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="spouse">Spouse</SelectItem>
-                        <SelectItem value="parent">Parent</SelectItem>
-                        <SelectItem value="sibling">Sibling</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {hasError(index, "relationship") && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <AlertCircle className="h-4 w-4 text-red-500" />
-                        <span className="text-xs text-red-500">Please select relationship</span>
-                      </div>
-                    )}
-                  </div>
+                  <Select
+                    value={contact.relationship}
+                    onValueChange={(value) => updateContact(index, "relationship", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select relationship" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="spouse">Spouse</SelectItem>
+                      <SelectItem value="parent">Parent</SelectItem>
+                      <SelectItem value="sibling">Sibling</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </TableCell>
                 <TableCell>
-                  <div className="relative">
-                    <Input
-                      value={contact.name}
-                      onChange={(e) => updateContact(index, "name", e.target.value)}
-                      placeholder="Enter name"
-                      className={hasError(index, "name") ? "border-red-500" : ""}
-                    />
-                    {hasError(index, "name") && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <AlertCircle className="h-4 w-4 text-red-500" />
-                        <span className="text-xs text-red-500">Please enter name</span>
-                      </div>
-                    )}
-                  </div>
+                  <Input
+                    value={contact.name}
+                    onChange={(e) => updateContact(index, "name", e.target.value)}
+                    placeholder="Enter name"
+                  />
                 </TableCell>
                 <TableCell>
-                  <div className="relative">
-                    <Input
-                      value={contact.phone}
-                      onChange={(e) => updateContact(index, "phone", e.target.value)}
-                      placeholder="Enter phone number"
-                      className={hasError(index, "phone") ? "border-red-500" : ""}
-                    />
-                    {hasError(index, "phone") && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <AlertCircle className="h-4 w-4 text-red-500" />
-                        <span className="text-xs text-red-500">Please enter phone number</span>
-                      </div>
-                    )}
-                  </div>
+                  <Input
+                    value={contact.phone}
+                    onChange={(e) => updateContact(index, "phone", e.target.value)}
+                    placeholder="Enter phone number"
+                  />
                 </TableCell>
                 <TableCell>
                   <Button

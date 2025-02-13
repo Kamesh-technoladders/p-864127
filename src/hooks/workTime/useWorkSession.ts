@@ -10,7 +10,6 @@ export const useWorkSession = (employeeId: string) => {
 
   const checkActiveSession = async () => {
     try {
-      setIsLoading(true);
       const { data, error } = await supabase
         .from('employee_work_times')
         .select('*')
@@ -20,13 +19,9 @@ export const useWorkSession = (employeeId: string) => {
         .limit(1)
         .maybeSingle();
 
-      if (error) {
-        console.error('Database error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       if (data) {
-        console.log('Active session found:', data);
         setActiveSession({
           id: data.id,
           start_time: data.start_time,
@@ -41,41 +36,16 @@ export const useWorkSession = (employeeId: string) => {
           regular_hours_completed: data.regular_hours_completed
         });
       } else {
-        console.log('No active session found');
         setActiveSession(null);
       }
     } catch (error) {
       console.error('Error checking active session:', error);
       toast.error('Failed to check active session');
-    } finally {
-      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     checkActiveSession();
-
-    // Subscribe to real-time changes
-    const channel = supabase
-      .channel('work-time-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'employee_work_times',
-          filter: `employee_id=eq.${employeeId}`
-        },
-        (payload) => {
-          console.log('Realtime update received:', payload);
-          checkActiveSession();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [employeeId]);
 
   return {

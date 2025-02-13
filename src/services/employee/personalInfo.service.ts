@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { PersonalInfo, EmergencyContact, FamilyDetail } from "../types/employee.types";
+import { PersonalInfo } from "../types/employee.types";
 
 export const personalInfoService = {
   async checkEmployeeIdExists(employeeId: string): Promise<boolean> {
@@ -8,7 +8,7 @@ export const personalInfoService = {
       .from('employees')
       .select('id')
       .eq('employee_id', employeeId)
-      .maybeSingle();
+      .maybeSingle(); // Changed from single() to maybeSingle()
 
     if (error) {
       throw error;
@@ -18,7 +18,6 @@ export const personalInfoService = {
   },
 
   async createPersonalInfo(personalInfo: PersonalInfo) {
-    // Create employee record
     const { data: employee, error: employeeError } = await supabase
       .from('employees')
       .insert({
@@ -65,44 +64,10 @@ export const personalInfoService = {
 
     if (addressError) throw addressError;
 
-    // Insert emergency contacts
-    if (personalInfo.emergencyContacts?.length > 0) {
-      const emergencyContacts = personalInfo.emergencyContacts.map(contact => ({
-        employee_id: employee.id,
-        relationship: contact.relationship,
-        name: contact.name,
-        phone: contact.phone
-      }));
-
-      const { error: emergencyContactError } = await supabase
-        .from('employee_emergency_contacts')
-        .insert(emergencyContacts);
-
-      if (emergencyContactError) throw emergencyContactError;
-    }
-
-    // Insert family details
-    if (personalInfo.familyDetails?.length > 0) {
-      const familyDetails = personalInfo.familyDetails.map(detail => ({
-        employee_id: employee.id,
-        relationship: detail.relationship,
-        name: detail.name,
-        occupation: detail.occupation,
-        phone: detail.phone
-      }));
-
-      const { error: familyDetailError } = await supabase
-        .from('employee_family_details')
-        .insert(familyDetails);
-
-      if (familyDetailError) throw familyDetailError;
-    }
-
     return employee;
   },
 
   async updatePersonalInfo(employeeId: string, personalInfo: Partial<PersonalInfo>) {
-    // Update employee details
     const { error: employeeError } = await supabase
       .from('employees')
       .update({
@@ -119,7 +84,6 @@ export const personalInfoService = {
 
     if (employeeError) throw employeeError;
 
-    // Update addresses if provided
     if (personalInfo.presentAddress) {
       const { error: presentAddressError } = await supabase
         .from('employee_addresses')
@@ -150,61 +114,6 @@ export const personalInfoService = {
         .eq('type', 'permanent');
 
       if (permanentAddressError) throw permanentAddressError;
-    }
-
-    // Update emergency contacts if provided
-    if (personalInfo.emergencyContacts) {
-      // Delete existing emergency contacts
-      const { error: deleteEmergencyError } = await supabase
-        .from('employee_emergency_contacts')
-        .delete()
-        .eq('employee_id', employeeId);
-
-      if (deleteEmergencyError) throw deleteEmergencyError;
-
-      // Insert new emergency contacts
-      if (personalInfo.emergencyContacts.length > 0) {
-        const emergencyContacts = personalInfo.emergencyContacts.map(contact => ({
-          employee_id: employeeId,
-          relationship: contact.relationship,
-          name: contact.name,
-          phone: contact.phone
-        }));
-
-        const { error: emergencyContactError } = await supabase
-          .from('employee_emergency_contacts')
-          .insert(emergencyContacts);
-
-        if (emergencyContactError) throw emergencyContactError;
-      }
-    }
-
-    // Update family details if provided
-    if (personalInfo.familyDetails) {
-      // Delete existing family details
-      const { error: deleteFamilyError } = await supabase
-        .from('employee_family_details')
-        .delete()
-        .eq('employee_id', employeeId);
-
-      if (deleteFamilyError) throw deleteFamilyError;
-
-      // Insert new family details
-      if (personalInfo.familyDetails.length > 0) {
-        const familyDetails = personalInfo.familyDetails.map(detail => ({
-          employee_id: employeeId,
-          relationship: detail.relationship,
-          name: detail.name,
-          occupation: detail.occupation,
-          phone: detail.phone
-        }));
-
-        const { error: familyDetailError } = await supabase
-          .from('employee_family_details')
-          .insert(familyDetails);
-
-        if (familyDetailError) throw familyDetailError;
-      }
     }
   }
 };

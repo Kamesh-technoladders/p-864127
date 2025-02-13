@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { AddressLineField } from "./fields/AddressLineField";
 import { CountryField } from "./fields/CountryField";
@@ -10,55 +11,20 @@ interface AddressFieldsProps {
   form: UseFormReturn<any>;
   prefix: string;
   disabled?: boolean;
-  showValidation?: boolean;
 }
 
-export const AddressFields: React.FC<AddressFieldsProps> = ({ 
-  form, 
-  prefix, 
-  disabled,
-  showValidation 
-}) => {
-  const [selectedCountry, setSelectedCountry] = useState<string>('');
-  const [selectedState, setSelectedState] = useState<string>('');
-
-  const handleCountryChange = (countryCode: string) => {
-    setSelectedCountry(countryCode);
-    setSelectedState(''); // Reset state when country changes
-  };
-
-  const handleStateChange = (stateCode: string) => {
-    setSelectedState(stateCode);
-  };
-
+export const AddressFields: React.FC<AddressFieldsProps> = ({ form, prefix, disabled }) => {
   return (
     <div className="space-y-6">
       <AddressLineField form={form} prefix={prefix} disabled={disabled} />
 
       <div className="grid grid-cols-2 gap-4">
-        <CountryField 
-          form={form} 
-          prefix={prefix} 
-          disabled={disabled}
-          onCountryChange={handleCountryChange}
-        />
-        <StateField 
-          form={form} 
-          prefix={prefix} 
-          disabled={disabled}
-          countryCode={selectedCountry}
-          onStateChange={handleStateChange}
-        />
+        <CountryField form={form} prefix={prefix} disabled={disabled} />
+        <StateField form={form} prefix={prefix} disabled={disabled} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <CityField 
-          form={form} 
-          prefix={prefix} 
-          disabled={disabled}
-          countryCode={selectedCountry}
-          stateCode={selectedState}
-        />
+        <CityField form={form} prefix={prefix} disabled={disabled} />
         <ZipCodeField form={form} prefix={prefix} disabled={disabled} />
       </div>
     </div>

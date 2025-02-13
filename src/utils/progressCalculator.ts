@@ -4,7 +4,6 @@ export interface FormProgress {
   education: boolean;
   experience: boolean;
   bank: boolean;
-  employment: boolean;
 }
 
 export interface FormData {
@@ -44,12 +43,6 @@ export interface FormData {
       phone: string;
     }>;
   } | null;
-  employment: {
-    department: string;
-    position: string;
-    employmentStartDate: string;
-    employmentStatus: 'active' | 'inactive' | 'onLeave';
-  } | null;
   education: any;
   experience: any[];
   bank: any;
@@ -59,18 +52,15 @@ export const calculateProgress = (progress: FormProgress): number => {
   // Calculate weighted progress
   let totalProgress = 0;
   
-  // Personal Details (20%)
-  if (progress.personal) totalProgress += 20;
+  // Personal Details (25%)
+  if (progress.personal) totalProgress += 25;
   
-  // Employment Details (20%)
-  if (progress.employment) totalProgress += 20;
+  // Education & Experience (50% combined)
+  if (progress.education) totalProgress += 25;
+  if (progress.experience) totalProgress += 25;
   
-  // Education & Experience (40% combined)
-  if (progress.education) totalProgress += 20;
-  if (progress.experience) totalProgress += 20;
-  
-  // Bank Details (20%)
-  if (progress.bank) totalProgress += 20;
+  // Bank Details (25%)
+  if (progress.bank) totalProgress += 25;
   
   return totalProgress;
 };
@@ -80,10 +70,6 @@ export const getProgressMessage = (progress: FormProgress): string => {
   
   if (!progress.personal) {
     incomplete.push("Personal Details");
-  }
-  
-  if (!progress.employment) {
-    incomplete.push("Employment Details");
   }
   
   // Check both education and experience together

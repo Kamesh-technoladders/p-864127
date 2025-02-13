@@ -1,22 +1,10 @@
+
 export interface Address {
   addressLine1: string;
   country: string;
   state: string;
   city: string;
   zipCode: string;
-}
-
-export interface EmergencyContact {
-  relationship: string;
-  name: string;
-  phone: string;
-}
-
-export interface FamilyDetail {
-  relationship: string;
-  name: string;
-  occupation: string;
-  phone: string;
 }
 
 export interface PersonalInfo {
@@ -31,15 +19,6 @@ export interface PersonalInfo {
   maritalStatus: string;
   presentAddress: Address;
   permanentAddress: Address;
-  emergencyContacts?: EmergencyContact[];
-  familyDetails?: FamilyDetail[];
-}
-
-export interface EmploymentInfo {
-  department: string;
-  position: string;
-  employmentStartDate: string;
-  employmentStatus: "active" | "inactive" | "onLeave";
 }
 
 export interface Education {
@@ -75,7 +54,6 @@ export interface BankDetails {
 
 export interface EmployeeData {
   personal: PersonalInfo;
-  employment: EmploymentInfo;
   education: Education;
   experience: Experience[];
   bank: BankDetails;

@@ -100,59 +100,6 @@ export type Database = {
           },
         ]
       }
-      employee_documents: {
-        Row: {
-          category: string
-          created_at: string | null
-          document_type: string
-          employee_id: string
-          file_name: string
-          file_path: string
-          file_size: number | null
-          id: string
-          mime_type: string | null
-          status: string | null
-          updated_at: string | null
-          upload_date: string | null
-        }
-        Insert: {
-          category: string
-          created_at?: string | null
-          document_type: string
-          employee_id: string
-          file_name: string
-          file_path: string
-          file_size?: number | null
-          id?: string
-          mime_type?: string | null
-          status?: string | null
-          updated_at?: string | null
-          upload_date?: string | null
-        }
-        Update: {
-          category?: string
-          created_at?: string | null
-          document_type?: string
-          employee_id?: string
-          file_name?: string
-          file_path?: string
-          file_size?: number | null
-          id?: string
-          mime_type?: string | null
-          status?: string | null
-          updated_at?: string | null
-          upload_date?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "employee_documents_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       employee_education: {
         Row: {
           created_at: string | null
@@ -178,48 +125,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "employee_education_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      employee_emergency_contacts: {
-        Row: {
-          created_at: string | null
-          employee_id: string
-          id: string
-          name: string
-          phone: string
-          relationship: string
-        }
-        Insert: {
-          created_at?: string | null
-          employee_id: string
-          id?: string
-          name: string
-          phone: string
-          relationship: string
-        }
-        Update: {
-          created_at?: string | null
-          employee_id?: string
-          id?: string
-          name?: string
-          phone?: string
-          relationship?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "employee_emergency_contacts_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_employee"
             columns: ["employee_id"]
             isOneToOne: false
             referencedRelation: "employees"
@@ -270,51 +175,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "employee_experiences_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      employee_family_details: {
-        Row: {
-          created_at: string | null
-          employee_id: string
-          id: string
-          name: string
-          occupation: string
-          phone: string
-          relationship: string
-        }
-        Insert: {
-          created_at?: string | null
-          employee_id: string
-          id?: string
-          name: string
-          occupation: string
-          phone: string
-          relationship: string
-        }
-        Update: {
-          created_at?: string | null
-          employee_id?: string
-          id?: string
-          name?: string
-          occupation?: string
-          phone?: string
-          relationship?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "employee_family_details_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_employee"
             columns: ["employee_id"]
             isOneToOne: false
             referencedRelation: "employees"
@@ -404,54 +264,42 @@ export type Database = {
           blood_group: string | null
           created_at: string | null
           date_of_birth: string | null
-          department: string | null
           email: string
           employee_id: string
-          employment_start_date: string | null
-          employment_status: string | null
           first_name: string
           gender: string | null
           id: string
           last_name: string
           marital_status: string | null
           phone: string | null
-          position: string | null
           updated_at: string | null
         }
         Insert: {
           blood_group?: string | null
           created_at?: string | null
           date_of_birth?: string | null
-          department?: string | null
           email: string
           employee_id: string
-          employment_start_date?: string | null
-          employment_status?: string | null
           first_name: string
           gender?: string | null
           id?: string
           last_name: string
           marital_status?: string | null
           phone?: string | null
-          position?: string | null
           updated_at?: string | null
         }
         Update: {
           blood_group?: string | null
           created_at?: string | null
           date_of_birth?: string | null
-          department?: string | null
           email?: string
           employee_id?: string
-          employment_start_date?: string | null
-          employment_status?: string | null
           first_name?: string
           gender?: string | null
           id?: string
           last_name?: string
           marital_status?: string | null
           phone?: string | null
-          position?: string | null
           updated_at?: string | null
         }
         Relationships: []
