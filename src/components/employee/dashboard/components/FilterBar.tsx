@@ -133,19 +133,17 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         { text: emp.employment_status || 'active' }
       ]);
       
-      // Add table to slide
+      // Add table to slide with corrected configuration
       slide.addTable({
-        x: 0.5,
-        y: 1.5,
-        w: 9,
+        w: "90%",
         colW: [1.5, 2, 2.5, 1, 1, 1],
+        rows: [headerRow, ...dataRows],
         border: { pt: 1, color: "666666" },
-        slideNumber: 1,
-        data: [headerRow, ...dataRows]
+        y: 1.5,
+        align: "center"
       });
       
-      const fileName = 'employees.pptx';
-      await pres.writeFile({ fileName });
+      await pres.writeFile({ fileName: 'employees.pptx' });
       toast.success('PPT file downloaded successfully');
     } catch (error) {
       console.error('Error downloading PPT:', error);
@@ -168,53 +166,56 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
-      <div className="flex items-center gap-3">
-        <Select value={selectedStatus} onValueChange={onStatusChange}>
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
-            <SelectItem value="terminated">Terminated</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by name, email, or ID..."
-            className="pl-10 pr-4 py-2 border rounded-lg text-sm w-64"
-            value={searchValue}
-            onChange={(e) => onSearchChange(e.target.value)}
-          />
+    <div className="bg-white rounded-xl p-4 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Select value={selectedStatus} onValueChange={onStatusChange}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
+              <SelectItem value="terminated">Terminated</SelectItem>
+            </SelectContent>
+          </Select>
+        
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name, email, or ID..."
+              className="pl-10 pr-4 py-2 border rounded-lg text-sm w-64"
+              value={searchValue}
+              onChange={(e) => onSearchChange(e.target.value)}
+            />
+          </div>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Download className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => handleDownload('csv')}>
-              <FileSpreadsheet className="mr-2 h-4 w-4" />
-              Download as CSV
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDownload('pdf')}>
-              <FileText className="mr-2 h-4 w-4" />
-              Download as PDF
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDownload('ppt')}>
-              <Presentation className="mr-2 h-4 w-4" />
-              Download as PPT
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+
+        <div className="ml-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Download className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleDownload('csv')}>
+                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                Download as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDownload('pdf')}>
+                <FileText className="mr-2 h-4 w-4" />
+                Download as PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDownload('ppt')}>
+                <Presentation className="mr-2 h-4 w-4" />
+                Download as PPT
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </div>
   );
