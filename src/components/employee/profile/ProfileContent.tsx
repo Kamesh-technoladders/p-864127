@@ -91,6 +91,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
         />
 
         <EducationSection
+          employeeId={employeeData.id}
           onEdit={() => handleEdit("education")}
         />
 
