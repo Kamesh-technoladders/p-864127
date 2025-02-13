@@ -44,6 +44,8 @@ const EmployeeProfile = () => {
     return <ErrorState message={error || "Employee Not Found"} onReturn={() => navigate("/")} />;
   }
 
+  console.log('Employee data in profile:', employeeData);
+
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gradient-to-b from-white to-[#FFF9E7] p-8">

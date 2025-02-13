@@ -16,11 +16,21 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   designation,
   yearsOfExperience,
 }) => {
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return 'Not specified';
+    try {
+      return new Date(dateStr).toLocaleDateString();
+    } catch (error) {
+      console.error('Error formatting date:', dateStr, error);
+      return 'Invalid date';
+    }
+  };
+
   const stats = [
-    { title: "Joined Date", value: joinedDate, icon: <Users className="w-5 h-5" /> },
+    { title: "Joined Date", value: formatDate(joinedDate), icon: <Users className="w-5 h-5" /> },
     { title: "Department", value: department || "Not specified", icon: <Building2 className="w-5 h-5" /> },
     { title: "Designation", value: designation || "Not specified", icon: <BadgeCheck className="w-5 h-5" /> },
-    { title: "Experience", value: yearsOfExperience, icon: <Clock className="w-5 h-5" /> },
+    { title: "Experience", value: yearsOfExperience || "Not specified", icon: <Clock className="w-5 h-5" /> },
   ];
 
   return (

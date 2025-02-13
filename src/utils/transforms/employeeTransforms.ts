@@ -1,23 +1,41 @@
 
 import { EmployeeDetailsResponse } from "@/services/types/employee.types";
+import { format } from "date-fns";
+
+const formatDate = (dateString: string | null): string => {
+  if (!dateString) return '';
+  try {
+    return format(new Date(dateString), 'dd/MM/yyyy');
+  } catch (error) {
+    console.error('Error formatting date:', dateString, error);
+    return '';
+  }
+};
 
 export const transformEmployeeData = (employeeDetails: EmployeeDetailsResponse) => {
-  return {
+  if (!employeeDetails) {
+    console.error('No employee details provided to transform');
+    return null;
+  }
+
+  console.log('Raw employee details:', employeeDetails);
+
+  const transformedData = {
     id: employeeDetails.id,
-    employeeId: employeeDetails.employee_id,
-    firstName: employeeDetails.first_name,
-    lastName: employeeDetails.last_name,
-    email: employeeDetails.email,
+    employeeId: employeeDetails.employee_id || '',
+    firstName: employeeDetails.first_name || '',
+    lastName: employeeDetails.last_name || '',
+    email: employeeDetails.email || '',
     phone: employeeDetails.phone || '',
-    dateOfBirth: employeeDetails.date_of_birth || '',
+    dateOfBirth: employeeDetails.date_of_birth ? format(new Date(employeeDetails.date_of_birth), 'yyyy-MM-dd') : '',
     gender: employeeDetails.gender || '',
     bloodGroup: employeeDetails.blood_group || '',
     maritalStatus: employeeDetails.marital_status || '',
     department: employeeDetails.department || '',
     position: employeeDetails.position || '',
     employmentStatus: employeeDetails.employment_status || '',
-    createdAt: employeeDetails.created_at,
-    updatedAt: employeeDetails.updated_at,
+    createdAt: employeeDetails.created_at ? format(new Date(employeeDetails.created_at), 'dd/MM/yyyy') : '',
+    updatedAt: employeeDetails.updated_at ? format(new Date(employeeDetails.updated_at), 'dd/MM/yyyy') : '',
     presentAddress: employeeDetails.present_address || {
       addressLine1: '',
       country: '',
@@ -32,7 +50,14 @@ export const transformEmployeeData = (employeeDetails: EmployeeDetailsResponse) 
       city: '',
       zipCode: ''
     },
-    emergencyContacts: employeeDetails.emergency_contacts || [],
-    familyDetails: employeeDetails.family_details || []
+    emergencyContacts: Array.isArray(employeeDetails.emergency_contacts) 
+      ? employeeDetails.emergency_contacts 
+      : [],
+    familyDetails: Array.isArray(employeeDetails.family_details) 
+      ? employeeDetails.family_details 
+      : []
   };
+
+  console.log('Transformed employee data:', transformedData);
+  return transformedData;
 };
