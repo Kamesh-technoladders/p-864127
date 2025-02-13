@@ -159,21 +159,27 @@ export type Database = {
           document_url: string | null
           employee_id: string | null
           id: string
+          institute: string | null
           type: string
+          year_completed: string | null
         }
         Insert: {
           created_at?: string | null
           document_url?: string | null
           employee_id?: string | null
           id?: string
+          institute?: string | null
           type: string
+          year_completed?: string | null
         }
         Update: {
           created_at?: string | null
           document_url?: string | null
           employee_id?: string | null
           id?: string
+          institute?: string | null
           type?: string
+          year_completed?: string | null
         }
         Relationships: [
           {

@@ -66,13 +66,10 @@ export const educationService = {
       
       const { url } = await response.json();
       
+      // Update the database record with the new document URL
       const { error } = await supabase
         .from('employee_education')
-        .update({ 
-          document_url: url,
-          institute: education.institute,
-          year_completed: education.yearCompleted
-        })
+        .update({ document_url: url })
         .eq('employee_id', employeeId)
         .eq('type', type);
 
@@ -81,6 +78,7 @@ export const educationService = {
 
     const promises = [];
 
+    // Handle document uploads
     if (education.ssc) {
       promises.push(uploadDocument(education.ssc, 'ssc'));
     }
@@ -93,17 +91,19 @@ export const educationService = {
       promises.push(uploadDocument(education.degree, 'degree'));
     }
 
-    // If only institute or year completed is updated without new documents
-    if (!education.ssc && !education.hsc && !education.degree && (education.institute || education.yearCompleted)) {
-      promises.push(
-        supabase
-          .from('employee_education')
-          .update({
-            institute: education.institute,
-            year_completed: education.yearCompleted
-          })
-          .eq('employee_id', employeeId)
-      );
+    // Handle institute and year_completed updates
+    if (education.institute || education.yearCompleted) {
+      const updateData = {
+        institute: education.institute,
+        year_completed: education.yearCompleted
+      };
+
+      const { error } = await supabase
+        .from('employee_education')
+        .update(updateData)
+        .eq('employee_id', employeeId);
+
+      if (error) throw error;
     }
 
     await Promise.all(promises);
