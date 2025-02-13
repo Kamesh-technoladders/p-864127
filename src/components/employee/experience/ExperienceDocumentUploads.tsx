@@ -2,13 +2,9 @@
 import React from "react";
 import { UploadField } from "../UploadField";
 import { Experience } from "@/services/types/employee.types";
+import { DocumentUploadsProps } from "../types/ExperienceTypes";
 
-interface ExperienceDocumentUploadsProps {
-  formData: Partial<Experience>;
-  handleFileUpload: (field: keyof Experience) => (file: File) => void;
-}
-
-export const ExperienceDocumentUploads: React.FC<ExperienceDocumentUploadsProps> = ({
+export const ExperienceDocumentUploads: React.FC<DocumentUploadsProps> = ({
   formData,
   handleFileUpload,
 }) => {

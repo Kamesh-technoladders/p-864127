@@ -41,7 +41,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           error && "border-[#DD0101] hover:border-[#DD0101]/80 focus:ring-[#DD0101]/20",
           className
         )}
-        placeholder={placeholder || `Enter ${label.toLowerCase()}`}
+        placeholder={placeholder}
       />
       {error && (
         <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">

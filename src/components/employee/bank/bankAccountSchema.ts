@@ -30,9 +30,7 @@ export const bankAccountSchema = z.object({
     .min(3, "Branch name must be at least 3 characters")
     .max(50, "Branch name cannot exceed 50 characters")
     .regex(/^[A-Za-z0-9\s.-]+$/, "Branch name can only contain letters, numbers, spaces, dots, and dashes"),
-  accountType: z.enum(["savings", "current"], {
-    required_error: "Please select an account type",
-  }),
+  accountType: z.enum(["savings", "current"]) as z.ZodType<"savings" | "current">,
   bankPhone: z
     .string()
     .min(10, "Phone number must be 10 digits")

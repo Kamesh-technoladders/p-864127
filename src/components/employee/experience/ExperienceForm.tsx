@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Input } from "@/components/ui/input";
-import { ExperienceData } from "../AddExperienceModal";
+import { ExperienceData } from "../types/ExperienceTypes";
 
 interface ExperienceFormProps {
   formData: ExperienceData;
