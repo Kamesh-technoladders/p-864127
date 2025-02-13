@@ -6,15 +6,28 @@ export const uploadDocument = async (
   type: 'education' | 'experience' | 'bank',
   employeeId: string
 ): Promise<string> => {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('type', type);
-  formData.append('employeeId', employeeId);
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+    formData.append('employeeId', employeeId);
 
-  const { data, error } = await supabase.functions.invoke('upload-document', {
-    body: formData
-  });
+    const { data, error } = await supabase.functions.invoke('upload-document', {
+      body: formData
+    });
 
-  if (error) throw error;
-  return data.url;
+    if (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
+
+    if (!data?.url) {
+      throw new Error('No URL returned from upload');
+    }
+
+    return data.url;
+  } catch (error) {
+    console.error('Upload document error:', error);
+    throw error;
+  }
 };
