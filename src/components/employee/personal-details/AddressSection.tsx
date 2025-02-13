@@ -6,9 +6,10 @@ import { PermanentAddressSection } from "./address/PermanentAddressSection";
 
 interface AddressSectionProps {
   form: UseFormReturn<any>;
+  showValidation?: boolean;
 }
 
-export const AddressSection: React.FC<AddressSectionProps> = ({ form }) => {
+export const AddressSection: React.FC<AddressSectionProps> = ({ form, showValidation }) => {
   return (
     <div className="space-y-6">
       <div className="mb-6">
@@ -19,8 +20,8 @@ export const AddressSection: React.FC<AddressSectionProps> = ({ form }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-8">
-        <PresentAddressSection form={form} />
-        <PermanentAddressSection form={form} />
+        <PresentAddressSection form={form} showValidation={showValidation} />
+        <PermanentAddressSection form={form} showValidation={showValidation} />
       </div>
     </div>
   );

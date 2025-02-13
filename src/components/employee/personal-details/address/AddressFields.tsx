@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { AddressLineField } from "./fields/AddressLineField";
@@ -11,9 +10,15 @@ interface AddressFieldsProps {
   form: UseFormReturn<any>;
   prefix: string;
   disabled?: boolean;
+  showValidation?: boolean;
 }
 
-export const AddressFields: React.FC<AddressFieldsProps> = ({ form, prefix, disabled }) => {
+export const AddressFields: React.FC<AddressFieldsProps> = ({ 
+  form, 
+  prefix, 
+  disabled,
+  showValidation 
+}) => {
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedState, setSelectedState] = useState<string>('');
 
