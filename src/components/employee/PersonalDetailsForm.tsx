@@ -43,7 +43,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [familyDetails, setFamilyDetails] = useState<FamilyMember[]>([]);
 
-  // Initialize emergency contacts and family details from initialData
   useEffect(() => {
     if (initialData) {
       setEmergencyContacts(

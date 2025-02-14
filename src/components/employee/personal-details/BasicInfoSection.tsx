@@ -1,6 +1,7 @@
+
 import React from "react";
-import { FormField } from "../../ui/form";
-import { Input } from "../../ui/input";
+import { FormField } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { AlertCircle, Loader2 } from "lucide-react";
 
 interface BasicInfoSectionProps {
