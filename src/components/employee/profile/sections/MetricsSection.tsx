@@ -14,7 +14,7 @@ export const MetricsSection: React.FC<MetricsSectionProps> = ({ employeeId }) =>
   return (
     <>
       <div className="h-[350px]">
-        <WorkTimeCard />
+        <WorkTimeCard employeeId={employeeId} />
       </div>
 
       <div className="h-[350px]">
