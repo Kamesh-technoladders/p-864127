@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { Document } from "@/services/types/employee.types";
 import { documentSchema } from "../documentValidation";
 import { toast } from "sonner";
@@ -8,9 +9,9 @@ export const validateDocument = (type: keyof typeof documentSchema.shape, value:
   try {
     const validationType = {
       [type]: true
-    } as const;
+    };
     const validationObject = { [type]: value };
-    const validationSchema = documentSchema.pick(validationType);
+    const validationSchema = documentSchema.pick(validationType as any);
     validationSchema.parse(validationObject);
     return true;
   } catch (error) {
@@ -28,9 +29,9 @@ export const getErrorMessage = (type: keyof typeof documentSchema.shape, value: 
   try {
     const validationType = {
       [type]: true
-    } as const;
+    };
     const validationObject = { [type]: value };
-    const validationSchema = documentSchema.pick(validationType);
+    const validationSchema = documentSchema.pick(validationType as any);
     validationSchema.parse(validationObject);
     return null;
   } catch (error) {
