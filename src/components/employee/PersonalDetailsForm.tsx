@@ -91,9 +91,12 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     onComplete(true, formData);
   });
 
-  const handleProfilePictureDelete = () => {
-    form.setValue("profilePictureUrl", "");
-    toast.success("Profile picture deleted successfully");
+  const handleProfilePictureDelete = async (): Promise<void> => {
+    return new Promise<void>((resolve) => {
+      form.setValue("profilePictureUrl", "");
+      toast.success("Profile picture deleted successfully");
+      resolve();
+    });
   };
 
   return (
