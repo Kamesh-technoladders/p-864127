@@ -3,19 +3,24 @@ import React from "react";
 import { FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { ProfilePictureUpload } from "./ProfilePictureUpload";
 
 interface BasicInfoSectionProps {
   register: any;
   errors: any;
   isCheckingEmail?: boolean;
   emailError?: string | null;
+  onProfilePictureChange?: (url: string) => void;
+  profilePictureUrl?: string;
 }
 
 export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ 
   register, 
   errors,
   isCheckingEmail,
-  emailError
+  emailError,
+  onProfilePictureChange,
+  profilePictureUrl
 }) => {
   return (
     <div className="space-y-4">
@@ -24,6 +29,13 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
         Fill in your personal details below.
       </div>
       
+      <div className="flex flex-col items-center mb-6">
+        <ProfilePictureUpload 
+          value={profilePictureUrl} 
+          onChange={(url) => onProfilePictureChange?.(url)} 
+        />
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <FormField
           control={register.control}

@@ -1,4 +1,3 @@
-
 import { EmployeeData } from "../types/employee.types";
 import { personalInfoService } from "./personalInfo.service";
 import { bankDetailsService } from "./bankDetails.service";
@@ -21,7 +20,10 @@ export const employeeService = {
       }
 
       // Create personal info and get the employee record
-      const employee = await personalInfoService.createPersonalInfo(data.personal);
+      const employee = await personalInfoService.createPersonalInfo({
+        ...data.personal,
+        profilePictureUrl: data.personal.profilePictureUrl
+      });
 
       // Create bank details
       await bankDetailsService.createBankDetails(employee.id, data.bank);
@@ -39,9 +41,6 @@ export const employeeService = {
       return employee;
     } catch (error: any) {
       console.error('Error creating employee:', error);
-      if (error.message && error.message.includes('Employee ID')) {
-        throw error;
-      }
       throw error;
     }
   },

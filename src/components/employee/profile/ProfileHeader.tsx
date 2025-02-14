@@ -8,12 +8,14 @@ import {
   TooltipTrigger,
   TooltipProvider
 } from "@/components/ui/tooltip";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface ProfileHeaderProps {
   employeeId: string;
   firstName: string;
   lastName: string;
   email: string;
+  profilePictureUrl?: string;
 }
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -21,6 +23,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   firstName,
   lastName,
   email,
+  profilePictureUrl,
 }) => {
   const fullName = `${firstName} ${lastName}`;
 
@@ -36,9 +39,15 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       <div className="relative z-10 flex items-end p-4 h-full">
         <div className="flex items-end gap-4">
           <div className="relative">
-            <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white/80 shadow-lg backdrop-blur-sm">
-              <div className="w-full h-full bg-gray-300" />
-            </div>
+            <Avatar className="w-20 h-20 border-4 border-white/80 shadow-lg">
+              {profilePictureUrl ? (
+                <AvatarImage src={profilePictureUrl} alt={fullName} />
+              ) : (
+                <AvatarFallback className="bg-gray-300 text-gray-600 text-xl">
+                  {firstName?.[0]}{lastName?.[0]}
+                </AvatarFallback>
+              )}
+            </Avatar>
             <div className="absolute -top-2 -right-2 bg-brand-accent text-brand-primary px-1.5 py-0.5 rounded text-xs font-medium shadow-sm backdrop-blur-sm">
               ID: {employeeId}
             </div>
