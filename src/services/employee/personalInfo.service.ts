@@ -8,7 +8,7 @@ export const personalInfoService = {
       .from('employees')
       .select('id')
       .eq('employee_id', employeeId)
-      .maybeSingle(); // Changed from single() to maybeSingle()
+      .maybeSingle();
 
     if (error) {
       throw error;
@@ -29,7 +29,8 @@ export const personalInfoService = {
         date_of_birth: personalInfo.dateOfBirth,
         gender: personalInfo.gender,
         blood_group: personalInfo.bloodGroup,
-        marital_status: personalInfo.maritalStatus
+        marital_status: personalInfo.maritalStatus,
+        joined_date: new Date().toISOString()
       })
       .select()
       .single();

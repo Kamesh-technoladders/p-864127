@@ -2,6 +2,7 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Users, Building2, BadgeCheck, Clock } from "lucide-react";
+import { format } from "date-fns";
 
 interface StatsBarProps {
   joinedDate: string;
@@ -19,7 +20,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   const formatDate = (dateStr: string) => {
     if (!dateStr) return 'Not specified';
     try {
-      return new Date(dateStr).toLocaleDateString();
+      return format(new Date(dateStr), 'MMM d, yyyy');
     } catch (error) {
       console.error('Error formatting date:', dateStr, error);
       return 'Invalid date';

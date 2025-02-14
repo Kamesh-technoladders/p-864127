@@ -11,6 +11,7 @@ import { PersonalDetailsData } from "../types";
 import { Button } from "@/components/ui/button";
 import { UserCircle, X } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PersonalDetailsEditModalProps {
   isOpen: boolean;
@@ -41,6 +42,91 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
     
     try {
       setIsSubmitting(true);
+
+      // Update employee basic info
+      const { error: employeeError } = await supabase
+        .from('employees')
+        .update({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          date_of_birth: formData.dateOfBirth,
+          gender: formData.gender,
+          blood_group: formData.bloodGroup,
+          marital_status: formData.maritalStatus
+        })
+        .eq('id', employeeId);
+
+      if (employeeError) throw employeeError;
+
+      // Update present address
+      const { error: presentAddressError } = await supabase
+        .from('employee_addresses')
+        .upsert({
+          employee_id: employeeId,
+          type: 'present',
+          address_line1: formData.presentAddress.addressLine1,
+          country: formData.presentAddress.country,
+          state: formData.presentAddress.state,
+          city: formData.presentAddress.city,
+          zip_code: formData.presentAddress.zipCode
+        })
+        .eq('employee_id', employeeId)
+        .eq('type', 'present');
+
+      if (presentAddressError) throw presentAddressError;
+
+      // Update permanent address
+      const { error: permanentAddressError } = await supabase
+        .from('employee_addresses')
+        .upsert({
+          employee_id: employeeId,
+          type: 'permanent',
+          address_line1: formData.permanentAddress.addressLine1,
+          country: formData.permanentAddress.country,
+          state: formData.permanentAddress.state,
+          city: formData.permanentAddress.city,
+          zip_code: formData.permanentAddress.zipCode
+        })
+        .eq('employee_id', employeeId)
+        .eq('type', 'permanent');
+
+      if (permanentAddressError) throw permanentAddressError;
+
+      // Handle emergency contacts
+      if (formData.emergencyContacts && formData.emergencyContacts.length > 0) {
+        const { error: contactsError } = await supabase
+          .from('employee_emergency_contacts')
+          .upsert(
+            formData.emergencyContacts.map(contact => ({
+              employee_id: employeeId,
+              name: contact.name,
+              relationship: contact.relationship,
+              phone: contact.phone
+            }))
+          );
+
+        if (contactsError) throw contactsError;
+      }
+
+      // Handle family details
+      if (formData.familyDetails && formData.familyDetails.length > 0) {
+        const { error: familyError } = await supabase
+          .from('employee_family_details')
+          .upsert(
+            formData.familyDetails.map(member => ({
+              employee_id: employeeId,
+              name: member.name,
+              relationship: member.relationship,
+              occupation: member.occupation,
+              phone: member.phone
+            }))
+          );
+
+        if (familyError) throw familyError;
+      }
+
       await onUpdate(formData);
       toast.success("Personal details updated successfully");
       onClose();
