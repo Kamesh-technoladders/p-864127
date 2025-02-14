@@ -11,7 +11,7 @@ interface BasicInfoSectionProps {
   isCheckingEmail?: boolean;
   emailError?: string | null;
   onProfilePictureChange?: (url: string) => void;
-  onProfilePictureDelete?: () => void;
+  onProfilePictureDelete?: () => Promise<void>;
   profilePictureUrl?: string;
 }
 

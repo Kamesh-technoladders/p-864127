@@ -143,7 +143,6 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
             currentFile={value ? { name: 'Profile Picture', type: 'image', url: value } : undefined}
             onRemove={() => setShowDeleteDialog(true)}
             error={undefined}
-            disabled={isUploading || isDeleting}
           />
           <p className="text-xs text-gray-500">
             Accepted formats: JPG, JPEG, PNG (max 5MB)
@@ -187,7 +186,10 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
               disabled={isDeleting}
             >
               {isDeleting ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Deleting...
+                </>
               ) : (
                 'Delete'
               )}
