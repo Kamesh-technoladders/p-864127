@@ -13,6 +13,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const personalDetailsSchema = z.object({
+  profilePictureUrl: z.string().optional(),
   employeeId: z.string().min(1, "Employee ID is required"),
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
@@ -50,25 +51,10 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   const [familyDetails, setFamilyDetails] = useState<FamilyMember[]>([]);
   const [documents, setDocuments] = useState<EmployeeDocument[]>([]);
 
-  useEffect(() => {
-    if (initialData) {
-      setEmergencyContacts(
-        initialData.emergencyContacts && initialData.emergencyContacts.length > 0
-          ? initialData.emergencyContacts
-          : [{ relationship: "", name: "", phone: "" }]
-      );
-
-      setFamilyDetails(
-        initialData.familyDetails && initialData.familyDetails.length > 0
-          ? initialData.familyDetails
-          : [{ relationship: "", name: "", occupation: "", phone: "" }]
-      );
-    }
-  }, [initialData]);
-
   const form = useForm({
     defaultValues: {
       ...initialData,
+      profilePictureUrl: initialData?.profilePictureUrl || "",
       presentAddress: initialData?.presentAddress || {
         addressLine1: "",
         country: "",
@@ -87,6 +73,22 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     },
     resolver: zodResolver(personalDetailsSchema)
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setEmergencyContacts(
+        initialData.emergencyContacts && initialData.emergencyContacts.length > 0
+          ? initialData.emergencyContacts
+          : [{ relationship: "", name: "", phone: "" }]
+      );
+
+      setFamilyDetails(
+        initialData.familyDetails && initialData.familyDetails.length > 0
+          ? initialData.familyDetails
+          : [{ relationship: "", name: "", occupation: "", phone: "" }]
+      );
+    }
+  }, [initialData]);
 
   const handleSubmit = form.handleSubmit((data) => {
     if (!validateForm()) {
@@ -113,7 +115,8 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
       ...data,
       emergencyContacts: validEmergencyContacts,
       familyDetails: validFamilyDetails,
-      documents
+      documents,
+      profilePictureUrl: data.profilePictureUrl
     };
 
     console.log('Form submitted:', formData);
@@ -169,6 +172,8 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
             errors={form.formState.errors}
             isCheckingEmail={isCheckingEmail}
             emailError={emailError}
+            profilePictureUrl={form.watch("profilePictureUrl")}
+            onProfilePictureChange={(url) => form.setValue("profilePictureUrl", url)}
           />
           
           <div className="pt-2">

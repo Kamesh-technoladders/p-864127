@@ -29,7 +29,7 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
         Fill in your personal details below.
       </div>
       
-      <div className="flex flex-col items-center mb-6">
+      <div className="mb-6">
         <ProfilePictureUpload 
           value={profilePictureUrl} 
           onChange={(url) => onProfilePictureChange?.(url)} 
