@@ -13,7 +13,9 @@ interface FormContentProps {
   formData: FormData;
   updateSectionProgress: (section: keyof FormProgress, completed: boolean) => void;
   updateFormData: (section: keyof FormData, data: any) => void;
-  handleSaveAndNext: () => void;
+  isCheckingEmail?: boolean;
+  emailError?: string | null;
+  isSubmitting?: boolean;
 }
 
 export const FormContent: React.FC<FormContentProps> = ({
@@ -21,7 +23,9 @@ export const FormContent: React.FC<FormContentProps> = ({
   formData,
   updateSectionProgress,
   updateFormData,
-  handleSaveAndNext,
+  isCheckingEmail,
+  emailError,
+  isSubmitting,
 }) => {
   switch (activeTab) {
     case "personal":
@@ -46,12 +50,13 @@ export const FormContent: React.FC<FormContentProps> = ({
                 familyDetails: data.familyDetails || []
               };
               updateFormData("personal", personalData);
-              handleSaveAndNext();
             } else {
               toast.error("Please fill in all required fields");
             }
           }}
           initialData={formData.personal}
+          isCheckingEmail={isCheckingEmail}
+          emailError={emailError}
         />
       );
     case "education":

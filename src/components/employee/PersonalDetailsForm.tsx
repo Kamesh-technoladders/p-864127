@@ -46,21 +46,31 @@ const personalDetailsSchema = z.object({
   sameAsPresent: z.boolean().optional()
 });
 
-export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComplete, initialData }) => {
+interface PersonalDetailsFormProps {
+  onComplete: (completed: boolean, data?: any) => void;
+  initialData?: any;
+  isCheckingEmail?: boolean;
+  emailError?: string | null;
+}
+
+export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ 
+  onComplete, 
+  initialData,
+  isCheckingEmail,
+  emailError 
+}) => {
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [familyDetails, setFamilyDetails] = useState<FamilyMember[]>([]);
 
   // Initialize emergency contacts and family details from initialData
   useEffect(() => {
     if (initialData) {
-      // Initialize emergency contacts with initial data or one empty contact
       setEmergencyContacts(
         initialData.emergencyContacts && initialData.emergencyContacts.length > 0
           ? initialData.emergencyContacts
           : [{ relationship: "", name: "", phone: "" }]
       );
 
-      // Initialize family details with initial data or one empty member
       setFamilyDetails(
         initialData.familyDetails && initialData.familyDetails.length > 0
           ? initialData.familyDetails
@@ -92,7 +102,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
   });
 
   const validateForm = () => {
-    // Check if at least one emergency contact is filled completely
     const hasValidEmergencyContact = emergencyContacts.some(
       contact => 
         contact.name.trim() !== "" && 
@@ -100,7 +109,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
         contact.phone.trim() !== ""
     );
 
-    // Check if at least one family member is filled completely
     const hasValidFamilyMember = familyDetails.some(
       member => 
         member.name.trim() !== "" && 
@@ -109,7 +117,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
         member.phone.trim() !== ""
     );
 
-    // If no valid entries are found, filter out empty entries
     if (!hasValidEmergencyContact) {
       setEmergencyContacts(contacts => 
         contacts.filter(contact => 
@@ -131,7 +138,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
       );
     }
 
-    // Allow form submission even if emergency contacts or family details are empty
     return true;
   };
 
@@ -141,7 +147,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
       return;
     }
 
-    // Filter out empty emergency contacts and family details
     const validEmergencyContacts = emergencyContacts.filter(
       contact => 
         contact.name.trim() !== "" && 
@@ -171,7 +176,12 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ onComp
     <div className="flex w-[622px] max-w-full flex-col text-sm font-medium ml-[15px]">
       <Form {...form}>
         <form id="personalDetailsForm" onSubmit={handleSubmit} className="space-y-6">
-          <BasicInfoSection form={form} />
+          <BasicInfoSection
+            register={form}
+            errors={form.formState.errors}
+            isCheckingEmail={isCheckingEmail}
+            emailError={emailError}
+          />
           
           <AddressSection form={form} />
 
