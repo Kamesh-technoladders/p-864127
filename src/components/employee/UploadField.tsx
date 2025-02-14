@@ -20,6 +20,7 @@ interface UploadFieldProps {
   onRemove?: () => void;
   error?: string;
   multiple?: boolean;
+  compact?: boolean;
 }
 
 const formatFileSize = (size: number): string => {
@@ -38,6 +39,7 @@ export const UploadField: React.FC<UploadFieldProps> = ({
   onRemove,
   error,
   multiple = false,
+  compact = false,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -48,7 +50,6 @@ export const UploadField: React.FC<UploadFieldProps> = ({
       setIsUploading(true);
       setProgress(0);
       
-      // Start progress simulation
       const progressInterval = setInterval(() => {
         setProgress((prev) => {
           if (prev >= 90) {
@@ -78,29 +79,31 @@ export const UploadField: React.FC<UploadFieldProps> = ({
   const fileSize = currentFile?.size ? formatFileSize(currentFile.size) : '';
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="text-[rgba(48,48,48,1)] font-semibold">
+    <div className={`flex flex-col ${compact ? 'gap-1' : 'gap-2'}`}>
+      <div className="text-[rgba(48,48,48,1)] font-semibold text-sm">
         {label}
         {required && <span className="text-[rgba(221,1,1,1)]">*</span>}
       </div>
-      <div className="self-stretch flex flex-col gap-2">
+      <div className="self-stretch flex flex-col gap-1">
         <div className="flex items-center gap-2 flex-wrap">
           {currentFile ? (
-            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg w-full">
+            <div className={`flex items-center gap-2 ${compact ? 'p-1.5' : 'p-2'} bg-gray-50 rounded-lg w-full`}>
               {isImage ? (
                 <img 
                   src={currentFile.url} 
                   alt={currentFile.name}
-                  className="h-8 w-8 object-cover rounded"
+                  className="h-6 w-6 object-cover rounded"
                 />
               ) : (
-                <FileText className="h-6 w-6 text-gray-500" />
+                <FileText className="h-5 w-5 text-gray-500" />
               )}
               <div className="flex flex-col flex-1 min-w-0">
                 <span className="text-sm font-medium truncate">{currentFile.name}</span>
-                <span className="text-xs text-gray-500">
-                  {currentFile.type.split('/')[1].toUpperCase()} {fileSize && `• ${fileSize}`}
-                </span>
+                {!compact && (
+                  <span className="text-xs text-gray-500">
+                    {currentFile.type.split('/')[1].toUpperCase()} {fileSize && `• ${fileSize}`}
+                  </span>
+                )}
               </div>
               {onRemove && (
                 <button
@@ -112,20 +115,20 @@ export const UploadField: React.FC<UploadFieldProps> = ({
               )}
             </div>
           ) : (
-            <div className="flex items-center justify-between w-full p-4 border border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
+            <div className={`flex items-center justify-between w-full ${compact ? 'p-2' : 'p-4'} border border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors`}>
               {isUploading ? (
                 <div className="flex items-center gap-2">
                   <LoaderCircle className="animate-spin h-4 w-4" />
-                  <span>Uploading...</span>
+                  <span className="text-sm">Uploading...</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-600">{value || `Upload ${label}`}</span>
+                  <span className="text-sm text-gray-600">{value || `Upload ${label}`}</span>
                 </div>
               )}
-              <label className="text-[rgba(225,1,2,1)] font-semibold cursor-pointer">
-                + Upload File
+              <label className="text-[rgba(225,1,2,1)] text-sm font-semibold cursor-pointer">
+                + Upload
                 <input
                   type="file"
                   className="hidden"
@@ -140,7 +143,7 @@ export const UploadField: React.FC<UploadFieldProps> = ({
         </div>
         {showProgress && isUploading && (
           <div className="w-full">
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-1" />
             <div className="text-xs text-gray-500 mt-1 text-right">{progress}%</div>
           </div>
         )}

@@ -28,35 +28,45 @@ export const DocumentField: React.FC<DocumentFieldProps> = ({
 }) => {
   const validationType = getValidationType(documentType);
   const currentDocument = getDocumentByType(documents, documentType);
-  const error = getErrorMessage(validationType, currentDocument?.documentNumber || '');
+  const [localValue, setLocalValue] = React.useState(currentDocument?.documentNumber || '');
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (error) {
-      toast.error(error, {
+    setLocalValue(currentDocument?.documentNumber || '');
+  }, [currentDocument?.documentNumber]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = documentType === 'pan' ? e.target.value.toUpperCase() : e.target.value;
+    setLocalValue(value);
+    updateDocumentNumber(documentType, value);
+    
+    const validationError = getErrorMessage(validationType, value);
+    setError(validationError);
+    
+    if (validationError && value.length > 0) {
+      toast.error(validationError, {
         duration: 2000,
         icon: <AlertCircle className="h-4 w-4" />
       });
     }
-  }, [error]);
+  };
 
   return (
     <FormField
       control={form.control}
       name={validationType}
       render={({ field }) => (
-        <div className="space-y-2">
+        <div className="space-y-1">
           <label className="text-sm font-medium">
             {label}{required && <span className="text-red-500">*</span>}
           </label>
           <div className="relative">
             <Input
               {...field}
-              value={currentDocument?.documentNumber || ''}
-              onChange={(e) => updateDocumentNumber(documentType, 
-                documentType === 'pan' ? e.target.value.toUpperCase() : e.target.value
-              )}
+              value={localValue}
+              onChange={handleChange}
               placeholder={`Enter ${label}`}
-              className={`h-11 ${error ? 'border-red-500' : ''}`}
+              className={`h-9 ${error ? 'border-red-500' : ''}`}
             />
           </div>
         </div>

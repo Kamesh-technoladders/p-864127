@@ -50,11 +50,6 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
 
   const updateDocumentNumber = (documentType: Document['documentType'], value: string) => {
     const validationType = getValidationType(documentType);
-
-    if (!validateDocument(validationType, value)) {
-      return;
-    }
-
     const updatedDocuments = [...documents];
     const existingIndex = documents.findIndex(doc => doc.documentType === documentType);
     
@@ -72,16 +67,19 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
     }
     
     onDocumentsChange(updatedDocuments);
+
+    // Validate after state update to not block input
+    validateDocument(validationType, value);
   };
 
   return (
     <div>
       <div className="text-[rgba(48,64,159,1)] font-bold mb-4">Document Upload</div>
-      <div className="text-[rgba(80,80,80,1)] text-xs mb-6">
+      <div className="text-[rgba(80,80,80,1)] text-xs mb-4">
         Upload your identity and verification documents here.
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         <DocumentUploadPair
           form={form}
           documentType="aadhar"

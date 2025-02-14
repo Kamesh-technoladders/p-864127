@@ -28,26 +28,31 @@ export const DocumentUploadPair: React.FC<DocumentUploadPairProps> = ({
   const currentDocument = getDocumentByType(documents, documentType);
 
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <DocumentField
-        form={form}
-        documentType={documentType}
-        documents={documents}
-        label={label}
-        required={required}
-        updateDocumentNumber={updateDocumentNumber}
-      />
-      <UploadField
-        label={`${label} Card`}
-        required={required}
-        onUpload={onUpload}
-        currentFile={currentDocument?.documentUrl ? {
-          name: currentDocument?.fileName || `${label} Card`,
-          type: 'application/pdf',
-          url: currentDocument?.documentUrl
-        } : undefined}
-        showProgress
-      />
+    <div className="flex items-center gap-4">
+      <div className="flex-1">
+        <DocumentField
+          form={form}
+          documentType={documentType}
+          documents={documents}
+          label={label}
+          required={required}
+          updateDocumentNumber={updateDocumentNumber}
+        />
+      </div>
+      <div className="w-64">
+        <UploadField
+          label={`${label} Card`}
+          required={required}
+          onUpload={onUpload}
+          currentFile={currentDocument?.documentUrl ? {
+            name: currentDocument?.fileName || `${label} Card`,
+            type: 'application/pdf',
+            url: currentDocument?.documentUrl
+          } : undefined}
+          showProgress
+          compact
+        />
+      </div>
     </div>
   );
 };
