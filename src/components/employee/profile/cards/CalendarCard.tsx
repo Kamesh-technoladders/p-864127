@@ -65,9 +65,9 @@ export const CalendarCard = () => {
   const days = generateMonth(currentDate);
 
   return (
-    <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[350px]">
+    <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[350px] overflow-hidden">
       <div className="grid grid-cols-[2fr_3fr] gap-4 h-full">
-        <div className="flex flex-col space-y-2">
+        <div className="flex flex-col space-y-2 min-w-0">
           <CalendarHeader 
             currentDate={currentDate}
             onPrevMonth={prevMonth}
@@ -80,24 +80,24 @@ export const CalendarCard = () => {
           />
         </div>
         
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full min-w-0">
           <Tabs defaultValue="events" className="flex flex-col h-full">
             <TabsList className="grid grid-cols-2 mb-1.5">
               <TabsTrigger value="events" className="flex items-center gap-1 text-xs">
-                <Calendar className="w-3 h-3" />
-                Upcoming Events
+                <Calendar className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate">Upcoming Events</span>
               </TabsTrigger>
               <TabsTrigger value="tasks" className="flex items-center gap-1 text-xs">
-                <ListTodo className="w-3 h-3" />
-                Tasks
+                <ListTodo className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate">Tasks</span>
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="events" className="h-[calc(100%-32px)] mt-0">
+            <TabsContent value="events" className="flex-1 overflow-hidden">
               <EventsList />
             </TabsContent>
 
-            <TabsContent value="tasks" className="h-[calc(100%-32px)] mt-0">
+            <TabsContent value="tasks" className="flex-1 overflow-hidden">
               <TasksList />
             </TabsContent>
           </Tabs>
