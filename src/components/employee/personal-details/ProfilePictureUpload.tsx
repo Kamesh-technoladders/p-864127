@@ -4,7 +4,7 @@ import { UploadField } from "../UploadField";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { uploadDocument } from "@/utils/uploadDocument";
 import { toast } from "sonner";
-import { Camera, Pencil } from "lucide-react";
+import { Camera, Pencil, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -19,14 +19,17 @@ import {
 interface ProfilePictureUploadProps {
   value?: string;
   onChange: (url: string) => void;
+  onDelete?: () => void;
 }
 
 export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
   value,
   onChange,
+  onDelete,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [showReplaceDialog, setShowReplaceDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   const handleUpload = async (file: File) => {
@@ -72,6 +75,20 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      if (onDelete) {
+        await onDelete();
+        toast.success('Profile picture deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting profile picture:', error);
+      toast.error('Failed to delete profile picture');
+    } finally {
+      setShowDeleteDialog(false);
+    }
+  };
+
   return (
     <>
       <div className="flex items-center gap-6 w-full max-w-2xl">
@@ -86,9 +103,9 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
             )}
           </Avatar>
           {value && (
-            <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
               <label className="cursor-pointer p-2 rounded-full hover:bg-white/20 transition-colors">
-                <Pencil className="h-6 w-6 text-white" />
+                <Pencil className="h-5 w-5 text-white" />
                 <input
                   type="file"
                   className="hidden"
@@ -99,6 +116,12 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
                   }}
                 />
               </label>
+              <button
+                onClick={() => setShowDeleteDialog(true)}
+                className="p-2 rounded-full hover:bg-white/20 transition-colors"
+              >
+                <Trash2 className="h-5 w-5 text-white" />
+              </button>
             </div>
           )}
         </div>
@@ -108,6 +131,7 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
             onUpload={handleUpload}
             showProgress={true}
             currentFile={value ? { name: 'Profile Picture', type: 'image', url: value } : undefined}
+            onRemove={() => setShowDeleteDialog(true)}
             error={undefined}
           />
           <p className="text-xs text-gray-500">
@@ -127,6 +151,23 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setPendingFile(null)}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleReplace}>Replace</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Profile Picture</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete your profile picture? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

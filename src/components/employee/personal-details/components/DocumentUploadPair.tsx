@@ -24,6 +24,7 @@ interface DocumentUploadPairProps {
   required?: boolean;
   updateDocumentNumber: (type: Document['documentType'], value: string) => void;
   onUpload: (file: File) => Promise<void>;
+  onDelete?: (type: Document['documentType']) => Promise<void>;
 }
 
 export const DocumentUploadPair: React.FC<DocumentUploadPairProps> = ({
@@ -34,8 +35,10 @@ export const DocumentUploadPair: React.FC<DocumentUploadPairProps> = ({
   required,
   updateDocumentNumber,
   onUpload,
+  onDelete
 }) => {
   const [showReplaceDialog, setShowReplaceDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const currentDocument = getDocumentByType(documents, documentType);
 
@@ -64,6 +67,19 @@ export const DocumentUploadPair: React.FC<DocumentUploadPairProps> = ({
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      if (onDelete) {
+        await onDelete(documentType);
+        toast.success(`${label} document deleted successfully`);
+      }
+      setShowDeleteDialog(false);
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error(`Failed to delete ${label.toLowerCase()} document`);
+    }
+  };
+
   return (
     <>
       <div className="flex items-center gap-4">
@@ -87,6 +103,7 @@ export const DocumentUploadPair: React.FC<DocumentUploadPairProps> = ({
               type: 'application/pdf',
               url: currentDocument?.documentUrl
             } : undefined}
+            onRemove={() => setShowDeleteDialog(true)}
             showProgress
             compact
           />
@@ -104,6 +121,23 @@ export const DocumentUploadPair: React.FC<DocumentUploadPairProps> = ({
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setPendingFile(null)}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleReplace}>Replace</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Document</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the {label} document? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
