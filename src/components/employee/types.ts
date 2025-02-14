@@ -1,4 +1,3 @@
-
 export interface Experience {
   id: string;
   jobTitle: string;
@@ -63,7 +62,13 @@ export interface BankAccountData {
   [key: string]: any;
 }
 
-export interface PersonalDetailsFormProps extends FormComponentProps<PersonalDetailsData> {}
+export interface PersonalDetailsFormProps {
+  onComplete: (completed: boolean, data?: any) => void;
+  initialData?: any;
+  isCheckingEmail?: boolean;
+  emailError?: string | null;
+  isSubmitting?: boolean;
+}
 
 export interface EducationFormProps extends FormComponentProps<EducationData> {}
 
