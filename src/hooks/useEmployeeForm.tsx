@@ -6,6 +6,7 @@ import { useEmailValidation } from "./form/useEmailValidation";
 import { useFormState } from "./form/useFormState";
 import { PersonalDetailsData } from "@/components/employee/types";
 import { EmployeeData } from "@/services/types/employee.types";
+import { personalInfoService } from "@/services/employee/personalInfo.service";
 
 export const useEmployeeForm = () => {
   const [isFormCompleted, setIsFormCompleted] = useState(false);
@@ -29,16 +30,29 @@ export const useEmployeeForm = () => {
       setIsSubmitting(true);
       try {
         if (completedData) {
-          updateFormData("personal", completedData);
+          // First save to backend
+          const savedEmployee = await personalInfoService.createPersonalInfo(completedData);
+          if (!savedEmployee) {
+            throw new Error("Failed to save personal details");
+          }
+
+          // Then update form state with the saved data
+          const personalData: PersonalDetailsData = {
+            ...completedData,
+            id: savedEmployee.id // Keep the id from backend
+          };
+          
+          updateFormData("personal", personalData);
           updateSectionProgress("personal", true);
           setActiveTab("education");
           toast.success("Personal details saved successfully!");
         } else {
           toast.error("Please complete all required fields");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error saving personal details:', error);
-        toast.error("Failed to save personal details. Please try again.");
+        toast.error(error.message || "Failed to save personal details. Please try again.");
+        updateSectionProgress("personal", false);
       } finally {
         setIsSubmitting(false);
       }
@@ -47,18 +61,35 @@ export const useEmployeeForm = () => {
 
     // For education tab, move to bank after saving
     if (activeTab === "education") {
+      if (!formData.personal?.id) {
+        toast.error("Please complete personal details first");
+        setActiveTab("personal");
+        return;
+      }
+
       if (completedData) {
-        updateFormData("education", completedData);
-        updateSectionProgress("education", true);
-        setActiveTab("bank");
-        toast.success("Education details saved successfully!");
+        try {
+          // Save education details to backend
+          await employeeService.updateEmployee(formData.personal.id, {
+            education: completedData
+          });
+
+          updateFormData("education", completedData);
+          updateSectionProgress("education", true);
+          setActiveTab("bank");
+          toast.success("Education details saved successfully!");
+        } catch (error: any) {
+          console.error('Error saving education details:', error);
+          toast.error(error.message || "Failed to save education details. Please try again.");
+          updateSectionProgress("education", false);
+        }
       }
       return;
     }
 
     // For final submission (bank details tab)
     if (activeTab === "bank") {
-      if (!formData.personal || !formData.education) {
+      if (!formData.personal?.id || !formData.education) {
         toast.error("Please complete all required sections before submitting");
         return;
       }
@@ -66,10 +97,15 @@ export const useEmployeeForm = () => {
       setIsSubmitting(true);
       try {
         if (completedData) {
+          // Update bank details in backend
+          await employeeService.updateEmployee(formData.personal.id, {
+            bank: completedData
+          });
+
           updateFormData("bank", completedData);
           
           const employeeData: EmployeeData = {
-            id: '',
+            id: formData.personal.id,
             employeeId: formData.personal.employeeId,
             personal: formData.personal,
             education: formData.education,
@@ -81,7 +117,7 @@ export const useEmployeeForm = () => {
             documents: formData.personal?.documents || []
           };
 
-          await employeeService.createEmployee(employeeData);
+          await employeeService.updateEmployee(formData.personal.id, employeeData);
           toast.success("Employee information saved successfully!");
           setIsFormCompleted(true);
           window.location.reload();

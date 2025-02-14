@@ -32,24 +32,10 @@ export const FormContent: React.FC<FormContentProps> = ({
         <PersonalDetailsForm
           onComplete={(completed: boolean, data?: any) => {
             if (completed && data) {
-              const personalData: PersonalDetailsData = {
-                employeeId: data.employeeId,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                email: data.email,
-                phone: data.phone,
-                dateOfBirth: data.dateOfBirth,
-                gender: data.gender,
-                bloodGroup: data.bloodGroup,
-                maritalStatus: data.maritalStatus,
-                presentAddress: data.presentAddress,
-                permanentAddress: data.permanentAddress,
-                emergencyContacts: data.emergencyContacts || [],
-                familyDetails: data.familyDetails || [],
-                documents: data.documents || []
-              };
-              updateFormData("personal", personalData);
-              updateSectionProgress("personal", true);
+              // The actual saving to backend is handled in useEmployeeForm
+              // This just passes the data up
+              updateFormData("personal", data);
+              updateSectionProgress("personal", completed);
             }
           }}
           initialData={formData.personal}
@@ -65,7 +51,7 @@ export const FormContent: React.FC<FormContentProps> = ({
             onComplete={(completed: boolean, data?: any) => {
               if (completed && data) {
                 updateFormData("education", data);
-                updateSectionProgress("education", true);
+                updateSectionProgress("education", completed);
               }
             }}
             initialData={formData.education}
@@ -75,7 +61,7 @@ export const FormContent: React.FC<FormContentProps> = ({
             onComplete={(completed: boolean, data?: Experience[]) => {
               if (completed && data) {
                 updateFormData("experience", data);
-                updateSectionProgress("experience", true);
+                updateSectionProgress("experience", completed);
               }
             }}
             experiences={formData.experience}
@@ -88,7 +74,7 @@ export const FormContent: React.FC<FormContentProps> = ({
           onComplete={(completed: boolean, data?: any) => {
             if (completed && data) {
               updateFormData("bank", data);
-              updateSectionProgress("bank", true);
+              updateSectionProgress("bank", completed);
             }
           }}
           initialData={formData.bank}
