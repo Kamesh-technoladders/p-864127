@@ -1,69 +1,31 @@
 
-import type { Document as EmployeeDocument } from "@/services/types/employee.types";
+import type { 
+  Document as EmployeeDocument,
+  Experience as EmployeeExperience,
+  Education as EmployeeEducation,
+  BankDetails,
+  Address,
+  EmergencyContact,
+  FamilyMember,
+  PersonalInfo
+} from "@/services/types/employee.types";
 
-export interface Experience {
-  id: string;
-  jobTitle: string;
-  company: string;
-  location: string;
-  employmentType: string;
-  startDate: string;
-  endDate: string;
-  offerLetter?: File;
-  separationLetter?: File;
-  payslips: File[];
-}
+export type { 
+  Address,
+  EmergencyContact,
+  FamilyMember,
+  BankDetails as BankAccountData,
+  EmployeeEducation as EducationData
+};
 
-export interface Address {
-  addressLine1: string;
-  country: string;
-  state: string;
-  city: string;
-  zipCode: string;
-}
+export interface Experience extends EmployeeExperience {}
 
-export interface EmergencyContact {
-  name: string;
-  relationship: string;
-  phone: string;
-}
-
-export interface FamilyMember {
-  name: string;
-  relationship: string;
-  occupation: string;
-  phone: string;
-}
-
-export interface PersonalDetailsData {
-  employeeId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  gender: string;
-  bloodGroup: string;
-  maritalStatus: string;
-  presentAddress: Address;
-  permanentAddress: Address;
-  emergencyContacts: EmergencyContact[];
-  familyDetails: FamilyMember[];
-  documents: EmployeeDocument[];
-}
+export interface PersonalDetailsData extends PersonalInfo {}
 
 export interface FormComponentProps<T = any> {
   onComplete: (completed: boolean, data?: T) => void;
   initialData?: T | null;
   isSubmitting?: boolean;
-}
-
-export interface EducationData {
-  [key: string]: any;
-}
-
-export interface BankAccountData {
-  [key: string]: any;
 }
 
 export interface PersonalDetailsFormProps extends FormComponentProps<PersonalDetailsData> {

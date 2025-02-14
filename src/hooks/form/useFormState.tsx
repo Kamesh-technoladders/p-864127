@@ -13,34 +13,7 @@ export const useFormState = () => {
   });
 
   const [formData, setFormData] = useState<FormData>({
-    personal: {
-      employeeId: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      dateOfBirth: "",
-      gender: "",
-      bloodGroup: "",
-      maritalStatus: "",
-      presentAddress: {
-        addressLine1: "",
-        country: "",
-        state: "",
-        city: "",
-        zipCode: ""
-      },
-      permanentAddress: {
-        addressLine1: "",
-        country: "",
-        state: "",
-        city: "",
-        zipCode: ""
-      },
-      emergencyContacts: [],
-      familyDetails: [],
-      documents: []
-    },
+    personal: null,
     education: null,
     experience: [],
     bank: null,

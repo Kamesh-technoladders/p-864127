@@ -1,5 +1,10 @@
 
-import { PersonalDetailsData, EducationData, Experience, BankAccountData } from "@/components/employee/types";
+import { 
+  PersonalDetailsData, 
+  EducationData, 
+  Experience, 
+  BankAccountData 
+} from "@/components/employee/types";
 
 export interface FormProgress {
   personal: boolean;
