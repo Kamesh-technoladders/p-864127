@@ -7,7 +7,7 @@ export const educationService = {
   async fetchEducation(employeeId: string) {
     const { data, error } = await supabase
       .from('employee_education')
-      .select('*')
+      .select('employee_id, type, document_url, institute, year_completed')
       .eq('employee_id', employeeId);
 
     if (error) throw error;
