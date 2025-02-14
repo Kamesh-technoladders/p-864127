@@ -93,7 +93,8 @@ export const UploadField: React.FC<UploadFieldProps> = ({
                   persist: () => {},
                   timeStamp: Date.now(),
                   type: 'change'
-                } as ChangeEvent<HTMLInputElement>)}
+                } as ChangeEvent<HTMLInputElement>);
+              }}
               onDelete={() => setShowDeleteDialog(true)}
               compact={compact}
               disabled={isUploading}
