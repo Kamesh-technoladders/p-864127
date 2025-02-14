@@ -23,6 +23,7 @@ export const useFormValidation = () => {
         member.phone.trim() !== ""
     );
 
+    // Filter out incomplete entries
     if (!hasValidEmergencyContact) {
       setEmergencyContacts(prevContacts => 
         prevContacts.filter(contact => 
@@ -44,7 +45,8 @@ export const useFormValidation = () => {
       );
     }
 
-    return true;
+    // Return validation result
+    return hasValidEmergencyContact && hasValidFamilyMember;
   };
 
   return { validateForm };

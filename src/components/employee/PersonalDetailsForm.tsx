@@ -55,7 +55,11 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   });
 
   const handleSubmit = form.handleSubmit((data) => {
-    if (!validateForm(emergencyContacts, familyDetails, setEmergencyContacts, setFamilyDetails)) {
+    // Validate both emergency contacts and family details
+    const isValid = validateForm(emergencyContacts, familyDetails, setEmergencyContacts, setFamilyDetails);
+    
+    if (!isValid) {
+      toast.error("Please add at least one emergency contact and one family member");
       onComplete(false);
       return;
     }
