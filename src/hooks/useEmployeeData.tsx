@@ -81,7 +81,8 @@ export const useEmployeeData = (employeeId: string | undefined) => {
             presentAddress: data.presentAddress,
             permanentAddress: data.permanentAddress,
             emergencyContacts: data.emergencyContacts || [],
-            familyDetails: data.familyDetails || []
+            familyDetails: data.familyDetails || [],
+            documents: data.documents || [] // Add this line
           };
 
           await Promise.all([

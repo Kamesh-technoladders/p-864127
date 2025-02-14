@@ -52,7 +52,8 @@ export const useEmployeeForm = () => {
           const personalData = {
             ...formData.personal!,
             emergencyContacts: formData.personal?.emergencyContacts || [],
-            familyDetails: formData.personal?.familyDetails || []
+            familyDetails: formData.personal?.familyDetails || [],
+            documents: formData.personal?.documents || [] // Add this line
           };
           
           await employeeService.createEmployee({
