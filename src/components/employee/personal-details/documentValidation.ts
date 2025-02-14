@@ -10,7 +10,7 @@ export const documentSchema = z.object({
   panNumber: z.string()
     .regex(/^[A-Z]{5}[0-9]{4}[A-Z]$/)
     .refine((val) => /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(val), {
-      message: "! PAN number is invalid, PAN number must be like CAKPD4545K"
+      message: "! PAN number is invalid, PAN number must be like AABBC1234K"
     }),
   esicNumber: z.string()
     .regex(/^\d{17}$/)
