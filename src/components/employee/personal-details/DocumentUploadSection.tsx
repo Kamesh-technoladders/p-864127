@@ -48,6 +48,18 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
     }
   };
 
+  const handleDocumentDelete = async (documentType: Document['documentType']) => {
+    try {
+      // Filter out the deleted document from the documents array
+      const updatedDocuments = documents.filter(doc => doc.documentType !== documentType);
+      onDocumentsChange(updatedDocuments);
+      return Promise.resolve();
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      return Promise.reject(error);
+    }
+  };
+
   const updateDocumentNumber = (documentType: Document['documentType'], value: string) => {
     const validationType = getValidationType(documentType);
     const updatedDocuments = [...documents];
@@ -88,6 +100,7 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
           required
           updateDocumentNumber={updateDocumentNumber}
           onUpload={handleFileUpload('aadhar')}
+          onDelete={handleDocumentDelete}
         />
 
         <DocumentUploadPair
@@ -98,6 +111,7 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
           required
           updateDocumentNumber={updateDocumentNumber}
           onUpload={handleFileUpload('pan')}
+          onDelete={handleDocumentDelete}
         />
 
         <DocumentUploadPair
@@ -107,6 +121,7 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
           label="UAN Number"
           updateDocumentNumber={updateDocumentNumber}
           onUpload={handleFileUpload('uan')}
+          onDelete={handleDocumentDelete}
         />
 
         <DocumentUploadPair
@@ -116,6 +131,7 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
           label="ESIC Number"
           updateDocumentNumber={updateDocumentNumber}
           onUpload={handleFileUpload('esic')}
+          onDelete={handleDocumentDelete}
         />
       </div>
     </div>
