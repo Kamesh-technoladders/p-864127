@@ -27,7 +27,7 @@ export const transformEmployeeData = (employeeDetails: EmployeeDetailsResponse) 
     lastName: employeeDetails.last_name || '',
     email: employeeDetails.email || '',
     phone: employeeDetails.phone || '',
-    dateOfBirth: employeeDetails.date_of_birth || '',  // Changed to keep original date format
+    dateOfBirth: employeeDetails.date_of_birth || '',
     gender: employeeDetails.gender || '',
     bloodGroup: employeeDetails.blood_group || '',
     maritalStatus: employeeDetails.marital_status || '',
@@ -55,7 +55,19 @@ export const transformEmployeeData = (employeeDetails: EmployeeDetailsResponse) 
       : [],
     familyDetails: Array.isArray(employeeDetails.family_details) 
       ? employeeDetails.family_details 
-      : []
+      : [],
+    experience: employeeDetails.experience?.map((exp: any) => ({
+      id: exp.id,
+      jobTitle: exp.job_title,
+      company: exp.company,
+      location: exp.location,
+      employmentType: exp.employment_type,
+      startDate: exp.start_date,
+      endDate: exp.end_date,
+      offerLetter: exp.offer_letter_url,
+      separationLetter: exp.separation_letter_url,
+      payslips: exp.payslips || []
+    })) || []
   };
 
   console.log('Transformed employee data:', transformedData);

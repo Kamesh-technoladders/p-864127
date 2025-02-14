@@ -41,18 +41,36 @@ export const useEmployeeProfile = (id: string | undefined) => {
   };
 
   const calculateTotalExperience = () => {
-    if (!employeeData?.experience || employeeData.experience.length === 0) {
+    console.log('Calculating total experience with data:', employeeData?.experience);
+    
+    if (!employeeData?.experience || !Array.isArray(employeeData.experience) || employeeData.experience.length === 0) {
+      console.log('No experience data found');
       return "0.0 years";
     }
 
     let totalMonths = 0;
     employeeData.experience.forEach((exp) => {
+      if (!exp.startDate) {
+        console.log('Skipping experience record with no start date:', exp);
+        return;
+      }
+      
       const start = new Date(exp.startDate);
       const end = exp.endDate ? new Date(exp.endDate) : new Date();
-      totalMonths += differenceInMonths(end, start);
+      
+      console.log('Calculating months between:', {
+        start: start.toISOString(),
+        end: end.toISOString(),
+        experience: exp
+      });
+      
+      const months = differenceInMonths(end, start);
+      console.log('Months calculated:', months);
+      totalMonths += months;
     });
 
     const years = totalMonths / 12;
+    console.log('Total years calculated:', years);
     return `${years.toFixed(1)} years`;
   };
 

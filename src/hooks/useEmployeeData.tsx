@@ -7,6 +7,7 @@ import { employeeAddressService } from "@/services/employee/employeeAddressServi
 import { employeeContactService } from "@/services/employee/employeeContactService";
 import { employeeFamilyService } from "@/services/employee/employeeFamilyService";
 import { transformEmployeeData } from "@/utils/transforms/employeeTransforms";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useEmployeeData = (employeeId: string | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,11 +25,32 @@ export const useEmployeeData = (employeeId: string | undefined) => {
     
     try {
       console.log('Fetching employee data for ID:', employeeId);
-      const employeeDetails = await employeeDataService.fetchEmployeeDetails(employeeId);
-      const transformedData = transformEmployeeData(employeeDetails);
       
-      console.log('Transformed employee data:', transformedData);
+      // First get the basic employee details
+      const { data: employeeDetails, error: employeeError } = await supabase
+        .rpc('get_employee_details', { p_employee_id: employeeId });
+
+      if (employeeError) throw employeeError;
+
+      // Then get the experience data
+      const { data: experienceData, error: experienceError } = await supabase
+        .from('employee_experiences')
+        .select('*')
+        .eq('employee_id', employeeId)
+        .eq('status', 'active')
+        .order('start_date', { ascending: false });
+
+      if (experienceError) throw experienceError;
+
+      const combinedData = {
+        ...employeeDetails,
+        experience: experienceData
+      };
+
+      const transformedData = transformEmployeeData(combinedData);
+      console.log('Combined and transformed employee data:', transformedData);
       setEmployeeData(transformedData);
+
     } catch (error: any) {
       console.error("Error fetching employee data:", error);
       const errorMessage = error.message === 'Invalid UUID' 
