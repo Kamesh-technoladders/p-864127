@@ -53,7 +53,7 @@ export const useEmployeeForm = () => {
             ...formData.personal!,
             emergencyContacts: formData.personal?.emergencyContacts || [],
             familyDetails: formData.personal?.familyDetails || [],
-            documents: formData.personal?.documents || [] // Add this line
+            documents: formData.personal?.documents || []
           };
           
           await employeeService.createEmployee({

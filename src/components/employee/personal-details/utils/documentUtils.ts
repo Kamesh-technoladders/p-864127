@@ -5,8 +5,11 @@ import { toast } from "sonner";
 
 export const validateDocument = (type: keyof typeof documentSchema.shape, value: string) => {
   try {
+    const validationType = {
+      [type]: true
+    } as const;
     const validationObject = { [type]: value };
-    const validationSchema = documentSchema.pick({ [type]: true });
+    const validationSchema = documentSchema.pick(validationType);
     validationSchema.parse(validationObject);
     return true;
   } catch (error) {
@@ -19,8 +22,11 @@ export const validateDocument = (type: keyof typeof documentSchema.shape, value:
 
 export const getErrorMessage = (type: keyof typeof documentSchema.shape, value: string) => {
   try {
+    const validationType = {
+      [type]: true
+    } as const;
     const validationObject = { [type]: value };
-    const validationSchema = documentSchema.pick({ [type]: true });
+    const validationSchema = documentSchema.pick(validationType);
     validationSchema.parse(validationObject);
     return null;
   } catch (error) {
