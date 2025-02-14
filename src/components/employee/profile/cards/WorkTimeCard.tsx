@@ -25,7 +25,7 @@ export const WorkTimeCard: React.FC<WorkTimeCardProps> = ({ employeeId }) => {
   };
 
   const getHeightPercentage = (hours: number) => {
-    const maxHours = Math.max(...weeklyStats.map(day => day.total), 8); // At least 8 hours for scale
+    const maxHours = Math.max(...weeklyStats.map(day => day.total), 8);
     return (hours / maxHours) * 100;
   };
 
@@ -42,7 +42,7 @@ export const WorkTimeCard: React.FC<WorkTimeCardProps> = ({ employeeId }) => {
 
   if (isLoading) {
     return (
-      <Card className="p-6 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-full">
+      <Card className="p-6 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[350px]">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="h-4 bg-gray-200 rounded w-1/4 mb-6"></div>
@@ -57,19 +57,21 @@ export const WorkTimeCard: React.FC<WorkTimeCardProps> = ({ employeeId }) => {
   }
 
   return (
-    <Card className="p-6 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-full">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-medium">Work Time this Week</h3>
-        <div className="text-sm text-gray-500">
-          Total: {formatHours(totalWeeklyHours)}
+    <Card className="hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[350px] flex flex-col">
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="font-medium">Work Time this Week</h3>
+          <div className="text-sm text-gray-500">
+            Total: {formatHours(totalWeeklyHours)}
+          </div>
         </div>
       </div>
 
-      <ScrollArea className="h-[200px]">
-        <div className="grid grid-cols-7 gap-1 relative pr-4">
+      <ScrollArea className="flex-1 px-6 pb-6">
+        <div className="grid grid-cols-7 gap-1 h-[200px]">
           {weeklyStats.map((day, i) => (
-            <div key={i} className="flex flex-col h-[180px]">
-              <div className="flex-1 flex items-end relative">
+            <div key={i} className="flex flex-col h-full">
+              <div className="flex-1 flex items-end">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -96,7 +98,7 @@ export const WorkTimeCard: React.FC<WorkTimeCardProps> = ({ employeeId }) => {
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <div className="text-center text-xs text-gray-500 mt-2 whitespace-nowrap">
+              <div className="text-center text-xs text-gray-500 mt-2">
                 {format(day.date, 'EEE')}
               </div>
             </div>

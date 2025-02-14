@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from "react";
 import { useEmployeeData } from "./useEmployeeData";
 import { toast } from "sonner";
@@ -11,55 +10,59 @@ export const useEmployeeProfile = (id: string | undefined) => {
   const [isPersonalModalOpen, setIsPersonalModalOpen] = useState(false);
   const [totalExperience, setTotalExperience] = useState("0.0 years");
 
-  const calculateTotalExperience = useCallback(() => {
-    console.log('Calculating total experience with data:', employeeData?.experience);
-    
-    if (!employeeData?.experience || !Array.isArray(employeeData.experience) || employeeData.experience.length === 0) {
-      console.log('No experience data found');
-      setTotalExperience("0.0 years");
-      return;
-    }
+  const calculateTotalExperience = useCallback(async () => {
+    if (!id) return;
 
-    // Sort experiences by start date
-    const sortedExperiences = [...employeeData.experience].sort(
-      (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-    );
+    try {
+      // Fetch experiences directly from the database
+      const { data: experiences, error } = await supabase
+        .from('employee_experiences')
+        .select('start_date, end_date')
+        .eq('employee_id', id)
+        .eq('status', 'active');
 
-    let totalMonths = 0;
-    let lastEndDate: Date | null = null;
+      if (error) throw error;
 
-    sortedExperiences.forEach((exp) => {
-      if (!exp.startDate) {
-        console.log('Skipping experience record with no start date:', exp);
+      if (!experiences || experiences.length === 0) {
+        setTotalExperience("0.0 years");
         return;
       }
-      
-      const startDate = parseISO(exp.startDate);
-      const endDate = exp.endDate ? parseISO(exp.endDate) : new Date();
-      
-      console.log('Processing experience:', {
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-        experience: exp
+
+      // Sort experiences by start date
+      const sortedExperiences = experiences.sort(
+        (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+      );
+
+      let totalMonths = 0;
+      let lastEndDate: Date | null = null;
+
+      sortedExperiences.forEach((exp) => {
+        if (!exp.start_date) return;
+        
+        const startDate = new Date(exp.start_date);
+        const endDate = exp.end_date ? new Date(exp.end_date) : new Date();
+
+        if (!lastEndDate || startDate > lastEndDate) {
+          // Non-overlapping experience
+          totalMonths += differenceInMonths(endDate, startDate);
+          lastEndDate = endDate;
+        } else if (endDate > lastEndDate) {
+          // Partially overlapping experience
+          totalMonths += differenceInMonths(endDate, lastEndDate);
+          lastEndDate = endDate;
+        }
       });
 
-      if (!lastEndDate || startDate > lastEndDate) {
-        // Non-overlapping experience
-        totalMonths += differenceInMonths(endDate, startDate);
-        lastEndDate = endDate;
-      } else if (endDate > lastEndDate) {
-        // Partially overlapping experience
-        totalMonths += differenceInMonths(endDate, lastEndDate);
-        lastEndDate = endDate;
-      }
-    });
+      const years = totalMonths / 12;
+      setTotalExperience(`${years.toFixed(1)} years`);
 
-    const years = totalMonths / 12;
-    console.log('Total years calculated:', years);
-    setTotalExperience(`${years.toFixed(1)} years`);
-  }, [employeeData?.experience]);
+    } catch (error) {
+      console.error("Error calculating total experience:", error);
+      setTotalExperience("Error calculating");
+    }
+  }, [id]);
 
-  // Subscribe to experience and work time changes
+  // Subscribe to experience changes
   useEffect(() => {
     if (!id) return;
 
@@ -76,8 +79,8 @@ export const useEmployeeProfile = (id: string | undefined) => {
           filter: `employee_id=eq.${id}`
         },
         () => {
-          console.log('Experience data changed, refreshing...');
-          fetchEmployeeData();
+          console.log('Experience data changed, recalculating...');
+          calculateTotalExperience();
         }
       )
       .subscribe();
@@ -85,12 +88,7 @@ export const useEmployeeProfile = (id: string | undefined) => {
     return () => {
       supabase.removeChannel(experienceChannel);
     };
-  }, [id, fetchEmployeeData, calculateTotalExperience]);
-
-  // Recalculate when data changes
-  useEffect(() => {
-    calculateTotalExperience();
-  }, [employeeData?.experience, calculateTotalExperience]);
+  }, [id, calculateTotalExperience]);
 
   const handleEdit = (section: string) => {
     if (section === "employment") {
