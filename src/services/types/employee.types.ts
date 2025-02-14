@@ -57,6 +57,8 @@ export interface BankDetails {
   branchName: string;
   accountType: string;
   bankPhone?: string;
+  cancelledCheque?: File | string;
+  passbookCopy?: File | string;
 }
 
 export interface EmployeeBasicInfo {

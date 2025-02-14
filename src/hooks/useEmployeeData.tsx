@@ -26,7 +26,6 @@ export const useEmployeeData = (employeeId: string | undefined) => {
     try {
       console.log('Fetching employee data for ID:', employeeId);
       
-      // First get the basic employee details
       const employeeDetails = await employeeDataService.fetchEmployeeDetails(employeeId);
 
       if (!employeeDetails) {
@@ -60,7 +59,10 @@ export const useEmployeeData = (employeeId: string | undefined) => {
 
       try {
         if (section === 'employment') {
-          const updateData: EmployeeBasicInfo = {
+          const updateData: Partial<EmployeeBasicInfo> = {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
             department: data.department,
             position: data.position
           };
@@ -82,7 +84,7 @@ export const useEmployeeData = (employeeId: string | undefined) => {
             permanentAddress: data.permanentAddress,
             emergencyContacts: data.emergencyContacts || [],
             familyDetails: data.familyDetails || [],
-            documents: data.documents || [] // Add this line
+            documents: data.documents || []
           };
 
           await Promise.all([
