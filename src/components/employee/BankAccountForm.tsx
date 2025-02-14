@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { FormField } from "./bank/FormField";
 import { DocumentUploads } from "./bank/DocumentUploads";
 import { bankAccountSchema, type BankFormData } from "./bank/bankAccountSchema";
@@ -138,25 +137,6 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
 
         <div className="pt-3">
           <DocumentUploads setValue={setValue} formValues={{}} />
-        </div>
-
-        <div className="flex justify-end gap-2 pt-3 border-t mt-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-            className="h-7 text-xs"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={!isValid || !isDirty || isSubmitting}
-            className="h-7 text-xs"
-          >
-            {isSubmitting ? "Saving..." : "Save Changes"}
-          </Button>
         </div>
       </form>
     </div>
