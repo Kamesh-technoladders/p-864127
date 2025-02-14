@@ -20,20 +20,17 @@ export const validateDocument = (type: keyof typeof documentSchema.shape, value:
 };
 
 export const getErrorMessage = (type: keyof typeof documentSchema.shape, value: string) => {
-  try {
-    const validationType = {
-      [type]: true
-    };
-    const validationObject = { [type]: value };
-    const validationSchema = documentSchema.pick(validationType as any);
-    validationSchema.parse(validationObject);
-    return null;
-  } catch (error) {
-    if (error instanceof Error) {
-      return error.message;
-    }
-    return "Invalid format";
+  const messages = {
+    aadharNumber: "! Aadhar is invalid, enter 12 digit number",
+    panNumber: "! PAN is invalid, enter like AABBC1234K",
+    esicNumber: "! ESIC is invalid, enter 17 digit number",
+    uanNumber: "! UAN is invalid, enter 12 digit number starting with 10"
+  };
+
+  if (!validateDocument(type, value)) {
+    return messages[type];
   }
+  return null;
 };
 
 export const getDocumentByType = (documents: Document[], type: Document['documentType']) => 
