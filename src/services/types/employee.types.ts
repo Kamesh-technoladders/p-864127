@@ -1,4 +1,3 @@
-
 export interface Address {
   addressLine1: string;
   country: string;
@@ -117,6 +116,18 @@ export interface EmployeeDetailsResponse {
     occupation: string;
     phone: string;
   }> | null;
+  experience?: Array<{
+    id: string;
+    job_title: string;
+    company: string;
+    location: string | null;
+    employment_type: string | null;
+    start_date: string;
+    end_date: string | null;
+    offer_letter_url: string | null;
+    separation_letter_url: string | null;
+    payslips: string[] | null;
+  }>;
 }
 
 export interface EmployeeBasicInfo {

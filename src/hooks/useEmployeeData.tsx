@@ -27,28 +27,14 @@ export const useEmployeeData = (employeeId: string | undefined) => {
       console.log('Fetching employee data for ID:', employeeId);
       
       // First get the basic employee details
-      const { data: employeeDetails, error: employeeError } = await supabase
-        .rpc('get_employee_details', { p_employee_id: employeeId });
+      const employeeDetails = await employeeDataService.fetchEmployeeDetails(employeeId);
 
-      if (employeeError) throw employeeError;
+      if (!employeeDetails) {
+        throw new Error('Employee not found');
+      }
 
-      // Then get the experience data
-      const { data: experienceData, error: experienceError } = await supabase
-        .from('employee_experiences')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .eq('status', 'active')
-        .order('start_date', { ascending: false });
-
-      if (experienceError) throw experienceError;
-
-      const combinedData = {
-        ...employeeDetails,
-        experience: experienceData
-      };
-
-      const transformedData = transformEmployeeData(combinedData);
-      console.log('Combined and transformed employee data:', transformedData);
+      const transformedData = transformEmployeeData(employeeDetails);
+      console.log('Transformed employee data:', transformedData);
       setEmployeeData(transformedData);
 
     } catch (error: any) {
@@ -117,8 +103,7 @@ export const useEmployeeData = (employeeId: string | undefined) => {
           await fetchEmployeeData();
           toast.success("Personal details updated successfully");
         } else {
-          const updateData: Partial<EmployeeData> = { [section]: data };
-          await employeeDataService.updateBasicInfo(employeeId, updateData as any);
+          await employeeDataService.updateBasicInfo(employeeId, data);
           await fetchEmployeeData();
           toast.success(`${section} updated successfully`);
         }
