@@ -11,30 +11,31 @@ interface AddressFieldsProps {
   form: UseFormReturn<any>;
   prefix: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
-export const AddressFields: React.FC<AddressFieldsProps> = ({ form, prefix, disabled }) => {
+export const AddressFields: React.FC<AddressFieldsProps> = ({ form, prefix, disabled, required = true }) => {
   return (
     <div className="space-y-3">
       <div className="text-xs">
-        <AddressLineField form={form} prefix={prefix} disabled={disabled} />
+        <AddressLineField form={form} prefix={prefix} disabled={disabled} required={required} />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="text-xs">
-          <CountryField form={form} prefix={prefix} disabled={disabled} />
+          <CountryField form={form} prefix={prefix} disabled={disabled} required={required} />
         </div>
         <div className="text-xs">
-          <StateField form={form} prefix={prefix} disabled={disabled} />
+          <StateField form={form} prefix={prefix} disabled={disabled} required={required} />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="text-xs">
-          <CityField form={form} prefix={prefix} disabled={disabled} />
+          <CityField form={form} prefix={prefix} disabled={disabled} required={required} />
         </div>
         <div className="text-xs">
-          <ZipCodeField form={form} prefix={prefix} disabled={disabled} />
+          <ZipCodeField form={form} prefix={prefix} disabled={disabled} required={required} />
         </div>
       </div>
     </div>

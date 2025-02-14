@@ -8,9 +8,10 @@ interface ZipCodeFieldProps {
   form: UseFormReturn<any>;
   prefix: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
-export const ZipCodeField: React.FC<ZipCodeFieldProps> = ({ form, prefix, disabled }) => {
+export const ZipCodeField: React.FC<ZipCodeFieldProps> = ({ form, prefix, disabled, required = true }) => {
   return (
     <FormField
       control={form.control}
@@ -18,7 +19,7 @@ export const ZipCodeField: React.FC<ZipCodeFieldProps> = ({ form, prefix, disabl
       render={({ field }) => (
         <FormItem className="space-y-2">
           <FormLabel className="text-[#1A1F2C] font-semibold">
-            ZIP Code<span className="text-[#DD0101]">*</span>
+            ZIP Code{required && <span className="text-[#DD0101]">*</span>}
           </FormLabel>
           <FormControl>
             <Input 

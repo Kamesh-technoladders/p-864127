@@ -8,9 +8,10 @@ interface AddressLineFieldProps {
   form: UseFormReturn<any>;
   prefix: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
-export const AddressLineField: React.FC<AddressLineFieldProps> = ({ form, prefix, disabled }) => {
+export const AddressLineField: React.FC<AddressLineFieldProps> = ({ form, prefix, disabled, required = true }) => {
   return (
     <FormField
       control={form.control}
@@ -18,7 +19,7 @@ export const AddressLineField: React.FC<AddressLineFieldProps> = ({ form, prefix
       render={({ field }) => (
         <FormItem className="space-y-2">
           <FormLabel className="text-[#1A1F2C] font-semibold">
-            Address Line 1<span className="text-[#DD0101]">*</span>
+            Address Line 1{required && <span className="text-[#DD0101]">*</span>}
           </FormLabel>
           <FormControl>
             <Input 
