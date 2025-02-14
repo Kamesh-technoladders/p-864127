@@ -2,6 +2,7 @@
 import { Document } from "@/services/types/employee.types";
 import { documentSchema } from "../documentValidation";
 import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
 
 export const validateDocument = (type: keyof typeof documentSchema.shape, value: string) => {
   try {
@@ -14,7 +15,10 @@ export const validateDocument = (type: keyof typeof documentSchema.shape, value:
     return true;
   } catch (error) {
     if (error instanceof Error) {
-      toast.error(error.message);
+      toast.error(error.message, {
+        duration: 2000,
+        icon: <AlertCircle className="h-4 w-4" />
+      });
     }
     return false;
   }

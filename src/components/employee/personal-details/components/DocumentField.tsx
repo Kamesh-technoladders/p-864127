@@ -4,9 +4,10 @@ import { FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { Document } from "@/services/types/employee.types";
-import { AlertCircle } from "lucide-react";
 import { getErrorMessage, getDocumentByType, getValidationType } from "../utils/documentUtils";
 import { documentSchema } from "../documentValidation";
+import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
 
 interface DocumentFieldProps {
   form: UseFormReturn<any>;
@@ -29,6 +30,15 @@ export const DocumentField: React.FC<DocumentFieldProps> = ({
   const currentDocument = getDocumentByType(documents, documentType);
   const error = getErrorMessage(validationType, currentDocument?.documentNumber || '');
 
+  React.useEffect(() => {
+    if (error) {
+      toast.error(error, {
+        duration: 2000,
+        icon: <AlertCircle className="h-4 w-4" />
+      });
+    }
+  }, [error]);
+
   return (
     <FormField
       control={form.control}
@@ -48,12 +58,6 @@ export const DocumentField: React.FC<DocumentFieldProps> = ({
               placeholder={`Enter ${label}`}
               className={`h-11 ${error ? 'border-red-500' : ''}`}
             />
-            {error && (
-              <div className="flex items-center gap-1 mt-1 text-xs text-red-500">
-                <AlertCircle className="h-3 w-3" />
-                <span>{error}</span>
-              </div>
-            )}
           </div>
         </div>
       )}

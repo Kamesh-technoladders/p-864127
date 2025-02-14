@@ -5,6 +5,8 @@ import { Document } from "@/services/types/employee.types";
 import { uploadDocument } from "@/utils/uploadDocument";
 import { validateDocument, getValidationType } from "./utils/documentUtils";
 import { DocumentUploadPair } from "./components/DocumentUploadPair";
+import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
 
 interface DocumentUploadSectionProps {
   form: UseFormReturn<any>;
@@ -39,6 +41,10 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
       onDocumentsChange(updatedDocuments);
     } catch (error) {
       console.error('Error uploading document:', error);
+      toast.error('Error uploading document. Please try again.', {
+        duration: 2000,
+        icon: <AlertCircle className="h-4 w-4" />
+      });
     }
   };
 
