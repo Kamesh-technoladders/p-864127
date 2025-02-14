@@ -32,7 +32,10 @@ const formatFileSize = (size: number): string => {
 const getFileType = (type: string | undefined): string => {
   if (!type) return '';
   const parts = type.split('/');
-  return parts.length > 1 ? parts[1].toUpperCase() : type.toUpperCase();
+  if (parts.length < 2) return type.toUpperCase();
+  const extension = parts[1];
+  if (!extension) return type.toUpperCase();
+  return extension.toUpperCase();
 };
 
 export const UploadField: React.FC<UploadFieldProps> = ({
