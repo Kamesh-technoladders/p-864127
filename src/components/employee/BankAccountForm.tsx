@@ -32,7 +32,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
     handleSubmit,
     setValue,
     watch,
-    formState: { errors, isValid, isDirty }
+    formState: { errors, isValid }
   } = useForm<BankFormData>({
     resolver: zodResolver(bankAccountSchema),
     mode: "onChange",
@@ -48,11 +48,9 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
   };
 
   const onSubmit = (data: BankFormData) => {
-    onComplete(true, data as BankDetails);
-  };
-
-  const handleCancel = () => {
-    onComplete(false);
+    if (isValid) {
+      onComplete(true, data as BankDetails);
+    }
   };
 
   return (
@@ -146,20 +144,13 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
           <DocumentUploads setValue={setValue} formValues={formValues} />
         </div>
 
-        <div className="flex justify-end gap-3 pt-6">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
+        <div className="flex justify-end pt-6">
           <Button
             type="submit"
+            className="bg-[#30409F] hover:bg-[#30409F]/90"
             disabled={isSubmitting || !isValid}
           >
-            {isSubmitting ? "Saving..." : "Save Changes"}
+            {isSubmitting ? "Saving..." : "Submit"}
           </Button>
         </div>
       </form>
