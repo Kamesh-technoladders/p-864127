@@ -7,6 +7,10 @@ export const uploadDocument = async (
   employeeId: string
 ): Promise<string> => {
   try {
+    if (!file || !type || !employeeId) {
+      throw new Error('Missing required fields for upload');
+    }
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('type', type);

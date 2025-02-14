@@ -17,10 +17,9 @@ serve(async (req) => {
     const formData = await req.formData()
     const file = formData.get('file')
     const type = formData.get('type')
-    const documentType = formData.get('documentType')
-    const experienceId = formData.get('experienceId')
+    const employeeId = formData.get('employeeId')
 
-    if (!file || !type || !experienceId) {
+    if (!file || !type || !employeeId) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
@@ -33,7 +32,7 @@ serve(async (req) => {
     )
 
     // Create a unique file name
-    const fileName = `${experienceId}/${type}/${crypto.randomUUID()}-${file.name}`
+    const fileName = `${employeeId}/${type}/${crypto.randomUUID()}-${file.name}`
     
     // Upload file to storage
     const { data: uploadData, error: uploadError } = await supabase.storage
@@ -51,41 +50,6 @@ serve(async (req) => {
     const { data: { publicUrl } } = supabase.storage
       .from('employee-documents')
       .getPublicUrl(fileName)
-
-    // Update the experience record with the document URL
-    let updateData = {}
-    switch (documentType) {
-      case 'offerLetter':
-        updateData = { offer_letter_url: publicUrl }
-        break
-      case 'separationLetter':
-        updateData = { separation_letter_url: publicUrl }
-        break
-      case 'payslips':
-        // For payslips, we append to the existing array
-        const { data: currentExperience } = await supabase
-          .from('employee_experiences')
-          .select('payslips')
-          .eq('id', experienceId)
-          .single()
-        
-        const currentPayslips = currentExperience?.payslips || []
-        updateData = { 
-          payslips: [...currentPayslips, publicUrl]
-        }
-        break
-      default:
-        updateData = { document_url: publicUrl }
-    }
-
-    const { error: updateError } = await supabase
-      .from('employee_experiences')
-      .update(updateData)
-      .eq('id', experienceId)
-
-    if (updateError) {
-      throw updateError
-    }
 
     return new Response(
       JSON.stringify({ url: publicUrl }),
