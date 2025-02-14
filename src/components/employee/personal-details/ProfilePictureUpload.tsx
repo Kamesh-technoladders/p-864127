@@ -44,8 +44,8 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative">
+    <div className="flex items-center gap-6 w-full max-w-2xl">
+      <div className="flex-shrink-0">
         <Avatar className="h-24 w-24">
           {value ? (
             <AvatarImage src={value} alt="Profile" />
@@ -56,16 +56,18 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
           )}
         </Avatar>
       </div>
-      <UploadField
-        label="Profile Picture"
-        onUpload={handleUpload}
-        showProgress={true}
-        currentFile={value ? { name: 'Profile Picture', type: 'image', url: value } : undefined}
-        error={undefined}
-      />
-      <p className="text-xs text-gray-500">
-        Accepted formats: JPG, JPEG, PNG (max 5MB)
-      </p>
+      <div className="flex-grow space-y-2">
+        <UploadField
+          label="Profile Picture"
+          onUpload={handleUpload}
+          showProgress={true}
+          currentFile={value ? { name: 'Profile Picture', type: 'image', url: value } : undefined}
+          error={undefined}
+        />
+        <p className="text-xs text-gray-500">
+          Accepted formats: JPG, JPEG, PNG (max 5MB)
+        </p>
+      </div>
     </div>
   );
 };
