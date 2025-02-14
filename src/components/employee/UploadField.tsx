@@ -80,7 +80,7 @@ export const UploadField: React.FC<UploadFieldProps> = ({
 
   return (
     <div className={`flex flex-col ${compact ? 'gap-1' : 'gap-2'}`}>
-      <div className="text-[rgba(48,48,48,1)] font-semibold text-sm">
+      <div className="text-[rgba(48,48,48,1)] font-semibold text-[6px]">
         {label}
         {required && <span className="text-[rgba(221,1,1,1)]">*</span>}
       </div>
@@ -98,9 +98,9 @@ export const UploadField: React.FC<UploadFieldProps> = ({
                 <FileText className="h-5 w-5 text-gray-500" />
               )}
               <div className="flex flex-col flex-1 min-w-0">
-                <span className="text-sm font-medium truncate">{currentFile.name}</span>
+                <span className="text-[6px] font-medium truncate">{currentFile.name}</span>
                 {!compact && (
-                  <span className="text-xs text-gray-500">
+                  <span className="text-[6px] text-gray-500">
                     {currentFile.type.split('/')[1].toUpperCase()} {fileSize && `• ${fileSize}`}
                   </span>
                 )}
@@ -119,15 +119,15 @@ export const UploadField: React.FC<UploadFieldProps> = ({
               {isUploading ? (
                 <div className="flex items-center gap-2">
                   <LoaderCircle className="animate-spin h-4 w-4" />
-                  <span className="text-sm">Uploading...</span>
+                  <span className="text-[6px]">Uploading...</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">{value || `Upload ${label}`}</span>
+                  <span className="text-[6px] text-gray-600">{value || `Upload ${label}`}</span>
                 </div>
               )}
-              <label className="text-[rgba(225,1,2,1)] text-sm font-semibold cursor-pointer">
+              <label className="text-[rgba(225,1,2,1)] text-[6px] font-semibold cursor-pointer">
                 + Upload
                 <input
                   type="file"
@@ -144,11 +144,11 @@ export const UploadField: React.FC<UploadFieldProps> = ({
         {showProgress && isUploading && (
           <div className="w-full">
             <Progress value={progress} className="h-1" />
-            <div className="text-xs text-gray-500 mt-1 text-right">{progress}%</div>
+            <div className="text-[6px] text-gray-500 mt-1 text-right">{progress}%</div>
           </div>
         )}
         {error && (
-          <div className="flex items-center gap-1 mt-1 text-xs text-[#DD0101]">
+          <div className="flex items-center gap-1 mt-1 text-[6px] text-[#DD0101]">
             <AlertCircle className="h-3 w-3" />
             <span>{error}</span>
           </div>
