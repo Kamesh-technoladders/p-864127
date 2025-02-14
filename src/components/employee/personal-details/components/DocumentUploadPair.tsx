@@ -39,13 +39,13 @@ export const DocumentUploadPair: React.FC<DocumentUploadPairProps> = ({
           updateDocumentNumber={updateDocumentNumber}
         />
       </div>
-      <div className="w-64">
+      <div className="w-32">
         <UploadField
-          label={`${label} Card`}
+          label={`+ Upload`}
           required={required}
           onUpload={onUpload}
           currentFile={currentDocument?.documentUrl ? {
-            name: currentDocument?.fileName || `${label} Card`,
+            name: currentDocument?.fileName || 'Document',
             type: 'application/pdf',
             url: currentDocument?.documentUrl
           } : undefined}

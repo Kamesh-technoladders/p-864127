@@ -5,9 +5,7 @@ import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { Document } from "@/services/types/employee.types";
 import { getErrorMessage, getDocumentByType, getValidationType } from "../utils/documentUtils";
-import { documentSchema } from "../documentValidation";
 import { toast } from "sonner";
-import { AlertCircle } from "lucide-react";
 
 interface DocumentFieldProps {
   form: UseFormReturn<any>;
@@ -44,10 +42,7 @@ export const DocumentField: React.FC<DocumentFieldProps> = ({
     setError(validationError);
     
     if (validationError && value.length > 0) {
-      toast.error(validationError, {
-        duration: 2000,
-        icon: <AlertCircle className="h-4 w-4" />
-      });
+      toast.error(validationError);
     }
   };
 
@@ -68,6 +63,11 @@ export const DocumentField: React.FC<DocumentFieldProps> = ({
               placeholder={`Enter ${label}`}
               className={`h-9 ${error ? 'border-red-500' : ''}`}
             />
+            {error && (
+              <span className="text-xs text-red-500 mt-1 block">
+                {error}
+              </span>
+            )}
           </div>
         </div>
       )}
