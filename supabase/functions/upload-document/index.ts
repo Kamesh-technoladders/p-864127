@@ -22,11 +22,21 @@ serve(async (req) => {
     const formData = await req.formData();
     const file = formData.get('file');
     const type = formData.get('type');
-    const employeeId = formData.get('employeeId');
 
-    if (!file || !type || !employeeId) {
+    console.log('Received form data:', {
+      file: file ? 'File present' : 'No file',
+      type: type || 'No type'
+    });
+
+    if (!file || !type) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
+        JSON.stringify({ 
+          error: 'Missing required fields',
+          details: {
+            file: !file ? 'Missing file' : 'Present',
+            type: !type ? 'Missing type' : type
+          }
+        }),
         { 
           headers: corsHeaders,
           status: 400 
@@ -50,10 +60,12 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Create a unique file name with sanitized inputs
+    // Create a properly structured file name
     const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const fileName = `${employeeId}/${type}/${crypto.randomUUID()}-${sanitizedFileName}`;
+    const fileName = `${type}/${crypto.randomUUID()}-${sanitizedFileName}`;
     
+    console.log('Attempting to upload file:', fileName);
+
     // Upload file to storage
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('employee-documents')
@@ -63,23 +75,44 @@ serve(async (req) => {
       });
 
     if (uploadError) {
-      throw uploadError;
+      console.error('Upload error:', uploadError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Upload failed',
+          details: uploadError.message
+        }),
+        { 
+          headers: corsHeaders,
+          status: 500 
+        }
+      );
     }
 
-    // Get the public URL of the uploaded file
+    // Get the public URL
     const { data: { publicUrl } } = supabase.storage
       .from('employee-documents')
       .getPublicUrl(fileName);
 
+    console.log('Upload successful, public URL:', publicUrl);
+
     return new Response(
-      JSON.stringify({ url: publicUrl }),
-      { headers: corsHeaders }
+      JSON.stringify({ 
+        url: publicUrl,
+        fileName: sanitizedFileName
+      }),
+      { 
+        headers: corsHeaders,
+        status: 200 
+      }
     );
 
   } catch (error) {
     console.error('Error processing request:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: 'Server error',
+        details: error.message
+      }),
       { 
         headers: corsHeaders,
         status: 500 
