@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Calendar, ListTodo } from "lucide-react";
@@ -168,7 +169,7 @@ export const CalendarCard = () => {
             </TabsList>
             
             <TabsContent value="events" className="mt-0">
-              <ScrollArea className="h-[520px] w-full rounded-md">
+              <ScrollArea className="h-[300px] w-full rounded-md">
                 <div className="space-y-3 pr-4">
                   {[...Array(5)].map((_, i) => (
                     <div 
@@ -193,7 +194,7 @@ export const CalendarCard = () => {
             </TabsContent>
 
             <TabsContent value="tasks" className="mt-0">
-              <ScrollArea className="h-[520px] w-full rounded-md">
+              <ScrollArea className="h-[300px] w-full rounded-md">
                 <div className="space-y-3 pr-4">
                   <TaskItem time="Sep 13, 08:50" title="Interview" completed={true} />
                   <TaskItem time="Sep 13, 10:30" title="Team-Meeting" completed={true} />
