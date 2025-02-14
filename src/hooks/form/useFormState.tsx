@@ -28,6 +28,10 @@ export const useFormState = () => {
 
   const updateFormData = (section: keyof FormData, data: any) => {
     console.log(`Updating ${section} data:`, data);
+    if (section === 'personal' && data) {
+      // Ensure documents array is present
+      data.documents = data.documents || [];
+    }
     setFormData((prev) => ({
       ...prev,
       [section]: data,

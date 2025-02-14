@@ -47,7 +47,8 @@ export const FormContent: React.FC<FormContentProps> = ({
                 presentAddress: data.presentAddress,
                 permanentAddress: data.permanentAddress,
                 emergencyContacts: data.emergencyContacts || [],
-                familyDetails: data.familyDetails || []
+                familyDetails: data.familyDetails || [],
+                documents: data.documents || []
               };
               updateFormData("personal", personalData);
             } else {

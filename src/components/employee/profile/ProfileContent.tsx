@@ -60,7 +60,8 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
       zipCode: ''
     },
     emergencyContacts: employeeData.emergencyContacts || [],
-    familyDetails: employeeData.familyDetails || []
+    familyDetails: employeeData.familyDetails || [],
+    documents: employeeData.documents || []
   };
 
   return (
