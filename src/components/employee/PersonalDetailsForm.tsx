@@ -6,17 +6,11 @@ import { BasicInfoSection } from "./personal-details/BasicInfoSection";
 import { AddressSection } from "./personal-details/AddressSection";
 import { EmergencyContactsSection } from "./personal-details/EmergencyContactsSection";
 import { FamilyDetailsSection } from "./personal-details/FamilyDetailsSection";
+import { DocumentUploadSection } from "./personal-details/DocumentUploadSection";
 import { PersonalDetailsFormProps, EmergencyContact, FamilyMember } from "./types";
+import { Document } from "@/services/types/employee.types";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-const addressSchema = z.object({
-  addressLine1: z.string().min(1, "Address is required"),
-  country: z.string().min(1, "Country is required"),
-  state: z.string().min(1, "State is required"),
-  city: z.string().min(1, "City is required"),
-  zipCode: z.string().min(1, "ZIP code is required")
-});
 
 const personalDetailsSchema = z.object({
   employeeId: z.string().min(1, "Employee ID is required"),
@@ -28,8 +22,20 @@ const personalDetailsSchema = z.object({
   gender: z.string().min(1, "Gender is required"),
   bloodGroup: z.string().min(1, "Blood group is required"),
   maritalStatus: z.string().min(1, "Marital status is required"),
-  presentAddress: addressSchema,
-  permanentAddress: addressSchema,
+  presentAddress: z.object({
+    addressLine1: z.string().min(1, "Address is required"),
+    country: z.string().min(1, "Country is required"),
+    state: z.string().min(1, "State is required"),
+    city: z.string().min(1, "City is required"),
+    zipCode: z.string().min(1, "ZIP code is required")
+  }),
+  permanentAddress: z.object({
+    addressLine1: z.string().min(1, "Address is required"),
+    country: z.string().min(1, "Country is required"),
+    state: z.string().min(1, "State is required"),
+    city: z.string().min(1, "City is required"),
+    zipCode: z.string().min(1, "ZIP code is required")
+  }),
   sameAsPresent: z.boolean().optional()
 });
 
@@ -42,6 +48,7 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
 }) => {
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [familyDetails, setFamilyDetails] = useState<FamilyMember[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
 
   useEffect(() => {
     if (initialData) {
@@ -79,6 +86,38 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
       sameAsPresent: false
     },
     resolver: zodResolver(personalDetailsSchema)
+  });
+
+  const handleSubmit = form.handleSubmit((data) => {
+    if (!validateForm()) {
+      onComplete(false);
+      return;
+    }
+
+    const validEmergencyContacts = emergencyContacts.filter(
+      contact => 
+        contact.name.trim() !== "" && 
+        contact.relationship.trim() !== "" && 
+        contact.phone.trim() !== ""
+    );
+
+    const validFamilyDetails = familyDetails.filter(
+      member => 
+        member.name.trim() !== "" && 
+        member.relationship.trim() !== "" && 
+        member.occupation.trim() !== "" && 
+        member.phone.trim() !== ""
+    );
+
+    const formData = {
+      ...data,
+      emergencyContacts: validEmergencyContacts,
+      familyDetails: validFamilyDetails,
+      documents
+    };
+
+    console.log('Form submitted:', formData);
+    onComplete(true, formData);
   });
 
   const validateForm = () => {
@@ -121,37 +160,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     return true;
   };
 
-  const handleSubmit = form.handleSubmit((data) => {
-    if (!validateForm()) {
-      onComplete(false);
-      return;
-    }
-
-    const validEmergencyContacts = emergencyContacts.filter(
-      contact => 
-        contact.name.trim() !== "" && 
-        contact.relationship.trim() !== "" && 
-        contact.phone.trim() !== ""
-    );
-
-    const validFamilyDetails = familyDetails.filter(
-      member => 
-        member.name.trim() !== "" && 
-        member.relationship.trim() !== "" && 
-        member.occupation.trim() !== "" && 
-        member.phone.trim() !== ""
-    );
-
-    const formData = {
-      ...data,
-      emergencyContacts: validEmergencyContacts,
-      familyDetails: validFamilyDetails
-    };
-
-    console.log('Form submitted:', formData);
-    onComplete(true, formData);
-  });
-
   return (
     <div className="flex w-[622px] max-w-full flex-col text-sm font-medium ml-[15px]">
       <Form {...form}>
@@ -173,6 +181,12 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
           <FamilyDetailsSection
             familyMembers={familyDetails}
             onFamilyMembersChange={setFamilyDetails}
+          />
+
+          <DocumentUploadSection
+            form={form}
+            documents={documents}
+            onDocumentsChange={setDocuments}
           />
         </form>
       </Form>

@@ -19,6 +19,13 @@ export interface FamilyMember {
   phone: string;
 }
 
+export interface Document {
+  documentType: 'aadhar' | 'uan' | 'pan' | 'esic';
+  documentNumber: string;
+  documentUrl?: string;
+  fileName?: string;
+}
+
 export interface PersonalInfo {
   employeeId: string;
   firstName: string;
@@ -33,6 +40,7 @@ export interface PersonalInfo {
   permanentAddress: Address;
   emergencyContacts: EmergencyContact[];
   familyDetails: FamilyMember[];
+  documents: Document[];
 }
 
 export interface Education {

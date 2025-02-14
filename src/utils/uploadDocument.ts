@@ -3,38 +3,39 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const uploadDocument = async (
   file: File,
-  type: 'education' | 'experience' | 'bank',
-  employeeId: string
+  bucketName: string,
+  type: string
 ): Promise<string> => {
   try {
-    if (!file || !type || !employeeId) {
+    if (!file || !bucketName || !type) {
       throw new Error('Missing required fields for upload');
     }
 
     // Create a properly structured FormData object
     const formData = new FormData();
-    formData.append('file', file, file.name); // Include filename explicitly
+    formData.append('file', file, file.name);
     formData.append('type', type);
-    formData.append('employeeId', employeeId);
 
-    // Use the supabase client to handle the URL construction
-    const { data, error } = await supabase.functions.invoke('upload-document', {
-      body: formData,
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
+    // Upload to storage bucket
+    const fileName = `${type}/${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
-    if (error) {
-      console.error('Upload error:', error);
-      throw error;
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      throw uploadError;
     }
 
-    if (!data?.url) {
-      throw new Error('No URL returned from upload');
-    }
+    // Get the public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from(bucketName)
+      .getPublicUrl(fileName);
 
-    return data.url;
+    return publicUrl;
   } catch (error) {
     console.error('Upload document error:', error);
     throw error;
