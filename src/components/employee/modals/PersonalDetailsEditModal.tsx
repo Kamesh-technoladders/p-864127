@@ -18,7 +18,7 @@ interface PersonalDetailsEditModalProps {
   onClose: () => void;
   data: PersonalDetailsData;
   employeeId: string;
-  onUpdate: (data: PersonalDetailsData) => void;
+  onUpdate: (data: PersonalDetailsData) => Promise<void>;
 }
 
 export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> = ({
@@ -32,13 +32,16 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
   const [formData, setFormData] = useState<PersonalDetailsData | null>(null);
 
   const handleComplete = (completed: boolean, data?: PersonalDetailsData) => {
-    if (data) {
+    if (completed && data) {
       setFormData(data);
     }
   };
 
   const handleSave = async () => {
-    if (!formData) return;
+    if (!formData) {
+      toast.error("Please fill in the required fields");
+      return;
+    }
     
     try {
       setIsSubmitting(true);
@@ -97,37 +100,50 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
 
       if (addressError) throw addressError;
 
-      // Insert new emergency contacts
+      // Insert new emergency contacts if provided
       if (formData.emergencyContacts && formData.emergencyContacts.length > 0) {
-        const { error: contactsError } = await supabase
-          .from('employee_emergency_contacts')
-          .insert(
-            formData.emergencyContacts.map(contact => ({
-              employee_id: employeeId,
-              name: contact.name,
-              relationship: contact.relationship,
-              phone: contact.phone
-            }))
-          );
+        const validContacts = formData.emergencyContacts.filter(contact => 
+          contact.name.trim() && contact.relationship.trim() && contact.phone.trim()
+        );
+        
+        if (validContacts.length > 0) {
+          const { error: contactsError } = await supabase
+            .from('employee_emergency_contacts')
+            .insert(
+              validContacts.map(contact => ({
+                employee_id: employeeId,
+                name: contact.name.trim(),
+                relationship: contact.relationship.trim(),
+                phone: contact.phone.trim()
+              }))
+            );
 
-        if (contactsError) throw contactsError;
+          if (contactsError) throw contactsError;
+        }
       }
 
-      // Insert new family details
+      // Insert new family details if provided
       if (formData.familyDetails && formData.familyDetails.length > 0) {
-        const { error: familyError } = await supabase
-          .from('employee_family_details')
-          .insert(
-            formData.familyDetails.map(member => ({
-              employee_id: employeeId,
-              name: member.name,
-              relationship: member.relationship,
-              occupation: member.occupation,
-              phone: member.phone
-            }))
-          );
+        const validFamilyMembers = formData.familyDetails.filter(member => 
+          member.name.trim() && member.relationship.trim() && 
+          member.occupation.trim() && member.phone.trim()
+        );
+        
+        if (validFamilyMembers.length > 0) {
+          const { error: familyError } = await supabase
+            .from('employee_family_details')
+            .insert(
+              validFamilyMembers.map(member => ({
+                employee_id: employeeId,
+                name: member.name.trim(),
+                relationship: member.relationship.trim(),
+                occupation: member.occupation.trim(),
+                phone: member.phone.trim()
+              }))
+            );
 
-        if (familyError) throw familyError;
+          if (familyError) throw familyError;
+        }
       }
 
       await onUpdate(formData);
@@ -157,6 +173,7 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
               size="icon" 
               className="h-6 w-6 text-white hover:bg-white/20"
               onClick={onClose}
+              disabled={isSubmitting}
             >
               <X className="h-3.5 w-3.5" />
             </Button>
@@ -170,10 +187,17 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
           />
         </div>
         <div className="flex justify-end gap-3 p-3 border-t">
-          <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
+          <Button 
+            variant="outline" 
+            onClick={onClose} 
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={isSubmitting || !formData}>
+          <Button 
+            onClick={handleSave} 
+            disabled={isSubmitting || !formData}
+          >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </Button>
         </div>

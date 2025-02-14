@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect } from "react";
 import { useEmployeeData } from "./useEmployeeData";
 import { toast } from "sonner";
@@ -104,7 +105,11 @@ export const useEmployeeProfile = (id: string | undefined) => {
     try {
       await updateEmployee("employment", data);
       await fetchEmployeeData();
+      setIsEmploymentModalOpen(false);
+      toast.success("Employment details updated successfully");
     } catch (error) {
+      console.error("Error updating employment details:", error);
+      toast.error("Failed to update employment details");
       throw error;
     }
   };
@@ -118,6 +123,7 @@ export const useEmployeeProfile = (id: string | undefined) => {
     } catch (error) {
       console.error("Error updating personal details:", error);
       toast.error("Failed to update personal details");
+      throw error;
     }
   };
 
