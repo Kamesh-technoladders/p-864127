@@ -90,9 +90,9 @@ export const CalendarCard = () => {
   const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
   return (
-    <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
-      <div className="grid grid-cols-[2fr_3fr] gap-4 h-[440px]">
-        <div className="space-y-4">
+    <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[380px]">
+      <div className="grid grid-cols-[2fr_3fr] gap-4 h-full">
+        <div className="flex flex-col space-y-2">
           <div className="flex items-center justify-between px-2">
             <button 
               onClick={prevMonth}
@@ -113,7 +113,7 @@ export const CalendarCard = () => {
 
           <div className="grid grid-cols-7 gap-1">
             {weekDays.map(day => (
-              <div key={day} className="h-8 flex items-center justify-center text-xs font-medium text-gray-400">
+              <div key={day} className="h-6 flex items-center justify-center text-xs font-medium text-gray-400">
                 {day}
               </div>
             ))}
@@ -124,7 +124,7 @@ export const CalendarCard = () => {
               <TooltipProvider key={index}>
                 <div
                   className={cn(
-                    "h-8 w-8 flex items-center justify-center text-xs relative",
+                    "h-7 w-7 flex items-center justify-center text-xs relative",
                     "rounded-full transition-colors cursor-pointer mx-auto",
                     !day.isCurrentMonth && "text-gray-300",
                     day.isToday && !isSameDay(day.date, selectedDate) && "bg-blue-50 text-blue-600 font-medium",
@@ -155,8 +155,8 @@ export const CalendarCard = () => {
           </div>
         </div>
         
-        <div className="space-y-3">
-          <Tabs defaultValue="events" className="w-full" onValueChange={setActiveTab}>
+        <div className="flex flex-col h-full">
+          <Tabs defaultValue="events" className="flex flex-col h-full" onValueChange={setActiveTab}>
             <TabsList className="grid grid-cols-2 mb-2">
               <TabsTrigger value="events" className="flex items-center gap-1 text-xs">
                 <Calendar className="w-3 h-3" />
@@ -168,15 +168,15 @@ export const CalendarCard = () => {
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="events" className="mt-0">
-              <ScrollArea className="h-[350px] w-full rounded-md">
+            <TabsContent value="events" className="flex-1 mt-0">
+              <ScrollArea className="h-[calc(100%-8px)] w-full rounded-md">
                 <div className="space-y-2 pr-4">
                   {[...Array(5)].map((_, i) => (
                     <div 
                       key={i}
-                      className="w-full bg-white border border-gray-100 p-3 rounded-lg hover:border-[#1A73E8]/20 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer"
+                      className="w-full bg-white border border-gray-100 p-2.5 rounded-lg hover:border-[#1A73E8]/20 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer"
                     >
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         <div className="font-medium text-sm text-gray-800">Team Sync {i + 1}</div>
                         <div className="text-xs text-gray-500">10:00 AM</div>
                         <div className="text-xs text-gray-600">
@@ -193,8 +193,8 @@ export const CalendarCard = () => {
               </ScrollArea>
             </TabsContent>
 
-            <TabsContent value="tasks" className="mt-0">
-              <ScrollArea className="h-[350px] w-full rounded-md">
+            <TabsContent value="tasks" className="flex-1 mt-0">
+              <ScrollArea className="h-[calc(100%-8px)] w-full rounded-md">
                 <div className="space-y-2 pr-4">
                   <TaskItem time="Sep 13, 08:50" title="Interview" completed={true} />
                   <TaskItem time="Sep 13, 10:30" title="Team-Meeting" completed={true} />
