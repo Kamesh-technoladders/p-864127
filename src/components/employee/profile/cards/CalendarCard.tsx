@@ -1,45 +1,21 @@
 
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Calendar, ListTodo } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Calendar, ListTodo } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, 
+import { startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, 
          isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from "date-fns";
-import { cn } from "@/lib/utils";
-import { TaskItem } from "../TaskSection";
-
-interface Holiday {
-  date: string;
-  name: string;
-  localName: string;
-  countryCode: string;
-  fixed: boolean;
-  global: boolean;
-  type: string;
-}
-
-interface CalendarDay {
-  date: Date;
-  isCurrentMonth: boolean;
-  isToday: boolean;
-  isHoliday: boolean;
-  isSunday: boolean;
-  holidayInfo?: Holiday;
-}
+import { CalendarHeader } from "./calendar/CalendarHeader";
+import { CalendarGrid } from "./calendar/CalendarGrid";
+import { EventsList } from "./calendar/EventsList";
+import { TasksList } from "./calendar/TasksList";
+import { Holiday, CalendarDay } from "./calendar/types";
 
 export const CalendarCard = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("events");
 
   useEffect(() => {
     const fetchHolidays = async () => {
@@ -87,76 +63,25 @@ export const CalendarCard = () => {
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
 
   const days = generateMonth(currentDate);
-  const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
   return (
     <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm h-[350px]">
       <div className="grid grid-cols-[2fr_3fr] gap-4 h-full">
         <div className="flex flex-col space-y-2">
-          <div className="flex items-center justify-between px-2">
-            <button 
-              onClick={prevMonth}
-              className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <ChevronLeft className="w-3.5 h-3.5 text-gray-600" />
-            </button>
-            <h2 className="text-sm font-semibold text-gray-900">
-              {format(currentDate, 'MMMM yyyy')}
-            </h2>
-            <button 
-              onClick={nextMonth}
-              className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <ChevronRight className="w-3.5 h-3.5 text-gray-600" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-7 gap-1">
-            {weekDays.map(day => (
-              <div key={day} className="h-5 flex items-center justify-center text-xs font-medium text-gray-400">
-                {day}
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-7 gap-0.5">
-            {days.map((day, index) => (
-              <TooltipProvider key={index}>
-                <div
-                  className={cn(
-                    "h-6 w-6 flex items-center justify-center text-xs relative",
-                    "rounded-full transition-colors cursor-pointer mx-auto",
-                    !day.isCurrentMonth && "text-gray-300",
-                    day.isToday && !isSameDay(day.date, selectedDate) && "bg-blue-50 text-blue-600 font-medium",
-                    day.isSunday && !isSameDay(day.date, selectedDate) && "text-[#F59E0B]",
-                    day.isHoliday && !isSameDay(day.date, selectedDate) && "text-[#EF4444]",
-                    !day.isSunday && !day.isHoliday && day.isCurrentMonth && !isSameDay(day.date, selectedDate) && "text-gray-900 hover:bg-gray-100",
-                    isSameDay(day.date, selectedDate) && "bg-[#1A73E8] text-white hover:bg-[#1A73E8]/90"
-                  )}
-                  onClick={() => setSelectedDate(day.date)}
-                >
-                  {format(day.date, 'd')}
-                  {day.holidayInfo && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="absolute -top-0.5 -right-0.5 w-1 h-1 bg-red-500 rounded-full" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <div className="text-xs">
-                          <p className="font-medium">{day.holidayInfo.name}</p>
-                          <p className="text-xs text-gray-500">{day.holidayInfo.localName}</p>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                </div>
-              </TooltipProvider>
-            ))}
-          </div>
+          <CalendarHeader 
+            currentDate={currentDate}
+            onPrevMonth={prevMonth}
+            onNextMonth={nextMonth}
+          />
+          <CalendarGrid 
+            days={days}
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+          />
         </div>
         
         <div className="flex flex-col h-full">
-          <Tabs defaultValue="events" className="flex flex-col h-full" onValueChange={setActiveTab}>
+          <Tabs defaultValue="events" className="flex flex-col h-full">
             <TabsList className="grid grid-cols-2 mb-1.5">
               <TabsTrigger value="events" className="flex items-center gap-1 text-xs">
                 <Calendar className="w-3 h-3" />
@@ -169,43 +94,11 @@ export const CalendarCard = () => {
             </TabsList>
             
             <TabsContent value="events" className="flex-1 mt-0">
-              <ScrollArea className="h-[calc(100%-4px)] w-full rounded-md">
-                <div className="space-y-1.5 pr-4">
-                  {[...Array(5)].map((_, i) => (
-                    <div 
-                      key={i}
-                      className="w-full bg-white border border-gray-100 p-2 rounded-lg hover:border-[#1A73E8]/20 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer"
-                    >
-                      <div className="space-y-0.5">
-                        <div className="font-medium text-sm text-gray-800">Team Sync {i + 1}</div>
-                        <div className="text-xs text-gray-500">10:00 AM</div>
-                        <div className="text-xs text-gray-600">
-                          Daily standup meeting with the development team
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-[#1A73E8]">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#1A73E8]" />
-                          <span>In Progress</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
+              <EventsList />
             </TabsContent>
 
             <TabsContent value="tasks" className="flex-1 mt-0">
-              <ScrollArea className="h-[calc(100%-4px)] w-full rounded-md">
-                <div className="space-y-1.5 pr-4">
-                  <TaskItem time="Sep 13, 08:50" title="Interview" completed={true} />
-                  <TaskItem time="Sep 13, 10:30" title="Team-Meeting" completed={true} />
-                  <TaskItem time="Sep 13, 13:00" title="Project Update" completed={false} />
-                  <TaskItem time="Sep 13, 14:45" title="Discuss Q3 Goals" completed={false} />
-                  <TaskItem time="Sep 15, 16:30" title="HR Policy Review" completed={false} />
-                  <TaskItem time="Sep 16, 09:00" title="Code Review" completed={false} />
-                  <TaskItem time="Sep 16, 11:30" title="Client Meeting" completed={false} />
-                  <TaskItem time="Sep 16, 14:00" title="Sprint Planning" completed={false} />
-                </div>
-              </ScrollArea>
+              <TasksList />
             </TabsContent>
           </Tabs>
         </div>
