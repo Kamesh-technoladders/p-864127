@@ -6,7 +6,6 @@ import { ExperienceForm } from "../ExperienceForm";
 import { BankAccountForm } from "../BankAccountForm";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
 import { Experience, PersonalDetailsData } from "../types";
-import { toast } from "sonner";
 
 interface FormContentProps {
   activeTab: string;
@@ -32,7 +31,6 @@ export const FormContent: React.FC<FormContentProps> = ({
       return (
         <PersonalDetailsForm
           onComplete={(completed: boolean, data?: any) => {
-            updateSectionProgress("personal", completed);
             if (completed && data) {
               const personalData: PersonalDetailsData = {
                 employeeId: data.employeeId,
@@ -51,8 +49,7 @@ export const FormContent: React.FC<FormContentProps> = ({
                 documents: data.documents || []
               };
               updateFormData("personal", personalData);
-            } else {
-              toast.error("Please fill in all required fields");
+              updateSectionProgress("personal", true);
             }
           }}
           initialData={formData.personal}
@@ -66,9 +63,9 @@ export const FormContent: React.FC<FormContentProps> = ({
         <>
           <EducationForm
             onComplete={(completed: boolean, data?: any) => {
-              updateSectionProgress("education", completed);
               if (completed && data) {
                 updateFormData("education", data);
+                updateSectionProgress("education", true);
               }
             }}
             initialData={formData.education}
@@ -76,9 +73,9 @@ export const FormContent: React.FC<FormContentProps> = ({
           <div className="shrink-0 h-px mt-[29px] border-[rgba(239,242,255,1)] border-solid border-2" />
           <ExperienceForm
             onComplete={(completed: boolean, data?: Experience[]) => {
-              updateSectionProgress("experience", completed);
               if (completed && data) {
                 updateFormData("experience", data);
+                updateSectionProgress("experience", true);
               }
             }}
             experiences={formData.experience}
@@ -89,9 +86,9 @@ export const FormContent: React.FC<FormContentProps> = ({
       return (
         <BankAccountForm
           onComplete={(completed: boolean, data?: any) => {
-            updateSectionProgress("bank", completed);
             if (completed && data) {
               updateFormData("bank", data);
+              updateSectionProgress("bank", true);
             }
           }}
           initialData={formData.bank}

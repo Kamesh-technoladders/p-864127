@@ -36,7 +36,8 @@ export const useFormState = () => {
   };
 
   const handleTabChange = (tabId: string) => {
-    if (!formProgress[activeTab as keyof FormProgress]) {
+    const currentTabKey = activeTab as keyof FormProgress;
+    if (!formProgress[currentTabKey]) {
       toast.error("Please save the current section before proceeding");
       return;
     }
