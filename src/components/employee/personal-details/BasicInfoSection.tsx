@@ -11,6 +11,7 @@ interface BasicInfoSectionProps {
   isCheckingEmail?: boolean;
   emailError?: string | null;
   onProfilePictureChange?: (url: string) => void;
+  onProfilePictureDelete?: () => void;
   profilePictureUrl?: string;
 }
 
@@ -20,6 +21,7 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   isCheckingEmail,
   emailError,
   onProfilePictureChange,
+  onProfilePictureDelete,
   profilePictureUrl
 }) => {
   return (
@@ -32,7 +34,8 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
       <div className="mb-6">
         <ProfilePictureUpload 
           value={profilePictureUrl} 
-          onChange={(url) => onProfilePictureChange?.(url)} 
+          onChange={(url) => onProfilePictureChange?.(url)}
+          onDelete={onProfilePictureDelete}
         />
       </div>
 

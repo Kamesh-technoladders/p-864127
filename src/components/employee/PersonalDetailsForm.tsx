@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { personalDetailsSchema } from "./personal-details/schema/personalDetailsSchema";
 import { useFormValidation } from "./personal-details/hooks/useFormValidation";
 import { useFormInitialization } from "./personal-details/hooks/useFormInitialization";
+import { toast } from "sonner";
 
 export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ 
   onComplete, 
@@ -86,6 +87,11 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     onComplete(true, formData);
   });
 
+  const handleProfilePictureDelete = () => {
+    form.setValue("profilePictureUrl", "");
+    toast.success("Profile picture deleted successfully");
+  };
+
   return (
     <div className="flex w-[622px] max-w-full flex-col text-sm font-medium ml-[15px]">
       <Form {...form}>
@@ -97,6 +103,7 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
             emailError={emailError}
             profilePictureUrl={form.watch("profilePictureUrl")}
             onProfilePictureChange={(url) => form.setValue("profilePictureUrl", url)}
+            onProfilePictureDelete={handleProfilePictureDelete}
           />
           
           <div className="pt-2">
