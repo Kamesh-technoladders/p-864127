@@ -20,7 +20,7 @@ interface ProfileContentProps {
   handleUpdateEmployment: (data: any) => Promise<void>;
   handleUpdatePersonal: (data: any) => Promise<void>;
   calculateYearsOfExperience: (date: string) => string;
-  calculateTotalExperience: () => string;
+  totalExperience: string;
 }
 
 export const ProfileContent: React.FC<ProfileContentProps> = ({
@@ -33,7 +33,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
   handleUpdateEmployment,
   handleUpdatePersonal,
   calculateYearsOfExperience,
-  calculateTotalExperience
+  totalExperience
 }) => {
   const personalData = {
     employeeId: employeeData.employeeId,
@@ -76,7 +76,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
         joinedDate={employeeData.joinedDate}
         department={employeeData.department || "Engineering"}
         designation={employeeData.position || "Software Engineer"}
-        yearsOfExperience={calculateTotalExperience()}
+        yearsOfExperience={totalExperience}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
