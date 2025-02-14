@@ -10,17 +10,22 @@ export const useFormInitialization = (initialData: any) => {
 
   useEffect(() => {
     if (initialData) {
+      // Initialize emergency contacts
       setEmergencyContacts(
         initialData.emergencyContacts && initialData.emergencyContacts.length > 0
           ? initialData.emergencyContacts
           : [{ relationship: "", name: "", phone: "" }]
       );
 
+      // Initialize family details
       setFamilyDetails(
         initialData.familyDetails && initialData.familyDetails.length > 0
           ? initialData.familyDetails
           : [{ relationship: "", name: "", occupation: "", phone: "" }]
       );
+
+      // Initialize documents
+      setDocuments(initialData.documents || []);
     }
   }, [initialData]);
 
