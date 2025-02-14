@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { LoaderCircle, FileText, X, AlertCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -21,6 +20,7 @@ interface UploadFieldProps {
   error?: string;
   multiple?: boolean;
   compact?: boolean;
+  minimal?: boolean;
 }
 
 const formatFileSize = (size: number): string => {
@@ -40,6 +40,7 @@ export const UploadField: React.FC<UploadFieldProps> = ({
   error,
   multiple = false,
   compact = false,
+  minimal = false,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -78,12 +79,56 @@ export const UploadField: React.FC<UploadFieldProps> = ({
   const isImage = currentFile?.type.startsWith('image/');
   const fileSize = currentFile?.size ? formatFileSize(currentFile.size) : '';
 
+  if (minimal) {
+    return (
+      <div className="inline-flex items-center">
+        <label className={`cursor-pointer px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 ${isUploading ? 'bg-gray-50' : 'bg-white'}`}>
+          {isUploading ? (
+            <span className="flex items-center gap-2">
+              <LoaderCircle className="animate-spin h-4 w-4" />
+              Uploading...
+            </span>
+          ) : (
+            <span className="flex items-center gap-2">
+              {currentFile ? (
+                <>
+                  <FileText className="h-4 w-4" />
+                  <span className="truncate max-w-[100px]">{currentFile.name}</span>
+                </>
+              ) : (
+                <>
+                  {label}
+                  {required && <span className="text-[#DD0101]">*</span>}
+                </>
+              )}
+            </span>
+          )}
+          <input
+            type="file"
+            className="hidden"
+            onChange={handleFileChange}
+            accept=".pdf,.png,.jpg,.jpeg"
+            disabled={isUploading}
+            multiple={multiple}
+          />
+        </label>
+        {showProgress && isUploading && (
+          <div className="ml-2">
+            <Progress value={progress} className="h-1 w-16" />
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className={`flex flex-col ${compact ? 'gap-1' : 'gap-2'}`}>
-      <div className="text-[rgba(48,48,48,1)] font-semibold text-sm">
-        {label}
-        {required && <span className="text-[rgba(221,1,1,1)]">*</span>}
-      </div>
+      {!minimal && (
+        <div className="text-[rgba(48,48,48,1)] font-semibold text-sm">
+          {label}
+          {required && <span className="text-[#DD0101]">*</span>}
+        </div>
+      )}
       <div className="self-stretch flex flex-col gap-1">
         <div className="flex items-center gap-2 flex-wrap">
           {currentFile ? (
