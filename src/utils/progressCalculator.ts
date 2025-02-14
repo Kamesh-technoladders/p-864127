@@ -28,3 +28,15 @@ export const calculateProgress = (formData: FormData): FormProgress => {
     bank: hasBankData,
   };
 };
+
+export const getProgressMessage = (formData: FormData): string => {
+  const progress = calculateProgress(formData);
+  const completedSections = Object.values(progress).filter(Boolean).length;
+  const totalSections = Object.keys(progress).length;
+  
+  if (completedSections === totalSections) {
+    return "All sections completed";
+  }
+  
+  return `${completedSections} of ${totalSections} sections completed`;
+};

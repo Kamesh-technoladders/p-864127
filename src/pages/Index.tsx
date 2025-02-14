@@ -29,8 +29,8 @@ const Index = () => {
     { id: "bank", label: "Bank Account Details", isActive: activeTab === "bank" },
   ];
 
-  const progress = calculateProgress(formProgress);
-  const progressMessage = getProgressMessage(formProgress);
+  const progress = calculateProgress(formData);
+  const progressMessage = getProgressMessage(formData);
 
   const handleAddEmployee = () => {
     setShowForm(true);
