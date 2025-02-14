@@ -56,9 +56,9 @@ export const UploadField: React.FC<UploadFieldProps> = ({
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async (): Promise<void> => {
     if (onRemove) {
-      onRemove();
+      await onRemove();
       toast.success("Document deleted successfully");
     }
     setShowDeleteDialog(false);
