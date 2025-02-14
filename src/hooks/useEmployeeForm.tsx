@@ -4,11 +4,15 @@ import { toast } from "sonner";
 import { FormProgress, FormData } from "@/utils/progressCalculator";
 import { Experience } from "@/components/employee/types";
 import { employeeService } from "@/services/employee/employee.service";
+import { personalInfoService } from "@/services/employee/personalInfo.service";
+import { useEffect } from "react";
 
 export const useEmployeeForm = () => {
   const [activeTab, setActiveTab] = useState("personal");
   const [isFormCompleted, setIsFormCompleted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [formProgress, setFormProgress] = useState<FormProgress>({
     personal: false,
     education: false,
@@ -22,6 +26,43 @@ export const useEmployeeForm = () => {
     experience: [],
     bank: null,
   });
+
+  // Debounced email check
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
+    const checkEmail = async (email: string) => {
+      try {
+        setIsCheckingEmail(true);
+        const exists = await personalInfoService.checkEmailExists(email);
+        if (exists) {
+          setEmailError(`Email ${email} is already registered`);
+          updateSectionProgress('personal', false);
+        } else {
+          setEmailError(null);
+        }
+      } catch (error) {
+        console.error('Error checking email:', error);
+      } finally {
+        setIsCheckingEmail(false);
+      }
+    };
+
+    if (formData.personal?.email) {
+      // Clear previous timeout
+      if (timeoutId) clearTimeout(timeoutId);
+      
+      // Set new timeout
+      timeoutId = setTimeout(() => {
+        checkEmail(formData.personal.email);
+      }, 500); // 500ms debounce
+    }
+
+    // Cleanup
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [formData.personal?.email]);
 
   const updateSectionProgress = (section: keyof FormProgress, completed: boolean) => {
     setFormProgress((prev) => ({
@@ -50,6 +91,60 @@ export const useEmployeeForm = () => {
     setActiveTab(tabId);
   };
 
+  const validatePersonalSection = (data: any) => {
+    if (!data) return false;
+    const requiredFields = [
+      'employeeId',
+      'firstName',
+      'lastName',
+      'email',
+      'phone',
+      'dateOfBirth',
+      'gender',
+      'bloodGroup',
+      'maritalStatus',
+      'presentAddress',
+      'permanentAddress'
+    ];
+
+    const isValid = requiredFields.every(field => {
+      if (field === 'presentAddress' || field === 'permanentAddress') {
+        const address = data[field];
+        return address && 
+               address.addressLine1 && 
+               address.country && 
+               address.state && 
+               address.city && 
+               address.zipCode;
+      }
+      return data[field];
+    });
+
+    if (!isValid) {
+      toast.error("Please fill in all required fields in Personal Details");
+    }
+
+    return isValid && !emailError;
+  };
+
+  const validateBankSection = (data: any) => {
+    if (!data) return false;
+    const requiredFields = [
+      'accountHolderName',
+      'accountNumber',
+      'ifscCode',
+      'bankName',
+      'branchName',
+      'accountType'
+    ];
+
+    const isValid = requiredFields.every(field => data[field]);
+    if (!isValid) {
+      toast.error("Please fill in all required fields in Bank Details");
+    }
+    return isValid;
+  };
+
   const handleSaveAndNext = async () => {
     if (activeTab === "personal") {
       const form = document.getElementById("personalDetailsForm") as HTMLFormElement;
@@ -69,13 +164,11 @@ export const useEmployeeForm = () => {
     if (currentIndex < tabOrder.length - 1) {
       setActiveTab(tabOrder[currentIndex + 1]);
     } else {
-      // Check if all required sections are completed
-      const requiredSections = ["personal", "bank"];
-      const isRequiredCompleted = requiredSections.every(section => 
-        formProgress[section as keyof FormProgress]
-      );
+      // Validate required sections
+      const isPersonalValid = validatePersonalSection(formData.personal);
+      const isBankValid = validateBankSection(formData.bank);
       
-      if (isRequiredCompleted) {
+      if (isPersonalValid && isBankValid) {
         setIsSubmitting(true);
         try {
           console.log('Submitting form data:', formData);
@@ -105,8 +198,6 @@ export const useEmployeeForm = () => {
         } finally {
           setIsSubmitting(false);
         }
-      } else {
-        toast.error("Please complete all required sections before submitting");
       }
     }
   };
@@ -117,6 +208,8 @@ export const useEmployeeForm = () => {
     formData,
     isFormCompleted,
     isSubmitting,
+    isCheckingEmail,
+    emailError,
     updateSectionProgress,
     updateFormData,
     handleTabChange,

@@ -14,6 +14,9 @@ const Index = () => {
     formProgress,
     formData,
     isFormCompleted,
+    isSubmitting,
+    isCheckingEmail,
+    emailError,
     updateSectionProgress,
     updateFormData,
     handleTabChange,
@@ -65,7 +68,9 @@ const Index = () => {
               formData={formData}
               updateSectionProgress={updateSectionProgress}
               updateFormData={updateFormData}
-              handleSaveAndNext={handleSaveAndNext}
+              isCheckingEmail={isCheckingEmail}
+              emailError={emailError}
+              isSubmitting={isSubmitting}
             />
           </FormContainer>
         </>
