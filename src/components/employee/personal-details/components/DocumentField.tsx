@@ -5,8 +5,6 @@ import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { Document } from "@/services/types/employee.types";
 import { getErrorMessage, getDocumentByType, getValidationType } from "../utils/documentUtils";
-import { toast } from "sonner";
-import { AlertCircle } from "lucide-react";
 
 interface DocumentFieldProps {
   form: UseFormReturn<any>;
@@ -49,13 +47,6 @@ export const DocumentField: React.FC<DocumentFieldProps> = ({
     if (localValue.length > 0) {
       const validationError = getErrorMessage(validationType, localValue);
       setError(validationError);
-      
-      if (validationError) {
-        toast.error(validationError, {
-          duration: 2000,
-          icon: <AlertCircle className="h-4 w-4" />
-        });
-      }
     }
   };
 

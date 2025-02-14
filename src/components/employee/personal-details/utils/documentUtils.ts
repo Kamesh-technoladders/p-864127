@@ -1,9 +1,6 @@
 
-import React from 'react';
 import { Document } from "@/services/types/employee.types";
 import { documentSchema } from "../documentValidation";
-import { toast } from "sonner";
-import { AlertCircle } from "lucide-react";
 
 export const validateDocument = (type: keyof typeof documentSchema.shape, value: string) => {
   try {
@@ -33,7 +30,6 @@ export const getErrorMessage = (type: keyof typeof documentSchema.shape, value: 
     return null;
   } catch (error) {
     if (error instanceof Error) {
-      // Map technical error messages to user-friendly ones if needed
       return error.message;
     }
     return "Invalid format";
