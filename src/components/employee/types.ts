@@ -1,4 +1,6 @@
 
+import type { Document as EmployeeDocument } from "@/services/types/employee.types";
+
 export interface Experience {
   id: string;
   jobTitle: string;
@@ -47,7 +49,7 @@ export interface PersonalDetailsData {
   permanentAddress: Address;
   emergencyContacts?: EmergencyContact[];
   familyDetails?: FamilyMember[];
-  documents?: Document[];
+  documents?: EmployeeDocument[];
 }
 
 export interface FormComponentProps<T = any> {

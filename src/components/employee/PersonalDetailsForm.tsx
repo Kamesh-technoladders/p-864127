@@ -8,7 +8,7 @@ import { EmergencyContactsSection } from "./personal-details/EmergencyContactsSe
 import { FamilyDetailsSection } from "./personal-details/FamilyDetailsSection";
 import { DocumentUploadSection } from "./personal-details/DocumentUploadSection";
 import { PersonalDetailsFormProps, EmergencyContact, FamilyMember } from "./types";
-import { Document } from "@/services/types/employee.types";
+import type { Document as EmployeeDocument } from "@/services/types/employee.types";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -48,7 +48,7 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
 }) => {
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [familyDetails, setFamilyDetails] = useState<FamilyMember[]>([]);
-  const [documents, setDocuments] = useState<Document[]>([]);
+  const [documents, setDocuments] = useState<EmployeeDocument[]>([]);
 
   useEffect(() => {
     if (initialData) {
