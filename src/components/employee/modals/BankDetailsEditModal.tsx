@@ -9,7 +9,7 @@ import {
 import { BankAccountForm } from "../BankAccountForm";
 import { BankDetails } from "@/services/types/employee.types";
 import { toast } from "sonner";
-import { bankDetailsService } from "@/services/employee/bankDetails.service";
+import { supabase } from "@/integrations/supabase/client";
 import { Banknote, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -34,13 +34,29 @@ export const BankDetailsEditModal: React.FC<BankDetailsEditModalProps> = ({
     if (completed && formData) {
       try {
         setIsSubmitting(true);
-        await bankDetailsService.updateBankDetails(employeeId, formData);
+
+        const { error } = await supabase
+          .from('employee_bank_details')
+          .upsert({
+            employee_id: employeeId,
+            account_holder_name: formData.accountHolderName,
+            account_number: formData.accountNumber,
+            ifsc_code: formData.ifscCode,
+            bank_name: formData.bankName,
+            branch_name: formData.branchName,
+            account_type: formData.accountType,
+            bank_phone: formData.bankPhone
+          })
+          .eq('employee_id', employeeId);
+
+        if (error) throw error;
+
         toast.success("Bank details updated successfully");
-        onUpdate();
+        await onUpdate();
         onClose();
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error updating bank details:", error);
-        toast.error("Failed to update bank details");
+        toast.error(error.message || "Failed to update bank details");
       } finally {
         setIsSubmitting(false);
       }

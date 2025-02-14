@@ -43,6 +43,17 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
     try {
       setIsSubmitting(true);
 
+      // First delete existing emergency contacts and family details
+      await supabase
+        .from('employee_emergency_contacts')
+        .delete()
+        .eq('employee_id', employeeId);
+
+      await supabase
+        .from('employee_family_details')
+        .delete()
+        .eq('employee_id', employeeId);
+
       // Update employee basic info
       const { error: employeeError } = await supabase
         .from('employees')
@@ -60,45 +71,37 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
 
       if (employeeError) throw employeeError;
 
-      // Update present address
-      const { error: presentAddressError } = await supabase
+      // Update addresses
+      const { error: addressError } = await supabase
         .from('employee_addresses')
-        .upsert({
-          employee_id: employeeId,
-          type: 'present',
-          address_line1: formData.presentAddress.addressLine1,
-          country: formData.presentAddress.country,
-          state: formData.presentAddress.state,
-          city: formData.presentAddress.city,
-          zip_code: formData.presentAddress.zipCode
-        })
-        .eq('employee_id', employeeId)
-        .eq('type', 'present');
+        .upsert([
+          {
+            employee_id: employeeId,
+            type: 'present',
+            address_line1: formData.presentAddress.addressLine1,
+            country: formData.presentAddress.country,
+            state: formData.presentAddress.state,
+            city: formData.presentAddress.city,
+            zip_code: formData.presentAddress.zipCode
+          },
+          {
+            employee_id: employeeId,
+            type: 'permanent',
+            address_line1: formData.permanentAddress.addressLine1,
+            country: formData.permanentAddress.country,
+            state: formData.permanentAddress.state,
+            city: formData.permanentAddress.city,
+            zip_code: formData.permanentAddress.zipCode
+          }
+        ]);
 
-      if (presentAddressError) throw presentAddressError;
+      if (addressError) throw addressError;
 
-      // Update permanent address
-      const { error: permanentAddressError } = await supabase
-        .from('employee_addresses')
-        .upsert({
-          employee_id: employeeId,
-          type: 'permanent',
-          address_line1: formData.permanentAddress.addressLine1,
-          country: formData.permanentAddress.country,
-          state: formData.permanentAddress.state,
-          city: formData.permanentAddress.city,
-          zip_code: formData.permanentAddress.zipCode
-        })
-        .eq('employee_id', employeeId)
-        .eq('type', 'permanent');
-
-      if (permanentAddressError) throw permanentAddressError;
-
-      // Handle emergency contacts
+      // Insert new emergency contacts
       if (formData.emergencyContacts && formData.emergencyContacts.length > 0) {
         const { error: contactsError } = await supabase
           .from('employee_emergency_contacts')
-          .upsert(
+          .insert(
             formData.emergencyContacts.map(contact => ({
               employee_id: employeeId,
               name: contact.name,
@@ -110,11 +113,11 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
         if (contactsError) throw contactsError;
       }
 
-      // Handle family details
+      // Insert new family details
       if (formData.familyDetails && formData.familyDetails.length > 0) {
         const { error: familyError } = await supabase
           .from('employee_family_details')
-          .upsert(
+          .insert(
             formData.familyDetails.map(member => ({
               employee_id: employeeId,
               name: member.name,
@@ -130,9 +133,9 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
       await onUpdate(formData);
       toast.success("Personal details updated successfully");
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating personal details:", error);
-      toast.error("Failed to update personal details");
+      toast.error(error.message || "Failed to update personal details");
     } finally {
       setIsSubmitting(false);
     }
@@ -170,7 +173,7 @@ export const PersonalDetailsEditModal: React.FC<PersonalDetailsEditModalProps> =
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={isSubmitting}>
+          <Button onClick={handleSave} disabled={isSubmitting || !formData}>
             {isSubmitting ? "Saving..." : "Save Changes"}
           </Button>
         </div>

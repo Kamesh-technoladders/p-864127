@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Briefcase, Calendar, ChevronRight, X } from "lucide-react";
 import { TimelineEvent } from "./components/TimelineEvent";
 import { EmploymentForm } from "./components/EmploymentForm";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TimelineEventType {
   title: string;
@@ -55,14 +56,29 @@ export const EmploymentDetailsModal: React.FC<EmploymentDetailsModalProps> = ({
 
     try {
       setIsSubmitting(true);
+
+      const { error: updateError } = await supabase
+        .from('employees')
+        .update({
+          department: formData.department,
+          position: formData.position,
+          employment_start_date: formData.joinedDate || new Date().toISOString()
+        })
+        .eq('id', employeeId);
+
+      if (updateError) throw updateError;
+
       await onUpdate({
         department: formData.department,
-        position: formData.position
+        position: formData.position,
+        joinedDate: formData.joinedDate
       });
+
+      toast.success("Employment details updated successfully");
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating employment details:", error);
-      toast.error("Failed to update employment details");
+      toast.error(error.message || "Failed to update employment details");
     } finally {
       setIsSubmitting(false);
     }
