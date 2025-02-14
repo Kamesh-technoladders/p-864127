@@ -6,22 +6,9 @@ import { BasicInfoSection } from "./personal-details/BasicInfoSection";
 import { AddressSection } from "./personal-details/AddressSection";
 import { EmergencyContactsSection } from "./personal-details/EmergencyContactsSection";
 import { FamilyDetailsSection } from "./personal-details/FamilyDetailsSection";
-import { PersonalDetailsFormProps } from "./types";
+import { PersonalDetailsFormProps, EmergencyContact, FamilyMember } from "./types";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-interface EmergencyContact {
-  relationship: string;
-  name: string;
-  phone: string;
-}
-
-interface FamilyMember {
-  relationship: string;
-  name: string;
-  occupation: string;
-  phone: string;
-}
 
 const addressSchema = z.object({
   addressLine1: z.string().min(1, "Address is required"),
@@ -46,18 +33,12 @@ const personalDetailsSchema = z.object({
   sameAsPresent: z.boolean().optional()
 });
 
-interface PersonalDetailsFormProps {
-  onComplete: (completed: boolean, data?: any) => void;
-  initialData?: any;
-  isCheckingEmail?: boolean;
-  emailError?: string | null;
-}
-
 export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ 
   onComplete, 
   initialData,
   isCheckingEmail,
-  emailError 
+  emailError,
+  isSubmitting
 }) => {
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [familyDetails, setFamilyDetails] = useState<FamilyMember[]>([]);
