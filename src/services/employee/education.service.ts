@@ -18,25 +18,22 @@ export const educationService = {
     const educationData = [
       { 
         employee_id: employeeId, 
-        type: 'ssc', 
+        type: 'ssc',
         document_url: null,
-        document_type: 'certificate',
         institute: education.institute,
         year_completed: education.yearCompleted
       },
       { 
         employee_id: employeeId, 
-        type: 'hsc', 
+        type: 'hsc',
         document_url: null,
-        document_type: 'certificate',
         institute: education.institute,
         year_completed: education.yearCompleted
       },
       { 
         employee_id: employeeId, 
-        type: 'degree', 
+        type: 'degree',
         document_url: null,
-        document_type: 'certificate',
         institute: education.institute,
         year_completed: education.yearCompleted
       }
@@ -51,8 +48,6 @@ export const educationService = {
 
   async updateEducation(employeeId: string, education: Partial<Education>) {
     try {
-      const uploadPromises = [];
-
       // Handle document uploads
       if (education.ssc instanceof File) {
         const url = await uploadDocument(education.ssc, 'education', employeeId);
@@ -101,8 +96,6 @@ export const educationService = {
 
         if (error) throw error;
       }
-
-      await Promise.all(uploadPromises);
     } catch (error) {
       console.error("Error updating education:", error);
       throw error;
