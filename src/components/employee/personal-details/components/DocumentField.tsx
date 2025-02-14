@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { Document } from "@/services/types/employee.types";
 import { getErrorMessage, getDocumentByType, getValidationType } from "../utils/documentUtils";
-import { documentSchema } from "../documentValidation";
 import { toast } from "sonner";
 import { AlertCircle } from "lucide-react";
 
@@ -40,14 +39,23 @@ export const DocumentField: React.FC<DocumentFieldProps> = ({
     setLocalValue(value);
     updateDocumentNumber(documentType, value);
     
-    const validationError = getErrorMessage(validationType, value);
-    setError(validationError);
-    
-    if (validationError && value.length > 0) {
-      toast.error(validationError, {
-        duration: 2000,
-        icon: <AlertCircle className="h-4 w-4" />
-      });
+    // Clear error when field is empty
+    if (value.length === 0) {
+      setError(null);
+    }
+  };
+
+  const handleBlur = () => {
+    if (localValue.length > 0) {
+      const validationError = getErrorMessage(validationType, localValue);
+      setError(validationError);
+      
+      if (validationError) {
+        toast.error(validationError, {
+          duration: 2000,
+          icon: <AlertCircle className="h-4 w-4" />
+        });
+      }
     }
   };
 
@@ -65,6 +73,7 @@ export const DocumentField: React.FC<DocumentFieldProps> = ({
               {...field}
               value={localValue}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder={`Enter ${label}`}
               className={`h-9 ${error ? 'border-red-500' : ''}`}
             />

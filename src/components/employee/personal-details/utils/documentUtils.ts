@@ -16,10 +16,7 @@ export const validateDocument = (type: keyof typeof documentSchema.shape, value:
     return true;
   } catch (error) {
     if (error instanceof Error) {
-      toast.error(error.message, {
-        duration: 2000,
-        icon: React.createElement(AlertCircle, { className: "h-4 w-4" })
-      });
+      return false;
     }
     return false;
   }
@@ -36,6 +33,7 @@ export const getErrorMessage = (type: keyof typeof documentSchema.shape, value: 
     return null;
   } catch (error) {
     if (error instanceof Error) {
+      // Map technical error messages to user-friendly ones if needed
       return error.message;
     }
     return "Invalid format";
