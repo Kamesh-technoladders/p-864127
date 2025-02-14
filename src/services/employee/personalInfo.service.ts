@@ -11,67 +11,92 @@ export const personalInfoService = {
       .maybeSingle();
 
     if (error) {
-      throw error;
+      console.error('Error checking employee ID:', error);
+      throw new Error('Failed to check employee ID');
     }
 
     return !!data;
   },
 
   async createPersonalInfo(personalInfo: PersonalInfo) {
-    const { data: employee, error: employeeError } = await supabase
-      .from('employees')
-      .insert({
-        employee_id: personalInfo.employeeId,
-        first_name: personalInfo.firstName,
-        last_name: personalInfo.lastName,
-        email: personalInfo.email,
-        phone: personalInfo.phone,
-        date_of_birth: personalInfo.dateOfBirth,
-        gender: personalInfo.gender,
-        blood_group: personalInfo.bloodGroup,
-        marital_status: personalInfo.maritalStatus,
-        joined_date: new Date().toISOString()
-      })
-      .select()
-      .single();
+    try {
+      const { data: employee, error: employeeError } = await supabase
+        .from('employees')
+        .insert({
+          employee_id: personalInfo.employeeId,
+          first_name: personalInfo.firstName,
+          last_name: personalInfo.lastName,
+          email: personalInfo.email,
+          phone: personalInfo.phone,
+          date_of_birth: personalInfo.dateOfBirth,
+          gender: personalInfo.gender,
+          blood_group: personalInfo.bloodGroup,
+          marital_status: personalInfo.maritalStatus,
+          employment_start_date: new Date().toISOString(), // Using the correct column name
+          present_address: {
+            addressLine1: personalInfo.presentAddress.addressLine1,
+            country: personalInfo.presentAddress.country,
+            state: personalInfo.presentAddress.state,
+            city: personalInfo.presentAddress.city,
+            zipCode: personalInfo.presentAddress.zipCode
+          },
+          permanent_address: {
+            addressLine1: personalInfo.permanentAddress.addressLine1,
+            country: personalInfo.permanentAddress.country,
+            state: personalInfo.permanentAddress.state,
+            city: personalInfo.permanentAddress.city,
+            zipCode: personalInfo.permanentAddress.zipCode
+          }
+        })
+        .select()
+        .single();
 
-    if (employeeError) throw employeeError;
-
-    // Insert addresses
-    const addresses = [
-      {
-        employee_id: employee.id,
-        type: 'present',
-        address_line1: personalInfo.presentAddress.addressLine1,
-        country: personalInfo.presentAddress.country,
-        state: personalInfo.presentAddress.state,
-        city: personalInfo.presentAddress.city,
-        zip_code: personalInfo.presentAddress.zipCode
-      },
-      {
-        employee_id: employee.id,
-        type: 'permanent',
-        address_line1: personalInfo.permanentAddress.addressLine1,
-        country: personalInfo.permanentAddress.country,
-        state: personalInfo.permanentAddress.state,
-        city: personalInfo.permanentAddress.city,
-        zip_code: personalInfo.permanentAddress.zipCode
+      if (employeeError) {
+        console.error('Error creating employee:', employeeError);
+        throw employeeError;
       }
-    ];
 
-    const { error: addressError } = await supabase
-      .from('employee_addresses')
-      .insert(addresses);
+      // Insert addresses
+      const addresses = [
+        {
+          employee_id: employee.id,
+          type: 'present',
+          address_line1: personalInfo.presentAddress.addressLine1,
+          country: personalInfo.presentAddress.country,
+          state: personalInfo.presentAddress.state,
+          city: personalInfo.presentAddress.city,
+          zip_code: personalInfo.presentAddress.zipCode
+        },
+        {
+          employee_id: employee.id,
+          type: 'permanent',
+          address_line1: personalInfo.permanentAddress.addressLine1,
+          country: personalInfo.permanentAddress.country,
+          state: personalInfo.permanentAddress.state,
+          city: personalInfo.permanentAddress.city,
+          zip_code: personalInfo.permanentAddress.zipCode
+        }
+      ];
 
-    if (addressError) throw addressError;
+      const { error: addressError } = await supabase
+        .from('employee_addresses')
+        .insert(addresses);
 
-    return employee;
+      if (addressError) {
+        console.error('Error creating employee addresses:', addressError);
+        throw addressError;
+      }
+
+      return employee;
+    } catch (error: any) {
+      console.error('Error in createPersonalInfo:', error);
+      throw new Error(error.message || 'Failed to create employee information');
+    }
   },
 
   async updatePersonalInfo(employeeId: string, personalInfo: Partial<PersonalInfo>) {
-    const { error: employeeError } = await supabase
-      .from('employees')
-      .update({
+    try {
+      const updateData: any = {
         first_name: personalInfo.firstName,
         last_name: personalInfo.lastName,
         email: personalInfo.email,
@@ -80,41 +105,69 @@ export const personalInfoService = {
         gender: personalInfo.gender,
         blood_group: personalInfo.bloodGroup,
         marital_status: personalInfo.maritalStatus
-      })
-      .eq('id', employeeId);
+      };
 
-    if (employeeError) throw employeeError;
-
-    if (personalInfo.presentAddress) {
-      const { error: presentAddressError } = await supabase
-        .from('employee_addresses')
-        .update({
-          address_line1: personalInfo.presentAddress.addressLine1,
+      if (personalInfo.presentAddress) {
+        updateData.present_address = {
+          addressLine1: personalInfo.presentAddress.addressLine1,
           country: personalInfo.presentAddress.country,
           state: personalInfo.presentAddress.state,
           city: personalInfo.presentAddress.city,
-          zip_code: personalInfo.presentAddress.zipCode
-        })
-        .eq('employee_id', employeeId)
-        .eq('type', 'present');
+          zipCode: personalInfo.presentAddress.zipCode
+        };
+      }
 
-      if (presentAddressError) throw presentAddressError;
-    }
-
-    if (personalInfo.permanentAddress) {
-      const { error: permanentAddressError } = await supabase
-        .from('employee_addresses')
-        .update({
-          address_line1: personalInfo.permanentAddress.addressLine1,
+      if (personalInfo.permanentAddress) {
+        updateData.permanent_address = {
+          addressLine1: personalInfo.permanentAddress.addressLine1,
           country: personalInfo.permanentAddress.country,
           state: personalInfo.permanentAddress.state,
           city: personalInfo.permanentAddress.city,
-          zip_code: personalInfo.permanentAddress.zipCode
-        })
-        .eq('employee_id', employeeId)
-        .eq('type', 'permanent');
+          zipCode: personalInfo.permanentAddress.zipCode
+        };
+      }
 
-      if (permanentAddressError) throw permanentAddressError;
+      const { error: employeeError } = await supabase
+        .from('employees')
+        .update(updateData)
+        .eq('id', employeeId);
+
+      if (employeeError) throw employeeError;
+
+      if (personalInfo.presentAddress) {
+        const { error: presentAddressError } = await supabase
+          .from('employee_addresses')
+          .update({
+            address_line1: personalInfo.presentAddress.addressLine1,
+            country: personalInfo.presentAddress.country,
+            state: personalInfo.presentAddress.state,
+            city: personalInfo.presentAddress.city,
+            zip_code: personalInfo.presentAddress.zipCode
+          })
+          .eq('employee_id', employeeId)
+          .eq('type', 'present');
+
+        if (presentAddressError) throw presentAddressError;
+      }
+
+      if (personalInfo.permanentAddress) {
+        const { error: permanentAddressError } = await supabase
+          .from('employee_addresses')
+          .update({
+            address_line1: personalInfo.permanentAddress.addressLine1,
+            country: personalInfo.permanentAddress.country,
+            state: personalInfo.permanentAddress.state,
+            city: personalInfo.permanentAddress.city,
+            zip_code: personalInfo.permanentAddress.zipCode
+          })
+          .eq('employee_id', employeeId)
+          .eq('type', 'permanent');
+
+        if (permanentAddressError) throw permanentAddressError;
+      }
+    } catch (error: any) {
+      console.error('Error in updatePersonalInfo:', error);
+      throw new Error(error.message || 'Failed to update employee information');
     }
   }
 };
