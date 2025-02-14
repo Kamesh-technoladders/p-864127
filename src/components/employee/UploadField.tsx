@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, type ChangeEvent } from "react";
 import { LoaderCircle, FileText, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { UploadFieldProps } from "./upload/types";
@@ -23,7 +23,7 @@ export const UploadField: React.FC<UploadFieldProps> = ({
   const [progress, setProgress] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setIsUploading(true);
@@ -76,7 +76,24 @@ export const UploadField: React.FC<UploadFieldProps> = ({
           {currentFile ? (
             <FilePreview
               file={currentFile}
-              onReplace={async (file) => handleFileChange({ target: { files: [file] } } as React.ChangeEvent<HTMLInputElement>)}
+              onReplace={(file) => {
+                handleFileChange({
+                  target: { files: [file] },
+                  currentTarget: { files: [file] },
+                  nativeEvent: new Event('change'),
+                  bubbles: true,
+                  cancelable: true,
+                  defaultPrevented: false,
+                  eventPhase: 0,
+                  isTrusted: true,
+                  preventDefault: () => {},
+                  isDefaultPrevented: () => false,
+                  stopPropagation: () => {},
+                  isPropagationStopped: () => false,
+                  persist: () => {},
+                  timeStamp: Date.now(),
+                  type: 'change'
+                } as ChangeEvent<HTMLInputElement>)}
               onDelete={() => setShowDeleteDialog(true)}
               compact={compact}
               disabled={isUploading}

@@ -1,7 +1,7 @@
 
 import React from "react";
 import { FileText, Replace, Trash2 } from "lucide-react";
-import { UploadedFile } from "./types";
+import { UploadedFile, formatFileSize, getFileType } from "./types";
 
 interface FilePreviewProps {
   file: UploadedFile;
