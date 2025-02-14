@@ -75,8 +75,9 @@ export const UploadField: React.FC<UploadFieldProps> = ({
     }
   };
 
-  const isImage = currentFile?.type.startsWith('image/');
+  const isImage = currentFile?.type?.startsWith('image/');
   const fileSize = currentFile?.size ? formatFileSize(currentFile.size) : '';
+  const fileType = currentFile?.type ? currentFile.type.split('/')[1].toUpperCase() : '';
 
   return (
     <div className={`flex flex-col ${compact ? 'gap-1' : 'gap-2'}`}>
@@ -99,9 +100,9 @@ export const UploadField: React.FC<UploadFieldProps> = ({
               )}
               <div className="flex flex-col flex-1 min-w-0">
                 <span className="text-[6px] font-medium truncate">{currentFile.name}</span>
-                {!compact && (
+                {!compact && fileType && (
                   <span className="text-[6px] text-gray-500">
-                    {currentFile.type.split('/')[1].toUpperCase()} {fileSize && `• ${fileSize}`}
+                    {fileType} {fileSize && `• ${fileSize}`}
                   </span>
                 )}
               </div>
