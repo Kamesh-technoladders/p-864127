@@ -55,6 +55,11 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
     return '';
   };
 
+  const transformedFormValues = {
+    cancelledCheque: transformDocumentValue(formValues.cancelledCheque),
+    passbookCopy: transformDocumentValue(formValues.passbookCopy)
+  };
+
   const onSubmit = async (data: BankFormData) => {
     try {
       if (!formValues.cancelledCheque || !formValues.passbookCopy) {
@@ -170,7 +175,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
         </div>
 
         <div className="pt-3">
-          <DocumentUploads setValue={setValue} formValues={formValues} />
+          <DocumentUploads setValue={setValue} formValues={transformedFormValues} />
         </div>
 
         <div className="flex justify-end pt-6">
