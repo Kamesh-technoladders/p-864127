@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { FormField } from "./bank/FormField";
 import { DocumentUploads } from "./bank/DocumentUploads";
 import { bankAccountSchema, type BankFormData } from "./bank/bankAccountSchema";
@@ -30,6 +31,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isValid, isDirty }
   } = useForm<BankFormData>({
     resolver: zodResolver(bankAccountSchema),
@@ -39,6 +41,11 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
       accountType: initialData.accountType as "savings" | "current"
     } : undefined
   });
+
+  const formValues = {
+    cancelledCheque: watch("cancelledCheque"),
+    passbookCopy: watch("passbookCopy")
+  };
 
   const onSubmit = (data: BankFormData) => {
     onComplete(true, data as BankDetails);
@@ -136,7 +143,24 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
         </div>
 
         <div className="pt-3">
-          <DocumentUploads setValue={setValue} formValues={{}} />
+          <DocumentUploads setValue={setValue} formValues={formValues} />
+        </div>
+
+        <div className="flex justify-end gap-3 pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleCancel}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting || !isValid}
+          >
+            {isSubmitting ? "Saving..." : "Save Changes"}
+          </Button>
         </div>
       </form>
     </div>

@@ -1,19 +1,22 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { UploadField } from "../UploadField";
 import { MAX_FILE_SIZE, ACCEPTED_FILE_TYPES } from "./bankAccountSchema";
+import { uploadDocument } from "@/utils/uploadDocument";
+import { UploadedFile } from "../upload/types";
 
 interface DocumentUploadsProps {
   setValue: (field: string, value: any) => void;
   formValues: {
-    cancelledCheque?: File;
-    passbookCopy?: File;
+    cancelledCheque?: File | string;
+    passbookCopy?: File | string;
   };
 }
 
 export const DocumentUploads: React.FC<DocumentUploadsProps> = ({ setValue, formValues }) => {
   const { toast } = useToast();
+  const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
 
   const handleFileUpload = (fieldName: "cancelledCheque" | "passbookCopy") => async (file: File) => {
     if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
@@ -34,10 +37,50 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({ setValue, form
       return;
     }
 
-    setValue(fieldName, file);
+    setUploading({ ...uploading, [fieldName]: true });
+
+    try {
+      const url = await uploadDocument(file, 'bank-documents', fieldName);
+      setValue(fieldName, url);
+      toast({
+        title: "File uploaded",
+        description: "Document uploaded successfully!",
+      });
+    } catch (error) {
+      console.error('Error uploading document:', error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload document. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading({ ...uploading, [fieldName]: false });
+    }
+  };
+
+  const getFileDetails = (value: File | string | undefined): UploadedFile | undefined => {
+    if (!value) return undefined;
+    
+    if (value instanceof File) {
+      return {
+        name: value.name,
+        type: value.type,
+        size: value.size
+      };
+    }
+
+    return {
+      name: value.split('/').pop() || 'Document',
+      type: 'application/pdf',
+      url: value
+    };
+  };
+
+  const handleRemove = (fieldName: string) => () => {
+    setValue(fieldName, undefined);
     toast({
-      title: "File uploaded",
-      description: "Document uploaded successfully!",
+      title: "Document removed",
+      description: "Document has been removed successfully.",
     });
   };
 
@@ -48,7 +91,8 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({ setValue, form
           label="Cancelled Cheque"
           required
           onUpload={handleFileUpload("cancelledCheque")}
-          value={formValues.cancelledCheque?.name}
+          currentFile={getFileDetails(formValues.cancelledCheque)}
+          onRemove={handleRemove("cancelledCheque")}
           showProgress
         />
         
@@ -56,7 +100,8 @@ export const DocumentUploads: React.FC<DocumentUploadsProps> = ({ setValue, form
           label="Bank Passbook/Statement"
           required
           onUpload={handleFileUpload("passbookCopy")}
-          value={formValues.passbookCopy?.name}
+          currentFile={getFileDetails(formValues.passbookCopy)}
+          onRemove={handleRemove("passbookCopy")}
           showProgress
         />
       </div>
