@@ -10,7 +10,6 @@ import { format } from "date-fns";
 import { Clock, AlertCircle, Coffee, UtensilsCrossed, Timer, Briefcase, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Progress } from "@/components/ui/progress";
 
 interface WorkTimeEntry {
   id: string;
@@ -150,128 +149,130 @@ export const WorkTimeHistoryModal: React.FC<WorkTimeHistoryModalProps> = ({
             </div>
           </div>
         </DialogHeader>
-        <ScrollArea className="flex-1">
-          {Object.entries(groupedEntries).map(([date, dayEntries]) => {
-            const { 
-              totalWorkMinutes, 
-              totalBreakMinutes, 
-              totalOvertimeMinutes,
-              remainingMinutes,
-              shouldShowOvertime
-            } = getDailySummary(dayEntries);
+        <ScrollArea className="flex-1 p-4">
+          <div className="space-y-8">
+            {Object.entries(groupedEntries).map(([date, dayEntries]) => {
+              const { 
+                totalWorkMinutes, 
+                totalBreakMinutes, 
+                totalOvertimeMinutes,
+                remainingMinutes,
+                shouldShowOvertime
+              } = getDailySummary(dayEntries);
 
-            return (
-              <div key={date} className="mb-8">
-                <h3 className="text-lg font-semibold mb-4">
-                  {format(new Date(date), 'EEEE, MMMM d, yyyy')}
-                </h3>
+              return (
+                <div key={date} className="mb-8">
+                  <h3 className="text-lg font-semibold mb-4">
+                    {format(new Date(date), 'EEEE, MMMM d, yyyy')}
+                  </h3>
 
-                <div className="bg-white p-4 rounded-lg border mb-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Daily Progress</span>
-                      <span>{formatDuration(totalWorkMinutes)} / 8h 0m</span>
-                    </div>
-                    <div className="flex gap-1 h-2">
-                      <div 
-                        className="bg-[#2C4D9E] rounded-l"
-                        style={{ width: `${(totalWorkMinutes / (8 * 60)) * 100}%` }}
-                      />
-                      <div 
-                        className="bg-[#FF9F43]"
-                        style={{ width: `${(totalBreakMinutes / (8 * 60)) * 100}%` }}
-                      />
-                      {showOvertime && shouldShowOvertime && (
+                  <div className="bg-white p-4 rounded-lg border mb-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Daily Progress</span>
+                        <span>{formatDuration(totalWorkMinutes)} / 8h 0m</span>
+                      </div>
+                      <div className="flex gap-1 h-2">
                         <div 
-                          className="bg-[#9B87F5] rounded-r"
-                          style={{ width: `${(totalOvertimeMinutes / (8 * 60)) * 100}%` }}
+                          className="bg-[#2C4D9E] rounded-l"
+                          style={{ width: `${(totalWorkMinutes / (8 * 60)) * 100}%` }}
                         />
-                      )}
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 mt-4">
-                      <div className="text-sm">
-                        <div className="text-[#2C4D9E] font-medium">Work Time</div>
-                        <div>{formatDuration(totalWorkMinutes)}</div>
+                        <div 
+                          className="bg-[#FF9F43]"
+                          style={{ width: `${(totalBreakMinutes / (8 * 60)) * 100}%` }}
+                        />
+                        {showOvertime && shouldShowOvertime && (
+                          <div 
+                            className="bg-[#9B87F5] rounded-r"
+                            style={{ width: `${(totalOvertimeMinutes / (8 * 60)) * 100}%` }}
+                          />
+                        )}
                       </div>
-                      <div className="text-sm">
-                        <div className="text-[#FF9F43] font-medium">Break Time</div>
-                        <div>{formatDuration(totalBreakMinutes)}</div>
-                      </div>
-                      {shouldShowOvertime && (
+                      <div className="grid grid-cols-3 gap-4 mt-4">
                         <div className="text-sm">
-                          <div className="text-[#9B87F5] font-medium">Overtime</div>
-                          <div>{formatDuration(totalOvertimeMinutes)}</div>
+                          <div className="text-[#2C4D9E] font-medium">Work Time</div>
+                          <div>{formatDuration(totalWorkMinutes)}</div>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  {dayEntries.map(entry => {
-                    const colors = getActivityColor(entry);
-                    return (
-                      <div
-                        key={entry.id}
-                        className={`border-l-4 ${colors.border} ${colors.bg} p-4 rounded-lg`}
-                      >
-                        <div className="flex justify-between items-start">
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <span className={`${colors.text}`}>
-                                {getActivityIcon(entry)}
-                              </span>
-                              <span className="font-medium">
-                                {format(new Date(entry.start_time), 'h:mm a')}
-                                {entry.end_time && ` - ${format(new Date(entry.end_time), 'h:mm a')}`}
-                              </span>
-                              {entry.pause_reason && (
-                                <span className={`text-sm ${colors.text}`}>
-                                  {entry.pause_reason}
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              Duration: {formatDuration(entry.duration_minutes)}
-                              {entry.regular_hours_completed && (
-                                <span className="text-[#4BAE4F] ml-2">(Regular hours completed)</span>
-                              )}
-                            </div>
-                            {entry.pause_reason && entry.total_pause_duration_minutes && (
-                              <div className="text-sm text-gray-600">
-                                Break Duration: {formatDuration(entry.total_pause_duration_minutes)}
-                                {entry.excess_break_minutes && entry.excess_break_minutes > 0 && (
-                                  <span className="text-[#FF5252] ml-2">
-                                    (Excess: {entry.excess_break_minutes}m)
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          <div className={`text-xs px-2 py-1 rounded-full ${
-                            entry.status === 'completed' 
-                              ? 'bg-green-100 text-green-700'
-                              : entry.status === 'running'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-yellow-100 text-yellow-700'
-                          }`}>
-                            {entry.status}
-                          </div>
+                        <div className="text-sm">
+                          <div className="text-[#FF9F43] font-medium">Break Time</div>
+                          <div>{formatDuration(totalBreakMinutes)}</div>
                         </div>
-                        
-                        {entry.missed_breaks && entry.missed_breaks.length > 0 && (
-                          <div className="mt-2 text-sm text-[#FFA726] flex items-center gap-1">
-                            <AlertCircle className="h-4 w-4" />
-                            Missed breaks: {entry.missed_breaks.join(', ')}
+                        {shouldShowOvertime && (
+                          <div className="text-sm">
+                            <div className="text-[#9B87F5] font-medium">Overtime</div>
+                            <div>{formatDuration(totalOvertimeMinutes)}</div>
                           </div>
                         )}
                       </div>
-                    );
-                  })}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {dayEntries.map(entry => {
+                      const colors = getActivityColor(entry);
+                      return (
+                        <div
+                          key={entry.id}
+                          className={`border-l-4 ${colors.border} ${colors.bg} p-4 rounded-lg`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <span className={`${colors.text}`}>
+                                  {getActivityIcon(entry)}
+                                </span>
+                                <span className="font-medium">
+                                  {format(new Date(entry.start_time), 'h:mm a')}
+                                  {entry.end_time && ` - ${format(new Date(entry.end_time), 'h:mm a')}`}
+                                </span>
+                                {entry.pause_reason && (
+                                  <span className={`text-sm ${colors.text}`}>
+                                    {entry.pause_reason}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                Duration: {formatDuration(entry.duration_minutes)}
+                                {entry.regular_hours_completed && (
+                                  <span className="text-[#4BAE4F] ml-2">(Regular hours completed)</span>
+                                )}
+                              </div>
+                              {entry.pause_reason && entry.total_pause_duration_minutes && (
+                                <div className="text-sm text-gray-600">
+                                  Break Duration: {formatDuration(entry.total_pause_duration_minutes)}
+                                  {entry.excess_break_minutes && entry.excess_break_minutes > 0 && (
+                                    <span className="text-[#FF5252] ml-2">
+                                      (Excess: {entry.excess_break_minutes}m)
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            <div className={`text-xs px-2 py-1 rounded-full ${
+                              entry.status === 'completed' 
+                                ? 'bg-green-100 text-green-700'
+                                : entry.status === 'running'
+                                ? 'bg-blue-100 text-blue-700'
+                                : 'bg-yellow-100 text-yellow-700'
+                            }`}>
+                              {entry.status}
+                            </div>
+                          </div>
+                          
+                          {entry.missed_breaks && entry.missed_breaks.length > 0 && (
+                            <div className="mt-2 text-sm text-[#FFA726] flex items-center gap-1">
+                              <AlertCircle className="h-4 w-4" />
+                              Missed breaks: {entry.missed_breaks.join(', ')}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>

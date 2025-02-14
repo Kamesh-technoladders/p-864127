@@ -20,25 +20,38 @@ export const useEmployeeProfile = (id: string | undefined) => {
       return;
     }
 
+    // Sort experiences by start date
+    const sortedExperiences = [...employeeData.experience].sort(
+      (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
+
     let totalMonths = 0;
-    employeeData.experience.forEach((exp) => {
+    let lastEndDate: Date | null = null;
+
+    sortedExperiences.forEach((exp) => {
       if (!exp.startDate) {
         console.log('Skipping experience record with no start date:', exp);
         return;
       }
       
-      const start = parseISO(exp.startDate);
-      const end = exp.endDate ? parseISO(exp.endDate) : new Date();
+      const startDate = parseISO(exp.startDate);
+      const endDate = exp.endDate ? parseISO(exp.endDate) : new Date();
       
-      console.log('Calculating months between:', {
-        start: start.toISOString(),
-        end: end.toISOString(),
+      console.log('Processing experience:', {
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
         experience: exp
       });
-      
-      const months = differenceInMonths(end, start);
-      console.log('Months calculated:', months);
-      totalMonths += months;
+
+      if (!lastEndDate || startDate > lastEndDate) {
+        // Non-overlapping experience
+        totalMonths += differenceInMonths(endDate, startDate);
+        lastEndDate = endDate;
+      } else if (endDate > lastEndDate) {
+        // Partially overlapping experience
+        totalMonths += differenceInMonths(endDate, lastEndDate);
+        lastEndDate = endDate;
+      }
     });
 
     const years = totalMonths / 12;
@@ -46,13 +59,13 @@ export const useEmployeeProfile = (id: string | undefined) => {
     setTotalExperience(`${years.toFixed(1)} years`);
   }, [employeeData?.experience]);
 
-  // Subscribe to experience changes
+  // Subscribe to experience and work time changes
   useEffect(() => {
     if (!id) return;
 
     calculateTotalExperience();
 
-    const channel = supabase
+    const experienceChannel = supabase
       .channel('experience-changes')
       .on(
         'postgres_changes',
@@ -70,7 +83,7 @@ export const useEmployeeProfile = (id: string | undefined) => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(experienceChannel);
     };
   }, [id, fetchEmployeeData, calculateTotalExperience]);
 
