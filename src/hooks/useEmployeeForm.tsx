@@ -52,9 +52,9 @@ export const useEmployeeForm = () => {
           console.log('Submitting form data:', formData);
           const personalData: PersonalDetailsData = {
             ...formData.personal!,
+            documents: formData.personal?.documents || [],
             emergencyContacts: formData.personal?.emergencyContacts || [],
-            familyDetails: formData.personal?.familyDetails || [],
-            documents: formData.personal?.documents || []
+            familyDetails: formData.personal?.familyDetails || []
           };
           
           await employeeService.createEmployee({
