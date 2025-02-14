@@ -59,7 +59,7 @@ export const DocumentField: React.FC<DocumentFieldProps> = ({
           <label className="text-sm font-medium">
             {label}{required && <span className="text-red-500">*</span>}
           </label>
-          <div className="relative">
+          <div className="space-y-1">
             <Input
               {...field}
               value={localValue}
@@ -68,6 +68,11 @@ export const DocumentField: React.FC<DocumentFieldProps> = ({
               placeholder={`Enter ${label}`}
               className={`h-9 ${error ? 'border-red-500' : ''}`}
             />
+            {error && (
+              <p className="text-[10px] font-light text-red-500 pl-1">
+                {error}
+              </p>
+            )}
           </div>
         </div>
       )}
