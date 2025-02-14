@@ -36,8 +36,16 @@ export const bankAccountSchema = z.object({
     .min(10, "Phone number must be 10 digits")
     .max(10, "Phone number must be 10 digits")
     .regex(/^\d+$/, "Phone number can only contain numbers"),
-  cancelledCheque: z.any().optional(),
-  passbookCopy: z.any().optional(),
+  cancelledCheque: z
+    .string()
+    .min(1, "Cancelled cheque is required")
+    .or(z.instanceof(File))
+    .or(z.object({ url: z.string() })),
+  passbookCopy: z
+    .string()
+    .min(1, "Bank passbook/statement is required")
+    .or(z.instanceof(File))
+    .or(z.object({ url: z.string() })),
 });
 
 export type BankFormData = z.infer<typeof bankAccountSchema>;

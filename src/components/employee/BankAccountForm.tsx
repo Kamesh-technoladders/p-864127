@@ -15,6 +15,7 @@ import { FormField } from "./bank/FormField";
 import { DocumentUploads } from "./bank/DocumentUploads";
 import { bankAccountSchema, type BankFormData } from "./bank/bankAccountSchema";
 import { BankDetails } from "@/services/types/employee.types";
+import { toast } from "sonner";
 
 interface BankAccountFormProps {
   onComplete: (completed: boolean, formData?: BankDetails) => void;
@@ -47,9 +48,21 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
     passbookCopy: watch("passbookCopy")
   };
 
-  const onSubmit = (data: BankFormData) => {
-    if (isValid) {
-      onComplete(true, data as BankDetails);
+  const onSubmit = async (data: BankFormData) => {
+    try {
+      if (!formValues.cancelledCheque || !formValues.passbookCopy) {
+        toast.error("Please upload all required documents");
+        return;
+      }
+
+      onComplete(true, {
+        ...data,
+        cancelledCheque: formValues.cancelledCheque,
+        passbookCopy: formValues.passbookCopy
+      } as BankDetails);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast.error("Failed to save bank details");
     }
   };
 
@@ -148,7 +161,7 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
           <Button
             type="submit"
             className="bg-[#30409F] hover:bg-[#30409F]/90"
-            disabled={isSubmitting || !isValid}
+            disabled={isSubmitting || !isValid || !formValues.cancelledCheque || !formValues.passbookCopy}
           >
             {isSubmitting ? "Saving..." : "Submit"}
           </Button>
