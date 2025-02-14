@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Calendar, ListTodo } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, 
-         isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from "date-fns";
+         isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, format } from "date-fns";
 import { CalendarHeader } from "./calendar/CalendarHeader";
 import { CalendarGrid } from "./calendar/CalendarGrid";
 import { EventsList } from "./calendar/EventsList";
