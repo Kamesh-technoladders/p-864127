@@ -1,60 +1,76 @@
 
-import { toast } from "sonner";
+import { PersonalDetailsData, BankAccountData } from "@/components/employee/types";
 
 export const useFormValidation = () => {
-  const validatePersonalSection = (data: any) => {
+  const validatePersonalSection = (data: PersonalDetailsData | null) => {
     if (!data) return false;
-    const requiredFields = [
-      'employeeId',
-      'firstName',
-      'lastName',
-      'email',
-      'phone',
-      'dateOfBirth',
-      'gender',
-      'bloodGroup',
-      'maritalStatus',
-      'presentAddress',
-      'permanentAddress'
-    ];
 
-    const isValid = requiredFields.every(field => {
-      if (field === 'presentAddress' || field === 'permanentAddress') {
-        const address = data[field];
-        return address && 
-               address.addressLine1 && 
-               address.country && 
-               address.state && 
-               address.city && 
-               address.zipCode;
-      }
-      return data[field];
-    });
+    const {
+      employeeId,
+      firstName,
+      lastName,
+      email,
+      phone,
+      dateOfBirth,
+      gender,
+      bloodGroup,
+      maritalStatus,
+      presentAddress,
+      permanentAddress,
+      documents
+    } = data;
 
-    if (!isValid) {
-      toast.error("Please fill in all required fields in Personal Details");
-    }
+    const isBasicInfoValid =
+      employeeId &&
+      firstName &&
+      lastName &&
+      email &&
+      phone &&
+      dateOfBirth &&
+      gender &&
+      bloodGroup &&
+      maritalStatus;
 
-    return isValid;
+    const isAddressValid = (address: any) =>
+      address &&
+      address.addressLine1 &&
+      address.country &&
+      address.state &&
+      address.city &&
+      address.zipCode;
+
+    return (
+      isBasicInfoValid &&
+      isAddressValid(presentAddress) &&
+      isAddressValid(permanentAddress) &&
+      Array.isArray(documents)
+    );
   };
 
-  const validateBankSection = (data: any) => {
+  const validateBankSection = (data: BankAccountData | null) => {
     if (!data) return false;
-    const requiredFields = [
-      'accountHolderName',
-      'accountNumber',
-      'ifscCode',
-      'bankName',
-      'branchName',
-      'accountType'
-    ];
 
-    const isValid = requiredFields.every(field => data[field]);
-    if (!isValid) {
-      toast.error("Please fill in all required fields in Bank Details");
-    }
-    return isValid;
+    const {
+      accountHolderName,
+      accountNumber,
+      ifscCode,
+      bankName,
+      branchName,
+      accountType,
+    } = data;
+
+    return !!(
+      accountHolderName &&
+      accountNumber &&
+      ifscCode &&
+      bankName &&
+      branchName &&
+      accountType
+    );
   };
 
-  return { validatePersonalSection, validateBankSection };
+  return {
+    validatePersonalSection,
+    validateBankSection,
+  };
 };

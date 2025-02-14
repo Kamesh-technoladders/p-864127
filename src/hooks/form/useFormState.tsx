@@ -13,7 +13,34 @@ export const useFormState = () => {
   });
 
   const [formData, setFormData] = useState<FormData>({
-    personal: null,
+    personal: {
+      employeeId: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      dateOfBirth: "",
+      gender: "",
+      bloodGroup: "",
+      maritalStatus: "",
+      presentAddress: {
+        addressLine1: "",
+        country: "",
+        state: "",
+        city: "",
+        zipCode: ""
+      },
+      permanentAddress: {
+        addressLine1: "",
+        country: "",
+        state: "",
+        city: "",
+        zipCode: ""
+      },
+      emergencyContacts: [],
+      familyDetails: [],
+      documents: []
+    },
     education: null,
     experience: [],
     bank: null,
@@ -28,18 +55,10 @@ export const useFormState = () => {
 
   const updateFormData = (section: keyof FormData, data: any) => {
     console.log(`Updating ${section} data:`, data);
-    if (section === 'personal' && data) {
-      // Ensure documents array is present
-      data.documents = data.documents || [];
-    }
     setFormData((prev) => ({
       ...prev,
       [section]: data,
     }));
-
-    if (section === 'experience') {
-      updateSectionProgress('experience', Array.isArray(data) && data.length > 0);
-    }
   };
 
   const handleTabChange = (tabId: string) => {

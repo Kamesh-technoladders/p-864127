@@ -58,6 +58,7 @@ export const FormContent: React.FC<FormContentProps> = ({
           initialData={formData.personal}
           isCheckingEmail={isCheckingEmail}
           emailError={emailError}
+          isSubmitting={isSubmitting}
         />
       );
     case "education":
