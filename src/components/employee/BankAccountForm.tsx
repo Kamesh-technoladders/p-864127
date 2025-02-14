@@ -48,6 +48,13 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
     passbookCopy: watch("passbookCopy")
   };
 
+  const transformDocumentValue = (value: string | File | { url?: string }): string | File => {
+    if (value instanceof File) return value;
+    if (typeof value === 'string') return value;
+    if (typeof value === 'object' && 'url' in value) return value.url || '';
+    return '';
+  };
+
   const onSubmit = async (data: BankFormData) => {
     try {
       if (!formValues.cancelledCheque || !formValues.passbookCopy) {
@@ -55,11 +62,13 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
         return;
       }
 
-      onComplete(true, {
+      const transformedData: BankDetails = {
         ...data,
-        cancelledCheque: formValues.cancelledCheque,
-        passbookCopy: formValues.passbookCopy
-      } as BankDetails);
+        cancelledCheque: transformDocumentValue(formValues.cancelledCheque),
+        passbookCopy: transformDocumentValue(formValues.passbookCopy)
+      };
+
+      onComplete(true, transformedData);
     } catch (error) {
       console.error("Form submission error:", error);
       toast.error("Failed to save bank details");
