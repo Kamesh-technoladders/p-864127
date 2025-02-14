@@ -171,23 +171,31 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
             emailError={emailError}
           />
           
-          <AddressSection form={form} />
+          <div className="pt-2">
+            <DocumentUploadSection
+              form={form}
+              documents={documents}
+              onDocumentsChange={setDocuments}
+            />
+          </div>
 
-          <EmergencyContactsSection
-            contacts={emergencyContacts}
-            onContactsChange={setEmergencyContacts}
-          />
+          <div className="pt-2">
+            <AddressSection form={form} />
+          </div>
 
-          <FamilyDetailsSection
-            familyMembers={familyDetails}
-            onFamilyMembersChange={setFamilyDetails}
-          />
+          <div className="pt-2">
+            <EmergencyContactsSection
+              contacts={emergencyContacts}
+              onContactsChange={setEmergencyContacts}
+            />
+          </div>
 
-          <DocumentUploadSection
-            form={form}
-            documents={documents}
-            onDocumentsChange={setDocuments}
-          />
+          <div className="pt-2">
+            <FamilyDetailsSection
+              familyMembers={familyDetails}
+              onFamilyMembersChange={setFamilyDetails}
+            />
+          </div>
         </form>
       </Form>
     </div>
