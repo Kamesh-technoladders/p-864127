@@ -62,8 +62,15 @@ export const BankAccountForm: React.FC<BankAccountFormProps> = ({
         return;
       }
 
+      // Ensure all required fields are present and correctly typed
       const transformedData: BankDetails = {
-        ...data,
+        accountHolderName: data.accountHolderName,
+        accountNumber: data.accountNumber,
+        ifscCode: data.ifscCode,
+        bankName: data.bankName,
+        branchName: data.branchName,
+        accountType: data.accountType,
+        bankPhone: data.bankPhone || "",
         cancelledCheque: transformDocumentValue(formValues.cancelledCheque),
         passbookCopy: transformDocumentValue(formValues.passbookCopy)
       };
