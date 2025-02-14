@@ -23,7 +23,7 @@ export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = (
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between h-[24px]">
+      <div className="flex items-center justify-between">
         <h3 className="font-semibold text-[#1A1F2C]">Permanent Address</h3>
         <FormField
           control={form.control}
