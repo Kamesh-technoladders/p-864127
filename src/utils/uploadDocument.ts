@@ -11,13 +11,18 @@ export const uploadDocument = async (
       throw new Error('Missing required fields for upload');
     }
 
+    // Create a properly structured FormData object
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', file, file.name); // Include filename explicitly
     formData.append('type', type);
     formData.append('employeeId', employeeId);
 
+    // Use the supabase client to handle the URL construction
     const { data, error } = await supabase.functions.invoke('upload-document', {
-      body: formData
+      body: formData,
+      headers: {
+        'Accept': 'application/json',
+      },
     });
 
     if (error) {
