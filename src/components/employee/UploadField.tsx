@@ -64,6 +64,32 @@ export const UploadField: React.FC<UploadFieldProps> = ({
     setShowDeleteDialog(false);
   };
 
+  const createSyntheticEvent = (file: File): ChangeEvent<HTMLInputElement> => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    input.files = dataTransfer.files;
+
+    return {
+      target: input,
+      currentTarget: input,
+      bubbles: true,
+      cancelable: true,
+      defaultPrevented: false,
+      eventPhase: Event.AT_TARGET,
+      isTrusted: true,
+      preventDefault: () => {},
+      isDefaultPrevented: () => false,
+      stopPropagation: () => {},
+      isPropagationStopped: () => false,
+      persist: () => {},
+      timeStamp: Date.now(),
+      type: 'change',
+      nativeEvent: new Event('change')
+    } as ChangeEvent<HTMLInputElement>;
+  };
+
   return (
     <>
       <div className={`flex flex-col ${compact ? 'gap-1' : 'gap-2'}`}>
@@ -77,23 +103,7 @@ export const UploadField: React.FC<UploadFieldProps> = ({
             <FilePreview
               file={currentFile}
               onReplace={(file) => {
-                handleFileChange({
-                  target: { files: [file] },
-                  currentTarget: { files: [file] },
-                  nativeEvent: new Event('change'),
-                  bubbles: true,
-                  cancelable: true,
-                  defaultPrevented: false,
-                  eventPhase: 0,
-                  isTrusted: true,
-                  preventDefault: () => {},
-                  isDefaultPrevented: () => false,
-                  stopPropagation: () => {},
-                  isPropagationStopped: () => false,
-                  persist: () => {},
-                  timeStamp: Date.now(),
-                  type: 'change'
-                } as ChangeEvent<HTMLInputElement>);
+                handleFileChange(createSyntheticEvent(file));
               }}
               onDelete={() => setShowDeleteDialog(true)}
               compact={compact}
