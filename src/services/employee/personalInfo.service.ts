@@ -18,8 +18,29 @@ export const personalInfoService = {
     return !!data;
   },
 
+  async checkEmailExists(email: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error checking email:', error);
+      throw new Error('Failed to check email');
+    }
+
+    return !!data;
+  },
+
   async createPersonalInfo(personalInfo: PersonalInfo) {
     try {
+      // Check if email already exists
+      const emailExists = await this.checkEmailExists(personalInfo.email);
+      if (emailExists) {
+        throw new Error(`Email ${personalInfo.email} is already registered`);
+      }
+
       const { data: employee, error: employeeError } = await supabase
         .from('employees')
         .insert({
@@ -32,7 +53,7 @@ export const personalInfoService = {
           gender: personalInfo.gender,
           blood_group: personalInfo.bloodGroup,
           marital_status: personalInfo.maritalStatus,
-          employment_start_date: new Date().toISOString(), // Using the correct column name
+          employment_start_date: new Date().toISOString(),
           present_address: {
             addressLine1: personalInfo.presentAddress.addressLine1,
             country: personalInfo.presentAddress.country,
@@ -52,6 +73,9 @@ export const personalInfoService = {
         .single();
 
       if (employeeError) {
+        if (employeeError.code === '23505' && employeeError.message.includes('employees_email_key')) {
+          throw new Error(`Email ${personalInfo.email} is already registered`);
+        }
         console.error('Error creating employee:', employeeError);
         throw employeeError;
       }

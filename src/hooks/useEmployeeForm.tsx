@@ -97,7 +97,7 @@ export const useEmployeeForm = () => {
           window.location.reload(); // Refresh to show updated table
         } catch (error: any) {
           console.error('Error saving employee data:', error);
-          if (error.message && error.message.includes('Employee ID')) {
+          if (error.message && (error.message.includes('Employee ID') || error.message.includes('Email'))) {
             toast.error(error.message);
           } else {
             toast.error("Failed to save employee information. Please try again.");
