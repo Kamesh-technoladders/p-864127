@@ -20,6 +20,7 @@ export const useFormState = () => {
   });
 
   const updateSectionProgress = (section: keyof FormProgress, completed: boolean) => {
+    console.log(`Updating ${section} progress:`, completed);
     setFormProgress((prev) => ({
       ...prev,
       [section]: completed,
@@ -28,22 +29,15 @@ export const useFormState = () => {
 
   const updateFormData = (section: keyof FormData, data: any) => {
     console.log(`Updating ${section} data:`, data);
-    setFormData((prev) => {
-      const newFormData = {
-        ...prev,
-        [section]: data,
-      };
-      console.log('Updated form data:', newFormData);
-      return newFormData;
-    });
+    setFormData((prev) => ({
+      ...prev,
+      [section]: data,
+    }));
   };
 
   const handleTabChange = (tabId: string) => {
-    const currentTabProgress = formProgress[activeTab as keyof FormProgress];
-    const currentTabData = formData[activeTab as keyof FormData];
-    
-    if (!currentTabProgress || !currentTabData) {
-      toast.error("Please complete and save the current section before proceeding");
+    if (!formProgress[activeTab as keyof FormProgress]) {
+      toast.error("Please save the current section before proceeding");
       return;
     }
     setActiveTab(tabId);
