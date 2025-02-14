@@ -90,30 +90,30 @@ export const CalendarCard = () => {
   const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
   return (
-    <Card className="p-6 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
-      <div className="grid grid-cols-[2fr_3fr] gap-8 h-[600px]">
-        <div className="space-y-6">
+    <Card className="p-4 hover:shadow-md transition-shadow bg-white/80 backdrop-blur-sm">
+      <div className="grid grid-cols-[2fr_3fr] gap-4 h-[440px]">
+        <div className="space-y-4">
           <div className="flex items-center justify-between px-2">
             <button 
               onClick={prevMonth}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
+              <ChevronLeft className="w-4 h-4 text-gray-600" />
             </button>
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-sm font-semibold text-gray-900">
               {format(currentDate, 'MMMM yyyy')}
             </h2>
             <button 
               onClick={nextMonth}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
             >
-              <ChevronRight className="w-5 h-5 text-gray-600" />
+              <ChevronRight className="w-4 h-4 text-gray-600" />
             </button>
           </div>
 
           <div className="grid grid-cols-7 gap-1">
             {weekDays.map(day => (
-              <div key={day} className="h-12 flex items-center justify-center text-sm font-medium text-gray-400">
+              <div key={day} className="h-8 flex items-center justify-center text-xs font-medium text-gray-400">
                 {day}
               </div>
             ))}
@@ -124,7 +124,7 @@ export const CalendarCard = () => {
               <TooltipProvider key={index}>
                 <div
                   className={cn(
-                    "h-12 w-12 flex items-center justify-center text-sm relative",
+                    "h-8 w-8 flex items-center justify-center text-xs relative",
                     "rounded-full transition-colors cursor-pointer mx-auto",
                     !day.isCurrentMonth && "text-gray-300",
                     day.isToday && !isSameDay(day.date, selectedDate) && "bg-blue-50 text-blue-600 font-medium",
@@ -139,10 +139,10 @@ export const CalendarCard = () => {
                   {day.holidayInfo && (
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
+                        <div className="absolute -top-0.5 -right-0.5 w-1 h-1 bg-red-500 rounded-full" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <div className="text-sm">
+                        <div className="text-xs">
                           <p className="font-medium">{day.holidayInfo.name}</p>
                           <p className="text-xs text-gray-500">{day.holidayInfo.localName}</p>
                         </div>
@@ -155,35 +155,35 @@ export const CalendarCard = () => {
           </div>
         </div>
         
-        <div className="space-y-4">
+        <div className="space-y-3">
           <Tabs defaultValue="events" className="w-full" onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 mb-4">
-              <TabsTrigger value="events" className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
+            <TabsList className="grid grid-cols-2 mb-2">
+              <TabsTrigger value="events" className="flex items-center gap-1 text-xs">
+                <Calendar className="w-3 h-3" />
                 Upcoming Events
               </TabsTrigger>
-              <TabsTrigger value="tasks" className="flex items-center gap-2">
-                <ListTodo className="w-4 h-4" />
+              <TabsTrigger value="tasks" className="flex items-center gap-1 text-xs">
+                <ListTodo className="w-3 h-3" />
                 Tasks
               </TabsTrigger>
             </TabsList>
             
             <TabsContent value="events" className="mt-0">
-              <ScrollArea className="h-[300px] w-full rounded-md">
-                <div className="space-y-3 pr-4">
+              <ScrollArea className="h-[350px] w-full rounded-md">
+                <div className="space-y-2 pr-4">
                   {[...Array(5)].map((_, i) => (
                     <div 
                       key={i}
-                      className="w-full bg-white border border-gray-100 p-4 rounded-lg hover:border-[#1A73E8]/20 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer"
+                      className="w-full bg-white border border-gray-100 p-3 rounded-lg hover:border-[#1A73E8]/20 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer"
                     >
-                      <div className="space-y-2">
-                        <div className="font-medium text-gray-800">Team Sync {i + 1}</div>
+                      <div className="space-y-1.5">
+                        <div className="font-medium text-sm text-gray-800">Team Sync {i + 1}</div>
                         <div className="text-xs text-gray-500">10:00 AM</div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-xs text-gray-600">
                           Daily standup meeting with the development team
                         </div>
                         <div className="flex items-center gap-2 text-xs text-[#1A73E8]">
-                          <div className="w-2 h-2 rounded-full bg-[#1A73E8]" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#1A73E8]" />
                           <span>In Progress</span>
                         </div>
                       </div>
@@ -194,8 +194,8 @@ export const CalendarCard = () => {
             </TabsContent>
 
             <TabsContent value="tasks" className="mt-0">
-              <ScrollArea className="h-[300px] w-full rounded-md">
-                <div className="space-y-3 pr-4">
+              <ScrollArea className="h-[350px] w-full rounded-md">
+                <div className="space-y-2 pr-4">
                   <TaskItem time="Sep 13, 08:50" title="Interview" completed={true} />
                   <TaskItem time="Sep 13, 10:30" title="Team-Meeting" completed={true} />
                   <TaskItem time="Sep 13, 13:00" title="Project Update" completed={false} />
