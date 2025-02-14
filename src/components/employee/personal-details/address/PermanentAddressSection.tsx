@@ -22,14 +22,14 @@ export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = (
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-[#1A1F2C]">Permanent Address</h3>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between pb-1">
+        <h3 className="text-sm font-semibold text-[#1A1F2C]">Permanent Address</h3>
         <FormField
           control={form.control}
           name="sameAsPresent"
           render={({ field }) => (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-1.5">
               <Checkbox
                 id="sameAsPresent"
                 checked={field.value}
@@ -37,10 +37,11 @@ export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = (
                   field.onChange(checked);
                   handleSameAsPresent(checked);
                 }}
+                className="h-3.5 w-3.5"
               />
               <label
                 htmlFor="sameAsPresent"
-                className="text-sm font-medium leading-none text-gray-700 whitespace-nowrap"
+                className="text-xs font-medium leading-none text-gray-700 whitespace-nowrap"
               >
                 Same as present address
               </label>

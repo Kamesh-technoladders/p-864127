@@ -18,7 +18,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({ form }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-8 items-start">
+      <div className="grid grid-cols-2 gap-6 items-start">
         <div className="w-full">
           <PresentAddressSection form={form} />
         </div>

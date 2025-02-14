@@ -15,17 +15,27 @@ interface AddressFieldsProps {
 
 export const AddressFields: React.FC<AddressFieldsProps> = ({ form, prefix, disabled }) => {
   return (
-    <div className="space-y-4">
-      <AddressLineField form={form} prefix={prefix} disabled={disabled} />
-
-      <div className="grid grid-cols-2 gap-4">
-        <CountryField form={form} prefix={prefix} disabled={disabled} />
-        <StateField form={form} prefix={prefix} disabled={disabled} />
+    <div className="space-y-3">
+      <div className="text-xs">
+        <AddressLineField form={form} prefix={prefix} disabled={disabled} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <CityField form={form} prefix={prefix} disabled={disabled} />
-        <ZipCodeField form={form} prefix={prefix} disabled={disabled} />
+      <div className="grid grid-cols-2 gap-3">
+        <div className="text-xs">
+          <CountryField form={form} prefix={prefix} disabled={disabled} />
+        </div>
+        <div className="text-xs">
+          <StateField form={form} prefix={prefix} disabled={disabled} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="text-xs">
+          <CityField form={form} prefix={prefix} disabled={disabled} />
+        </div>
+        <div className="text-xs">
+          <ZipCodeField form={form} prefix={prefix} disabled={disabled} />
+        </div>
       </div>
     </div>
   );
