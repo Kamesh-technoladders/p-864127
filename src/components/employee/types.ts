@@ -33,11 +33,11 @@ export interface PersonalDetailsFormProps extends FormComponentProps<PersonalDet
   emailError?: string | null;
 }
 
-export interface EducationFormProps extends FormComponentProps<EducationData> {}
+export interface EducationFormProps extends FormComponentProps<EmployeeEducation> {}
 
 export interface ExperienceFormProps {
   onComplete: (completed: boolean, data?: Experience[]) => void;
   experiences?: Experience[];
 }
 
-export interface BankAccountFormProps extends FormComponentProps<BankAccountData> {}
+export interface BankAccountFormProps extends FormComponentProps<BankDetails> {}

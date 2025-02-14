@@ -2,10 +2,10 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
-import { BankAccountData } from "../types";
+import { BankDetails } from "@/services/types/employee.types";
 
 interface BankDetailsSectionProps {
-  data: BankAccountData;
+  data: BankDetails;
   onEdit: () => void;
 }
 
@@ -13,6 +13,12 @@ export const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
   data,
   onEdit,
 }) => {
+  const getFileName = (file: string | File | undefined) => {
+    if (!file) return "";
+    if (file instanceof File) return file.name;
+    return file.split('/').pop() || file;
+  };
+
   return (
     <div className="p-6 bg-white rounded-lg border border-gray-200">
       <div className="flex justify-between items-center mb-4">
@@ -66,7 +72,7 @@ export const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
           <label className="text-sm text-gray-600">Cancelled Cheque</label>
           {data.cancelledCheque ? (
             <div className="flex items-center gap-2">
-              <span className="text-blue-600">{data.cancelledCheque.name}</span>
+              <span className="text-blue-600">{getFileName(data.cancelledCheque)}</span>
             </div>
           ) : (
             <span className="text-gray-400">No document uploaded</span>
@@ -76,7 +82,7 @@ export const BankDetailsSection: React.FC<BankDetailsSectionProps> = ({
           <label className="text-sm text-gray-600">Passbook Copy</label>
           {data.passbookCopy ? (
             <div className="flex items-center gap-2">
-              <span className="text-blue-600">{data.passbookCopy.name}</span>
+              <span className="text-blue-600">{getFileName(data.passbookCopy)}</span>
             </div>
           ) : (
             <span className="text-gray-400">No document uploaded</span>

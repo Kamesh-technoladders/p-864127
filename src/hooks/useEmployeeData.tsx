@@ -59,7 +59,11 @@ export const useEmployeeData = (employeeId: string | undefined) => {
 
       try {
         if (section === 'employment') {
-          const updateData: Partial<EmployeeBasicInfo> = {
+          if (!data.firstName || !data.lastName || !data.email) {
+            throw new Error('Required fields missing');
+          }
+          
+          const updateData: EmployeeBasicInfo = {
             firstName: data.firstName,
             lastName: data.lastName,
             email: data.email,
