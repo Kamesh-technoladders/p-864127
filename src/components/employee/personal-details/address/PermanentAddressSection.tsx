@@ -53,6 +53,7 @@ export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = (
         form={form} 
         prefix="permanentAddress" 
         disabled={form.watch("sameAsPresent")}
+        required={false}
       />
     </div>
   );

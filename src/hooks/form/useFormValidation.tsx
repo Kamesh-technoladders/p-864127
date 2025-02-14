@@ -2,6 +2,14 @@
 import { PersonalDetailsData, BankAccountData } from "@/components/employee/types";
 
 export const useFormValidation = () => {
+  const isAddressValid = (address: any) =>
+    address &&
+    address.addressLine1 &&
+    address.country &&
+    address.state &&
+    address.city &&
+    address.zipCode;
+
   const validatePersonalSection = (data: PersonalDetailsData | null) => {
     if (!data) return false;
 
@@ -31,18 +39,16 @@ export const useFormValidation = () => {
       bloodGroup &&
       maritalStatus;
 
-    const isAddressValid = (address: any) =>
-      address &&
-      address.addressLine1 &&
-      address.country &&
-      address.state &&
-      address.city &&
-      address.zipCode;
+    // Present address is mandatory
+    const isPresentAddressValid = isAddressValid(presentAddress);
+    
+    // Permanent address is optional
+    const isPermanentAddressValid = !permanentAddress || Object.keys(permanentAddress).length === 0 || isAddressValid(permanentAddress);
 
     return (
       isBasicInfoValid &&
-      isAddressValid(presentAddress) &&
-      isAddressValid(permanentAddress) &&
+      isPresentAddressValid &&
+      isPermanentAddressValid &&
       Array.isArray(documents)
     );
   };
