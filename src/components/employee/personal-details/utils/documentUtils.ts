@@ -17,7 +17,7 @@ export const validateDocument = (type: keyof typeof documentSchema.shape, value:
     if (error instanceof Error) {
       toast.error(error.message, {
         duration: 2000,
-        icon: <AlertCircle className="h-4 w-4" />
+        icon: React.createElement(AlertCircle, { className: "h-4 w-4" })
       });
     }
     return false;
