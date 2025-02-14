@@ -5,8 +5,8 @@ export const useFormValidation = () => {
   const validateForm = (
     emergencyContacts: EmergencyContact[],
     familyDetails: FamilyMember[],
-    setEmergencyContacts: (contacts: EmergencyContact[]) => void,
-    setFamilyDetails: (members: FamilyMember[]) => void
+    setEmergencyContacts: React.Dispatch<React.SetStateAction<EmergencyContact[]>>,
+    setFamilyDetails: React.Dispatch<React.SetStateAction<FamilyMember[]>>
   ) => {
     const hasValidEmergencyContact = emergencyContacts.some(
       contact => 
@@ -24,8 +24,8 @@ export const useFormValidation = () => {
     );
 
     if (!hasValidEmergencyContact) {
-      setEmergencyContacts(contacts => 
-        contacts.filter(contact => 
+      setEmergencyContacts(prevContacts => 
+        prevContacts.filter(contact => 
           contact.name.trim() !== "" || 
           contact.relationship.trim() !== "" || 
           contact.phone.trim() !== ""
@@ -34,8 +34,8 @@ export const useFormValidation = () => {
     }
 
     if (!hasValidFamilyMember) {
-      setFamilyDetails(members => 
-        members.filter(member => 
+      setFamilyDetails(prevMembers => 
+        prevMembers.filter(member => 
           member.name.trim() !== "" || 
           member.relationship.trim() !== "" || 
           member.occupation.trim() !== "" || 

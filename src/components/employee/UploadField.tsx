@@ -29,6 +29,12 @@ const formatFileSize = (size: number): string => {
   return (size / (1024 * 1024)).toFixed(1) + ' MB';
 };
 
+const getFileType = (type: string | undefined): string => {
+  if (!type) return '';
+  const parts = type.split('/');
+  return parts.length > 1 ? parts[1].toUpperCase() : type.toUpperCase();
+};
+
 export const UploadField: React.FC<UploadFieldProps> = ({
   label,
   value,
@@ -75,9 +81,9 @@ export const UploadField: React.FC<UploadFieldProps> = ({
     }
   };
 
-  const isImage = currentFile?.type?.startsWith('image/');
+  const isImage = currentFile?.type?.startsWith('image/') ?? false;
   const fileSize = currentFile?.size ? formatFileSize(currentFile.size) : '';
-  const fileType = currentFile?.type ? currentFile.type.split('/')[1].toUpperCase() : '';
+  const fileType = currentFile?.type ? getFileType(currentFile.type) : '';
 
   return (
     <div className={`flex flex-col ${compact ? 'gap-1' : 'gap-2'}`}>
