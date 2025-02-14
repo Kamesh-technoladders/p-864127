@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { LoaderCircle, FileText, X, AlertCircle } from "lucide-react";
+import { LoaderCircle, FileText, X, AlertCircle, Replace } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface UploadedFile {
@@ -97,7 +97,7 @@ export const UploadField: React.FC<UploadFieldProps> = ({
       <div className="self-stretch flex flex-col gap-1">
         <div className="flex items-center gap-2 flex-wrap">
           {currentFile ? (
-            <div className={`flex items-center gap-2 ${compact ? 'p-1.5' : 'p-2'} bg-gray-50 rounded-lg w-full`}>
+            <div className={`flex items-center gap-2 ${compact ? 'p-1.5' : 'p-2'} bg-gray-50 rounded-lg w-full group hover:bg-gray-100 transition-colors`}>
               {isImage ? (
                 <img 
                   src={currentFile.url} 
@@ -115,14 +115,27 @@ export const UploadField: React.FC<UploadFieldProps> = ({
                   </span>
                 )}
               </div>
-              {onRemove && (
-                <button
-                  onClick={onRemove}
-                  className="p-1 hover:bg-gray-200 rounded-full shrink-0"
-                >
-                  <X className="h-4 w-4 text-gray-500" />
-                </button>
-              )}
+              <div className="flex items-center gap-2">
+                <label className="cursor-pointer p-1.5 rounded-full hover:bg-gray-200 transition-colors">
+                  <Replace className="h-4 w-4 text-gray-500" />
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    disabled={isUploading}
+                    multiple={multiple}
+                  />
+                </label>
+                {onRemove && (
+                  <button
+                    onClick={onRemove}
+                    className="p-1.5 hover:bg-gray-200 rounded-full transition-colors"
+                  >
+                    <X className="h-4 w-4 text-gray-500" />
+                  </button>
+                )}
+              </div>
             </div>
           ) : (
             <div className={`flex items-center justify-between w-full ${compact ? 'p-2' : 'p-4'} border border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors`}>
