@@ -6,13 +6,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const OnboardingTasksCard = () => {
   return (
-    <Card className="p-6 bg-[#1C1C1C] text-white hover:shadow-xl transition-shadow h-[200px] relative">
+    <Card className="p-6 bg-[#1C1C1C] text-white hover:shadow-xl transition-shadow h-full relative">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-medium">Onboarding Tasks (2/8)</h3>
       </div>
       
-      <ScrollArea className="h-[120px] pr-4 -mr-4">
-        <div className="space-y-1">
+      <ScrollArea className="h-[270px] pr-4 -mr-4">
+        <div className="space-y-2">
           <TaskItem time="Sep 13, 08:50" title="Interview" completed={true} />
           <TaskItem time="Sep 13, 10:30" title="Team-Meeting" completed={true} />
           <TaskItem time="Sep 13, 13:00" title="Project Update" completed={false} />
