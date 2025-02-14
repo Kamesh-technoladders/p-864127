@@ -8,17 +8,15 @@ import { toast } from 'sonner';
 
 interface ExperienceSectionProps {
   employeeId: string;
+  onExperienceUpdate?: () => void;
 }
 
 export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   employeeId,
+  onExperienceUpdate
 }) => {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [viewingDocument, setViewingDocument] = useState<{ url: string; type: string } | null>(null);
-
-  useEffect(() => {
-    fetchExperiences();
-  }, [employeeId]);
 
   const fetchExperiences = async () => {
     try {
@@ -37,11 +35,17 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         payslips: exp.payslips || []
       }));
       setExperiences(transformedData);
+      // Notify parent component about the update
+      onExperienceUpdate?.();
     } catch (error) {
       console.error('Error fetching experiences:', error);
       toast.error('Failed to load experiences');
     }
   };
+
+  useEffect(() => {
+    fetchExperiences();
+  }, [employeeId]);
 
   const getDocumentUrl = (docType: keyof Pick<Experience, 'offerLetter' | 'separationLetter' | 'payslips'>, experience: Experience): string | null => {
     const doc = docType === 'payslips' ? experience.payslips?.[0] : experience[docType];
