@@ -93,11 +93,11 @@ export const CalendarCard = () => {
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="events" className="flex-1 mt-0">
+            <TabsContent value="events" className="h-[calc(100%-32px)] mt-0">
               <EventsList />
             </TabsContent>
 
-            <TabsContent value="tasks" className="flex-1 mt-0">
+            <TabsContent value="tasks" className="h-[calc(100%-32px)] mt-0">
               <TasksList />
             </TabsContent>
           </Tabs>

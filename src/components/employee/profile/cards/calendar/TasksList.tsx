@@ -5,8 +5,8 @@ import { TaskItem } from "../../TaskSection";
 
 export const TasksList: React.FC = () => {
   return (
-    <ScrollArea className="h-[calc(100%-4px)] w-full rounded-md">
-      <div className="space-y-1.5 pr-4">
+    <ScrollArea className="h-full w-full rounded-md">
+      <div className="space-y-1 pr-4">
         <TaskItem time="Sep 13, 08:50" title="Interview" completed={true} />
         <TaskItem time="Sep 13, 10:30" title="Team-Meeting" completed={true} />
         <TaskItem time="Sep 13, 13:00" title="Project Update" completed={false} />
