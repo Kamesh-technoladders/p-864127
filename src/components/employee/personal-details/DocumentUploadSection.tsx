@@ -50,19 +50,27 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
 
   const handleDocumentDelete = async (documentType: Document['documentType']) => {
     try {
-      console.log('Deleting document:', documentType);
-      console.log('Current documents:', documents);
-      
-      // Filter out the deleted document from the documents array
+      // Remove the document from the documents array
       const updatedDocuments = documents.filter(doc => doc.documentType !== documentType);
-      
-      console.log('Updated documents after deletion:', updatedDocuments);
       onDocumentsChange(updatedDocuments);
       
       // Clear the document number from the form state
       const formField = `${documentType}Number`;
-      if (form.getValues(formField)) {
-        form.setValue(formField, '');
+      form.setValue(formField, '');
+      
+      // Clear any other form fields related to this document
+      form.setValue(`${documentType}Url`, '');
+      form.setValue(`${documentType}FileName`, '');
+      
+      // Reset the form field validation state
+      form.clearErrors(formField);
+      
+      // Clear the document from the parent component's state
+      const existingDoc = documents.find(doc => doc.documentType === documentType);
+      if (existingDoc) {
+        existingDoc.documentUrl = '';
+        existingDoc.documentNumber = '';
+        existingDoc.fileName = '';
       }
       
       return Promise.resolve();

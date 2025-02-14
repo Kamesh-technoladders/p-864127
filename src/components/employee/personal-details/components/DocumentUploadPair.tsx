@@ -73,13 +73,16 @@ export const DocumentUploadPair: React.FC<DocumentUploadPairProps> = ({
       if (onDelete) {
         await onDelete(documentType);
         toast.success(`${label} document deleted successfully`);
+        setShowDeleteDialog(false);
       }
-      setShowDeleteDialog(false);
     } catch (error) {
       console.error("Delete error:", error);
       toast.error(`Failed to delete ${label.toLowerCase()} document`);
     }
   };
+
+  // Only show the document UI if there's a valid document URL
+  const showDocument = currentDocument?.documentUrl && currentDocument.documentUrl !== '';
 
   return (
     <>
@@ -99,7 +102,7 @@ export const DocumentUploadPair: React.FC<DocumentUploadPairProps> = ({
             label={`${label} Card`}
             required={required}
             onUpload={handleUpload}
-            currentFile={currentDocument?.documentUrl ? {
+            currentFile={showDocument ? {
               name: currentDocument?.fileName || `${label} Card`,
               type: 'application/pdf',
               url: currentDocument?.documentUrl
