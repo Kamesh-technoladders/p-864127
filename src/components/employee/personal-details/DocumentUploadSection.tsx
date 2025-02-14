@@ -41,7 +41,10 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
       onDocumentsChange(updatedDocuments);
     } catch (error) {
       console.error('Error uploading document:', error);
-      toast.error('Error uploading document. Please try again.');
+      toast.error('Error uploading document. Please try again.', {
+        duration: 2000,
+        icon: <AlertCircle className="h-4 w-4" />
+      });
     }
   };
 
@@ -64,6 +67,8 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
     }
     
     onDocumentsChange(updatedDocuments);
+
+    // Validate after state update to not block input
     validateDocument(validationType, value);
   };
 
@@ -79,7 +84,7 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
           form={form}
           documentType="aadhar"
           documents={documents}
-          label="Aadhar"
+          label="Aadhar Number"
           required
           updateDocumentNumber={updateDocumentNumber}
           onUpload={handleFileUpload('aadhar')}
@@ -89,7 +94,7 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
           form={form}
           documentType="pan"
           documents={documents}
-          label="PAN"
+          label="PAN Number"
           required
           updateDocumentNumber={updateDocumentNumber}
           onUpload={handleFileUpload('pan')}
@@ -99,7 +104,7 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
           form={form}
           documentType="uan"
           documents={documents}
-          label="UAN"
+          label="UAN Number"
           updateDocumentNumber={updateDocumentNumber}
           onUpload={handleFileUpload('uan')}
         />
@@ -108,7 +113,7 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
           form={form}
           documentType="esic"
           documents={documents}
-          label="ESIC"
+          label="ESIC Number"
           updateDocumentNumber={updateDocumentNumber}
           onUpload={handleFileUpload('esic')}
         />

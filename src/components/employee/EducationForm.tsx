@@ -4,28 +4,21 @@ import { UploadField } from "./UploadField";
 import { EducationFormProps } from "./types";
 import { uploadDocument } from "@/utils/uploadDocument";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initialData }) => {
   const [ssc, setSsc] = useState<File | null>(null);
   const [hsc, setHsc] = useState<File | null>(null);
   const [degree, setDegree] = useState<File | null>(null);
-  const [institute, setInstitute] = useState(initialData?.institute || '');
-  const [yearCompleted, setYearCompleted] = useState(initialData?.yearCompleted || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({
     ssc: false,
     hsc: false,
-    degree: false,
-    institute: false,
-    yearCompleted: false
+    degree: false
   });
 
   useEffect(() => {
     if (initialData) {
-      setInstitute(initialData.institute);
-      setYearCompleted(initialData.yearCompleted);
+      // Handle initial data if provided
     }
   }, [initialData]);
 
@@ -33,16 +26,11 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
     const newErrors = {
       ssc: !ssc,
       hsc: !hsc,
-      degree: !degree,
-      institute: !institute,
-      yearCompleted: !yearCompleted
+      degree: !degree
     };
     setErrors(newErrors);
 
     const educationData = {
-      type: 'degree', // Setting a default type
-      institute,
-      yearCompleted,
       ssc,
       hsc,
       degree
@@ -50,7 +38,7 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
     
     const isComplete = !Object.values(newErrors).some(error => error);
     onComplete(isComplete, educationData);
-  }, [ssc, hsc, degree, institute, yearCompleted, onComplete]);
+  }, [ssc, hsc, degree, onComplete]);
 
   const handleFileUpload = async (file: File, type: 'ssc' | 'hsc' | 'degree') => {
     try {
@@ -87,70 +75,40 @@ export const EducationForm: React.FC<EducationFormProps> = ({ onComplete, initia
         Add your course and certificate here.
       </div>
 
-      <div className="mt-6 space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="institute">Institute Name</Label>
-          <Input
-            id="institute"
-            value={institute}
-            onChange={(e) => setInstitute(e.target.value)}
-            placeholder="Enter your institute name"
-            className={errors.institute ? "border-red-500" : ""}
-          />
-          {errors.institute && (
-            <span className="text-xs text-red-500">Institute name is required</span>
-          )}
-        </div>
+      <div className="mt-6">
+        <UploadField 
+          label="SSC" 
+          required 
+          onUpload={(file) => handleFileUpload(file, 'ssc')}
+          showProgress
+          value={ssc?.name}
+          currentFile={ssc ? { name: ssc.name, type: ssc.type } : null}
+          error={errors.ssc ? "SSC certificate is required" : undefined}
+        />
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="yearCompleted">Year Completed</Label>
-          <Input
-            id="yearCompleted"
-            value={yearCompleted}
-            onChange={(e) => setYearCompleted(e.target.value)}
-            placeholder="Enter year of completion"
-            className={errors.yearCompleted ? "border-red-500" : ""}
-          />
-          {errors.yearCompleted && (
-            <span className="text-xs text-red-500">Year completed is required</span>
-          )}
-        </div>
+      <div className="mt-6">
+        <UploadField 
+          label="HSC/Diploma" 
+          required 
+          onUpload={(file) => handleFileUpload(file, 'hsc')}
+          showProgress
+          value={hsc?.name}
+          currentFile={hsc ? { name: hsc.name, type: hsc.type } : null}
+          error={errors.hsc ? "HSC/Diploma certificate is required" : undefined}
+        />
+      </div>
 
-        <div>
-          <UploadField 
-            label="SSC" 
-            required 
-            onUpload={(file) => handleFileUpload(file, 'ssc')}
-            showProgress
-            value={ssc?.name}
-            currentFile={ssc ? { name: ssc.name, type: ssc.type } : null}
-            error={errors.ssc ? "SSC certificate is required" : undefined}
-          />
-        </div>
-
-        <div>
-          <UploadField 
-            label="HSC/Diploma" 
-            required 
-            onUpload={(file) => handleFileUpload(file, 'hsc')}
-            showProgress
-            value={hsc?.name}
-            currentFile={hsc ? { name: hsc.name, type: hsc.type } : null}
-            error={errors.hsc ? "HSC/Diploma certificate is required" : undefined}
-          />
-        </div>
-
-        <div>
-          <UploadField 
-            label="Degree" 
-            required 
-            onUpload={(file) => handleFileUpload(file, 'degree')}
-            showProgress
-            value={degree?.name}
-            currentFile={degree ? { name: degree.name, type: degree.type } : null}
-            error={errors.degree ? "Degree certificate is required" : undefined}
-          />
-        </div>
+      <div className="mt-6">
+        <UploadField 
+          label="Degree" 
+          required 
+          onUpload={(file) => handleFileUpload(file, 'degree')}
+          showProgress
+          value={degree?.name}
+          currentFile={degree ? { name: degree.name, type: degree.type } : null}
+          error={errors.degree ? "Degree certificate is required" : undefined}
+        />
       </div>
     </div>
   );
