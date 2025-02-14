@@ -47,9 +47,9 @@ export interface PersonalDetailsData {
   maritalStatus: string;
   presentAddress: Address;
   permanentAddress: Address;
-  emergencyContacts?: EmergencyContact[];
-  familyDetails?: FamilyMember[];
-  documents?: EmployeeDocument[];
+  emergencyContacts: EmergencyContact[];
+  familyDetails: FamilyMember[];
+  documents: EmployeeDocument[];
 }
 
 export interface FormComponentProps<T = any> {

@@ -5,6 +5,7 @@ import { employeeService } from "@/services/employee/employee.service";
 import { useEmailValidation } from "./form/useEmailValidation";
 import { useFormValidation } from "./form/useFormValidation";
 import { useFormState } from "./form/useFormState";
+import { PersonalDetailsData } from "@/components/employee/types";
 
 export const useEmployeeForm = () => {
   const [isFormCompleted, setIsFormCompleted] = useState(false);
@@ -49,7 +50,7 @@ export const useEmployeeForm = () => {
         setIsSubmitting(true);
         try {
           console.log('Submitting form data:', formData);
-          const personalData = {
+          const personalData: PersonalDetailsData = {
             ...formData.personal!,
             emergencyContacts: formData.personal?.emergencyContacts || [],
             familyDetails: formData.personal?.familyDetails || [],
