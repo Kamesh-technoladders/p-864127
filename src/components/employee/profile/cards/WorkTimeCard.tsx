@@ -3,7 +3,13 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useWorkTimeStats } from "@/hooks/useWorkTimeStats";
-import { format } from "date-fns";
+import { format, isSameDay, isBefore, isAfter } from "date-fns";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface WorkTimeCardProps {
   employeeId: string;
@@ -21,6 +27,17 @@ export const WorkTimeCard: React.FC<WorkTimeCardProps> = ({ employeeId }) => {
   const getHeightPercentage = (hours: number) => {
     const maxHours = Math.max(...weeklyStats.map(day => day.total), 8); // At least 8 hours for scale
     return (hours / maxHours) * 100;
+  };
+
+  const getBarColor = (date: Date) => {
+    const today = new Date();
+    if (isSameDay(date, today)) {
+      return "bg-white border border-gray-200";
+    }
+    if (isBefore(date, today)) {
+      return "bg-black";
+    }
+    return "bg-transparent border border-gray-200";
   };
 
   if (isLoading) {
@@ -53,20 +70,31 @@ export const WorkTimeCard: React.FC<WorkTimeCardProps> = ({ employeeId }) => {
           {weeklyStats.map((day, i) => (
             <div key={i} className="flex flex-col h-[180px]">
               <div className="flex-1 flex items-end relative">
-                <div 
-                  className={`w-full rounded-t-lg transition-all duration-300 ${
-                    day.isToday ? "bg-brand-accent" : "bg-gray-100"
-                  }`}
-                  style={{
-                    height: `${Math.max(getHeightPercentage(day.total), 5)}%`
-                  }}
-                >
-                  {day.total > 0 && (
-                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-medium bg-gray-800 text-white px-2 py-1 rounded whitespace-nowrap">
-                      {formatHours(day.total)}
-                    </div>
-                  )}
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div 
+                        className={`w-full rounded-t-lg transition-all duration-300 ${getBarColor(day.date)}`}
+                        style={{
+                          height: `${Math.max(getHeightPercentage(day.total), 5)}%`
+                        }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="flex flex-col gap-1">
+                        <p className="font-medium">{format(day.date, 'EEEE, MMM d')}</p>
+                        <p className="text-sm">
+                          {day.total > 0 
+                            ? `Worked: ${formatHours(day.total)}`
+                            : isBefore(day.date, new Date())
+                              ? 'No work recorded'
+                              : 'Upcoming'
+                          }
+                        </p>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <div className="text-center text-xs text-gray-500 mt-2 whitespace-nowrap">
                 {format(day.date, 'EEE')}
