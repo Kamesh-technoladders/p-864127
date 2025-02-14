@@ -22,7 +22,7 @@ export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = (
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-[#1A1F2C]">Permanent Address</h3>
         <FormField
@@ -40,7 +40,7 @@ export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = (
               />
               <label
                 htmlFor="sameAsPresent"
-                className="text-sm font-medium leading-none text-gray-700"
+                className="text-sm font-medium leading-none text-gray-700 whitespace-nowrap"
               >
                 Same as present address
               </label>

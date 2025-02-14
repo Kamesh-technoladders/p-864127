@@ -15,7 +15,7 @@ interface AddressFieldsProps {
 
 export const AddressFields: React.FC<AddressFieldsProps> = ({ form, prefix, disabled }) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <AddressLineField form={form} prefix={prefix} disabled={disabled} />
 
       <div className="grid grid-cols-2 gap-4">
