@@ -47,6 +47,7 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
       lastName: initialData?.lastName || "",
       email: initialData?.email || "",
       phone: initialData?.phone || "",
+      dateOfBirth: initialData?.dateOfBirth ? new Date(initialData.dateOfBirth) : undefined,
       bloodGroup: initialData?.bloodGroup as any || undefined,
       maritalStatus: initialData?.maritalStatus as any || undefined,
       aadharNumber: initialData?.aadharNumber || "",
@@ -120,49 +121,9 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     });
   };
 
+  const currentMaritalStatus = form.watch("maritalStatus");
+
   return (
     <div className="flex w-[622px] max-w-full flex-col text-sm font-medium ml-[15px]">
       <Form {...form}>
-        <form id="personalDetailsForm" onSubmit={handleSubmit} className="space-y-6">
-          <BasicInfoSection
-            register={form}
-            errors={form.formState.errors}
-            isCheckingEmail={isCheckingEmail}
-            emailError={emailError}
-            profilePictureUrl={form.watch("profilePictureUrl")}
-            onProfilePictureChange={(url) => form.setValue("profilePictureUrl", url)}
-            onProfilePictureDelete={handleProfilePictureDelete}
-            setValue={form.setValue}
-            watch={form.watch}
-          />
-          
-          <div className="pt-2">
-            <DocumentUploadSection
-              form={form}
-              documents={documents}
-              onDocumentsChange={setDocuments}
-            />
-          </div>
-
-          <div className="pt-2">
-            <AddressSection form={form} />
-          </div>
-
-          <div className="pt-2">
-            <EmergencyContactsSection
-              contacts={emergencyContacts}
-              onContactsChange={setEmergencyContacts}
-            />
-          </div>
-
-          <div className="pt-2">
-            <FamilyDetailsSection
-              familyMembers={familyDetails}
-              onFamilyMembersChange={setFamilyDetails}
-            />
-          </div>
-        </form>
-      </Form>
-    </div>
-  );
-};
+        <form id="personalDetailsForm" onSubmit={handleSubmit} className="space

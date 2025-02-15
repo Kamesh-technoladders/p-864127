@@ -16,12 +16,19 @@ interface FamilyMember {
 interface FamilyDetailsSectionProps {
   familyMembers: FamilyMember[];
   onFamilyMembersChange: (members: FamilyMember[]) => void;
+  maritalStatus?: string;
 }
 
 export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
   familyMembers,
   onFamilyMembersChange,
+  maritalStatus
 }) => {
+  const getRelationshipOptions = () => {
+    const baseOptions = ['Father', 'Mother', 'Brother', 'Sister', 'Son', 'Daughter'];
+    return maritalStatus === 'married' ? ['Spouse', ...baseOptions] : baseOptions;
+  };
+
   const addFamilyMember = () => {
     onFamilyMembersChange([...familyMembers, { relationship: "", name: "", occupation: "", phone: "" }]);
   };
@@ -66,9 +73,11 @@ export const FamilyDetailsSection: React.FC<FamilyDetailsSectionProps> = ({
                       <SelectValue placeholder="Select relationship" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="spouse">Spouse</SelectItem>
-                      <SelectItem value="child">Child</SelectItem>
-                      <SelectItem value="parent">Parent</SelectItem>
+                      {getRelationshipOptions().map((option) => (
+                        <SelectItem key={option.toLowerCase()} value={option.toLowerCase()}>
+                          {option}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </TableCell>

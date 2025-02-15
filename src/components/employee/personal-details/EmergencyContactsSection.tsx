@@ -15,12 +15,19 @@ interface EmergencyContact {
 interface EmergencyContactsSectionProps {
   contacts: EmergencyContact[];
   onContactsChange: (contacts: EmergencyContact[]) => void;
+  maritalStatus?: string;
 }
 
 export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> = ({
   contacts,
   onContactsChange,
+  maritalStatus
 }) => {
+  const getRelationshipOptions = () => {
+    const baseOptions = ['Parent', 'Sibling', 'Other'];
+    return maritalStatus === 'married' ? ['Spouse', ...baseOptions] : baseOptions;
+  };
+
   const addEmergencyContact = () => {
     onContactsChange([...contacts, { relationship: "", name: "", phone: "" }]);
   };
@@ -64,9 +71,11 @@ export const EmergencyContactsSection: React.FC<EmergencyContactsSectionProps> =
                       <SelectValue placeholder="Select relationship" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="spouse">Spouse</SelectItem>
-                      <SelectItem value="parent">Parent</SelectItem>
-                      <SelectItem value="sibling">Sibling</SelectItem>
+                      {getRelationshipOptions().map((option) => (
+                        <SelectItem key={option.toLowerCase()} value={option.toLowerCase()}>
+                          {option}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </TableCell>

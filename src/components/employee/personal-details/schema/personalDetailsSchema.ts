@@ -19,6 +19,7 @@ export const personalDetailsSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  dateOfBirth: z.date().max(new Date(), "Date of birth cannot be in the future"),
   bloodGroup: z.enum(BLOOD_GROUPS, {
     required_error: "Blood group is required"
   }),
