@@ -1,7 +1,7 @@
 
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { EmployeeData, PersonalInfo, EmployeeBasicInfo } from "@/services/types/employee.types";
+import { EmployeeData, PersonalInfo } from "@/services/types/employee.types";
 import { employeeDataService } from "@/services/employee/employeeDataService";
 import { employeeAddressService } from "@/services/employee/employeeAddressService";
 import { employeeContactService } from "@/services/employee/employeeContactService";
@@ -32,7 +32,14 @@ export const useEmployeeData = (employeeId: string | undefined) => {
         throw new Error('Employee not found');
       }
 
-      const transformedData = transformEmployeeData(employeeDetails);
+      const transformedData = {
+        ...transformEmployeeData(employeeDetails),
+        aadharNumber: employeeDetails.aadhar_number || '',
+        panNumber: employeeDetails.pan_number || '',
+        aadharUrl: employeeDetails.aadhar_url || '',
+        panUrl: employeeDetails.pan_url || ''
+      };
+
       console.log('Transformed employee data:', transformedData);
       setEmployeeData(transformedData);
 

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ProfileHeader } from "./ProfileHeader";
 import { StatsBar } from "./StatsBar";
@@ -9,6 +8,7 @@ import { BankInfoSection } from "./sections/BankInfoSection";
 import { MetricsSection } from "./sections/MetricsSection";
 import { EmploymentDetailsModal } from "./modals/EmploymentDetailsModal";
 import { PersonalDetailsEditModal } from "../modals/PersonalDetailsEditModal";
+import { PersonalDetailsData } from "../types";
 
 interface ProfileContentProps {
   employeeData: any;

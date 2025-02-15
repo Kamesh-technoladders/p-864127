@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -5,7 +6,6 @@ import { BasicInfoSection } from "./personal-details/BasicInfoSection";
 import { AddressSection } from "./personal-details/AddressSection";
 import { EmergencyContactsSection } from "./personal-details/EmergencyContactsSection";
 import { FamilyDetailsSection } from "./personal-details/FamilyDetailsSection";
-import { DocumentUploadSection } from "./personal-details/DocumentUploadSection";
 import { PersonalDetailsFormProps } from "./types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { personalDetailsSchema, PersonalDetailsFormSchema } from "./personal-details/schema/personalDetailsSchema";
@@ -91,6 +91,8 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     const formData = {
       ...data,
       employeeId: data.employeeId,
+      aadharNumber: data.aadharNumber,
+      panNumber: data.panNumber,
       emergencyContacts: validEmergencyContacts,
       familyDetails: validFamilyDetails,
       documents,
@@ -115,53 +117,44 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     onComplete(true, formData);
   });
 
-  const handleProfilePictureDelete = async (): Promise<void> => {
-    return new Promise<void>((resolve) => {
-      form.setValue("profilePictureUrl", "");
-      toast.success("Profile picture deleted successfully");
-      resolve();
-    });
-  };
-
-  const currentMaritalStatus = form.watch("maritalStatus");
-
   return (
-    <div className="flex w-[622px] max-w-full flex-col text-sm font-medium ml-[15px]">
-      <Form {...form}>
-        <form id="personalDetailsForm" onSubmit={handleSubmit} className="space-y-6">
-          <BasicInfoSection
-            register={form}
-            errors={form.formState.errors}
-            isCheckingEmail={isCheckingEmail}
-            emailError={emailError}
-            profilePictureUrl={form.watch("profilePictureUrl")}
-            onProfilePictureChange={(url) => form.setValue("profilePictureUrl", url)}
-            onProfilePictureDelete={handleProfilePictureDelete}
-            setValue={form.setValue}
-            watch={form.watch}
+    <Form {...form}>
+      <form id="personalDetailsForm" onSubmit={handleSubmit} className="space-y-6">
+        <BasicInfoSection
+          register={form}
+          errors={form.formState.errors}
+          isCheckingEmail={isCheckingEmail}
+          emailError={emailError}
+          profilePictureUrl={form.watch("profilePictureUrl")}
+          onProfilePictureChange={(url) => form.setValue("profilePictureUrl", url)}
+          onProfilePictureDelete={async () => {
+            form.setValue("profilePictureUrl", "");
+            return Promise.resolve();
+          }}
+          setValue={form.setValue}
+          watch={form.watch}
+        />
+        
+        <div className="pt-2">
+          <AddressSection form={form} />
+        </div>
+
+        <div className="pt-2">
+          <EmergencyContactsSection
+            contacts={emergencyContacts}
+            onContactsChange={setEmergencyContacts}
+            maritalStatus={form.watch("maritalStatus")}
           />
-          
-          <div className="pt-2">
-            <AddressSection form={form} />
-          </div>
+        </div>
 
-          <div className="pt-2">
-            <EmergencyContactsSection
-              contacts={emergencyContacts}
-              onContactsChange={setEmergencyContacts}
-              maritalStatus={currentMaritalStatus}
-            />
-          </div>
-
-          <div className="pt-2">
-            <FamilyDetailsSection
-              familyMembers={familyDetails}
-              onFamilyMembersChange={setFamilyDetails}
-              maritalStatus={currentMaritalStatus}
-            />
-          </div>
-        </form>
-      </Form>
-    </div>
+        <div className="pt-2">
+          <FamilyDetailsSection
+            familyMembers={familyDetails}
+            onFamilyMembersChange={setFamilyDetails}
+            maritalStatus={form.watch("maritalStatus")}
+          />
+        </div>
+      </form>
+    </Form>
   );
 };
