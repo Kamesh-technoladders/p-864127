@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { PersonalInfo } from "../types/employee.types";
 
@@ -41,6 +40,8 @@ export const personalInfoService = {
         throw new Error(`Email ${personalInfo.email} is already registered`);
       }
 
+      console.log('Creating employee with data:', personalInfo);
+
       const { data: employee, error: employeeError } = await supabase
         .from('employees')
         .insert({
@@ -54,31 +55,18 @@ export const personalInfoService = {
           blood_group: personalInfo.bloodGroup,
           marital_status: personalInfo.maritalStatus,
           employment_start_date: new Date().toISOString(),
-          present_address: {
-            addressLine1: personalInfo.presentAddress.addressLine1,
-            country: personalInfo.presentAddress.country,
-            state: personalInfo.presentAddress.state,
-            city: personalInfo.presentAddress.city,
-            zipCode: personalInfo.presentAddress.zipCode
-          },
-          permanent_address: {
-            addressLine1: personalInfo.permanentAddress.addressLine1,
-            country: personalInfo.permanentAddress.country,
-            state: personalInfo.permanentAddress.state,
-            city: personalInfo.permanentAddress.city,
-            zipCode: personalInfo.permanentAddress.zipCode
-          }
+          present_address: personalInfo.presentAddress,
+          permanent_address: personalInfo.permanentAddress
         })
         .select()
         .single();
 
       if (employeeError) {
-        if (employeeError.code === '23505' && employeeError.message.includes('employees_email_key')) {
-          throw new Error(`Email ${personalInfo.email} is already registered`);
-        }
         console.error('Error creating employee:', employeeError);
         throw employeeError;
       }
+
+      console.log('Employee created successfully:', employee);
 
       // Insert addresses
       const addresses = [
