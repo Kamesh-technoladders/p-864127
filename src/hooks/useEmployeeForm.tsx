@@ -24,14 +24,58 @@ export const useEmployeeForm = () => {
 
   const { isCheckingEmail, emailError, setEmailError } = useEmailValidation(formData.personal?.email);
 
+  const validateAddressData = (data: any) => {
+    if (!data.presentAddress || !data.permanentAddress) {
+      throw new Error("Missing address data");
+    }
+
+    const requiredFields = ['addressLine1', 'country', 'state', 'city', 'zipCode'];
+    
+    // Validate present address
+    for (const field of requiredFields) {
+      if (!data.presentAddress[field]) {
+        throw new Error(`Present address: ${field} is required`);
+      }
+    }
+
+    // Validate permanent address
+    for (const field of requiredFields) {
+      if (!data.permanentAddress[field]) {
+        throw new Error(`Permanent address: ${field} is required`);
+      }
+    }
+
+    return true;
+  };
+
   const handleSaveAndNext = async (completedData?: any) => {
     // For personal details tab
     if (activeTab === "personal") {
       setIsSubmitting(true);
       try {
         if (completedData) {
+          // Validate address data before submission
+          validateAddressData(completedData);
+
           // First save to backend
-          const savedEmployee = await personalInfoService.createPersonalInfo(completedData);
+          const savedEmployee = await personalInfoService.createPersonalInfo({
+            ...completedData,
+            presentAddress: {
+              addressLine1: completedData.presentAddress.addressLine1,
+              country: completedData.presentAddress.country,
+              state: completedData.presentAddress.state,
+              city: completedData.presentAddress.city,
+              zipCode: completedData.presentAddress.zipCode
+            },
+            permanentAddress: {
+              addressLine1: completedData.permanentAddress.addressLine1,
+              country: completedData.permanentAddress.country,
+              state: completedData.permanentAddress.state,
+              city: completedData.permanentAddress.city,
+              zipCode: completedData.permanentAddress.zipCode
+            }
+          });
+
           if (!savedEmployee) {
             throw new Error("Failed to save personal details");
           }
@@ -39,7 +83,7 @@ export const useEmployeeForm = () => {
           // Then update form state with the saved data
           const personalData: PersonalDetailsData = {
             ...completedData,
-            id: savedEmployee.id // Add the id from backend
+            id: savedEmployee.id
           };
           
           updateFormData("personal", personalData);

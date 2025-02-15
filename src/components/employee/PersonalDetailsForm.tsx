@@ -31,24 +31,20 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     setDocuments
   } = useFormInitialization(initialData);
 
+  const defaultAddressValues = {
+    addressLine1: "",
+    country: "",
+    state: "",
+    city: "",
+    zipCode: ""
+  };
+
   const form = useForm({
     defaultValues: {
       ...initialData,
       profilePictureUrl: initialData?.profilePictureUrl || "",
-      presentAddress: initialData?.presentAddress || {
-        addressLine1: "",
-        country: "",
-        state: "",
-        city: "",
-        zipCode: ""
-      },
-      permanentAddress: initialData?.permanentAddress || {
-        addressLine1: "",
-        country: "",
-        state: "",
-        city: "",
-        zipCode: ""
-      },
+      presentAddress: initialData?.presentAddress || defaultAddressValues,
+      permanentAddress: initialData?.permanentAddress || defaultAddressValues,
       sameAsPresent: false
     },
     resolver: zodResolver(personalDetailsSchema)
@@ -84,7 +80,22 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
       emergencyContacts: validEmergencyContacts,
       familyDetails: validFamilyDetails,
       documents,
-      profilePictureUrl: data.profilePictureUrl
+      profilePictureUrl: data.profilePictureUrl,
+      // Ensure address data is properly structured
+      presentAddress: {
+        addressLine1: data.presentAddress.addressLine1,
+        country: data.presentAddress.country,
+        state: data.presentAddress.state,
+        city: data.presentAddress.city,
+        zipCode: data.presentAddress.zipCode
+      },
+      permanentAddress: {
+        addressLine1: data.permanentAddress.addressLine1,
+        country: data.permanentAddress.country,
+        state: data.permanentAddress.state,
+        city: data.permanentAddress.city,
+        zipCode: data.permanentAddress.zipCode
+      }
     };
 
     console.log('Form submitted:', formData);
