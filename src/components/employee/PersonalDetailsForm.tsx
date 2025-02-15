@@ -9,7 +9,7 @@ import { FamilyDetailsSection } from "./personal-details/FamilyDetailsSection";
 import { DocumentUploadSection } from "./personal-details/DocumentUploadSection";
 import { PersonalDetailsFormProps } from "./types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { personalDetailsSchema } from "./personal-details/schema/personalDetailsSchema";
+import { personalDetailsSchema, PersonalDetailsFormSchema } from "./personal-details/schema/personalDetailsSchema";
 import { useFormValidation } from "./personal-details/hooks/useFormValidation";
 import { useFormInitialization } from "./personal-details/hooks/useFormInitialization";
 import { toast } from "sonner";
@@ -39,10 +39,20 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     zipCode: ""
   };
 
-  const form = useForm({
+  const form = useForm<PersonalDetailsFormSchema>({
     defaultValues: {
-      ...initialData,
       profilePictureUrl: initialData?.profilePictureUrl || "",
+      employeeId: initialData?.employeeId || "",
+      firstName: initialData?.firstName || "",
+      lastName: initialData?.lastName || "",
+      email: initialData?.email || "",
+      phone: initialData?.phone || "",
+      bloodGroup: initialData?.bloodGroup as any || undefined,
+      maritalStatus: initialData?.maritalStatus as any || undefined,
+      aadharNumber: initialData?.aadharNumber || "",
+      panNumber: initialData?.panNumber || "",
+      uanNumber: initialData?.uanNumber || "",
+      esicNumber: initialData?.esicNumber || "",
       presentAddress: initialData?.presentAddress || defaultAddressValues,
       permanentAddress: initialData?.permanentAddress || defaultAddressValues,
       sameAsPresent: false
@@ -77,11 +87,11 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
 
     const formData = {
       ...data,
+      employeeId: data.employeeId,
       emergencyContacts: validEmergencyContacts,
       familyDetails: validFamilyDetails,
       documents,
       profilePictureUrl: data.profilePictureUrl,
-      // Ensure address data is properly structured
       presentAddress: {
         addressLine1: data.presentAddress.addressLine1,
         country: data.presentAddress.country,
@@ -89,13 +99,13 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
         city: data.presentAddress.city,
         zipCode: data.presentAddress.zipCode
       },
-      permanentAddress: {
+      permanentAddress: data.permanentAddress ? {
         addressLine1: data.permanentAddress.addressLine1,
         country: data.permanentAddress.country,
         state: data.permanentAddress.state,
         city: data.permanentAddress.city,
         zipCode: data.permanentAddress.zipCode
-      }
+      } : undefined
     };
 
     console.log('Form submitted:', formData);
@@ -122,6 +132,8 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
             profilePictureUrl={form.watch("profilePictureUrl")}
             onProfilePictureChange={(url) => form.setValue("profilePictureUrl", url)}
             onProfilePictureDelete={handleProfilePictureDelete}
+            setValue={form.setValue}
+            watch={form.watch}
           />
           
           <div className="pt-2">
