@@ -3,7 +3,7 @@ import React from "react";
 import { FormField } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { PersonalDetailsFormSchema } from "../schema/personalDetailsSchema";
-import { IdDocumentField } from "./IdDocumentField";
+import { IdDocumentField } from "../IdDocumentField"; // Fixed import path
 
 interface DocumentFieldsProps {
   form: UseFormReturn<PersonalDetailsFormSchema>;
