@@ -126,4 +126,48 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   return (
     <div className="flex w-[622px] max-w-full flex-col text-sm font-medium ml-[15px]">
       <Form {...form}>
-        <form id="personalDetailsForm" onSubmit={handleSubmit} className="space
+        <form id="personalDetailsForm" onSubmit={handleSubmit} className="space-y-6">
+          <BasicInfoSection
+            register={form}
+            errors={form.formState.errors}
+            isCheckingEmail={isCheckingEmail}
+            emailError={emailError}
+            profilePictureUrl={form.watch("profilePictureUrl")}
+            onProfilePictureChange={(url) => form.setValue("profilePictureUrl", url)}
+            onProfilePictureDelete={handleProfilePictureDelete}
+            setValue={form.setValue}
+            watch={form.watch}
+          />
+          
+          <div className="pt-2">
+            <DocumentUploadSection
+              form={form}
+              documents={documents}
+              onDocumentsChange={setDocuments}
+            />
+          </div>
+
+          <div className="pt-2">
+            <AddressSection form={form} />
+          </div>
+
+          <div className="pt-2">
+            <EmergencyContactsSection
+              contacts={emergencyContacts}
+              onContactsChange={setEmergencyContacts}
+              maritalStatus={currentMaritalStatus}
+            />
+          </div>
+
+          <div className="pt-2">
+            <FamilyDetailsSection
+              familyMembers={familyDetails}
+              onFamilyMembersChange={setFamilyDetails}
+              maritalStatus={currentMaritalStatus}
+            />
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+};
