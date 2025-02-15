@@ -20,7 +20,7 @@ export type {
 
 export interface Experience extends EmployeeExperience {}
 
-// Extend PersonalInfo but explicitly define URL fields
+// Make documents required in PersonalDetailsData to match PersonalInfo
 export interface PersonalDetailsData extends Omit<PersonalInfo, 'documents'> {
   id?: string;
   sameAsPresent?: boolean;
@@ -29,7 +29,7 @@ export interface PersonalDetailsData extends Omit<PersonalInfo, 'documents'> {
   panUrl?: string;
   uanUrl?: string;
   esicUrl?: string;
-  documents?: EmployeeDocument[];
+  documents: EmployeeDocument[]; // Changed from optional to required
 }
 
 export interface FormComponentProps<T = any> {
