@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -51,9 +50,13 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
       bloodGroup: initialData?.bloodGroup as any || undefined,
       maritalStatus: initialData?.maritalStatus as any || undefined,
       aadharNumber: initialData?.aadharNumber || "",
+      aadharUrl: initialData?.aadharUrl || "",
       panNumber: initialData?.panNumber || "",
+      panUrl: initialData?.panUrl || "",
       uanNumber: initialData?.uanNumber || "",
+      uanUrl: initialData?.uanUrl || "",
       esicNumber: initialData?.esicNumber || "",
+      esicUrl: initialData?.esicUrl || "",
       presentAddress: initialData?.presentAddress || defaultAddressValues,
       permanentAddress: initialData?.permanentAddress || defaultAddressValues,
       sameAsPresent: false
@@ -62,7 +65,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   });
 
   const handleSubmit = form.handleSubmit((data) => {
-    // Validate both emergency contacts and family details
     const isValid = validateForm(emergencyContacts, familyDetails, setEmergencyContacts, setFamilyDetails);
     
     if (!isValid) {
@@ -139,14 +141,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
             watch={form.watch}
           />
           
-          <div className="pt-2">
-            <DocumentUploadSection
-              form={form}
-              documents={documents}
-              onDocumentsChange={setDocuments}
-            />
-          </div>
-
           <div className="pt-2">
             <AddressSection form={form} />
           </div>

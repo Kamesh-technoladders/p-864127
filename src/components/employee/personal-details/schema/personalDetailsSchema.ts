@@ -27,9 +27,13 @@ export const personalDetailsSchema = z.object({
     required_error: "Marital status is required"
   }),
   aadharNumber: z.string().regex(/^\d{12}$/, "Aadhar number must be 12 digits"),
+  aadharUrl: z.string().optional(),
   panNumber: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]$/, "Invalid PAN number format"),
+  panUrl: z.string().optional(),
   uanNumber: z.string().regex(/^\d{12}$/, "UAN number must be 12 digits").optional(),
+  uanUrl: z.string().optional(),
   esicNumber: z.string().regex(/^\d{17}$/, "ESIC number must be 17 digits").optional(),
+  esicUrl: z.string().optional(),
   presentAddress: addressSchema,
   permanentAddress: addressSchema.optional(),
   sameAsPresent: z.boolean().optional()

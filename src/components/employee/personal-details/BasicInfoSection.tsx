@@ -193,6 +193,30 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
 
         <FormField
           control={register.control}
+          name="dateOfBirth"
+          render={({ field }) => (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Date of Birth<span className="text-red-500">*</span>
+              </label>
+              <Input
+                {...field}
+                type="date"
+                max={new Date().toISOString().split('T')[0]}
+                className={errors.dateOfBirth ? "border-red-500" : ""}
+              />
+              {errors.dateOfBirth && (
+                <div className="text-red-500 text-xs flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  <span>{errors.dateOfBirth.message}</span>
+                </div>
+              )}
+            </div>
+          )}
+        />
+
+        <FormField
+          control={register.control}
           name="bloodGroup"
           render={({ field }) => (
             <div className="space-y-2">
@@ -257,29 +281,21 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           control={register.control}
           name="aadharNumber"
           render={({ field }) => (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Aadhar Number<span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <Input
-                  {...field}
-                  placeholder="Enter 12-digit Aadhar number"
-                  className={aadharError || errors.aadharNumber ? "border-red-500" : ""}
-                />
-                {isCheckingAadhar && (
-                  <div className="absolute right-2 top-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-                  </div>
-                )}
-              </div>
-              {(errors.aadharNumber || aadharError) && (
-                <div className="text-red-500 text-xs flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  <span>{aadharError || errors.aadharNumber?.message}</span>
-                </div>
-              )}
-            </div>
+            <IdDocumentField
+              label="Aadhar Number"
+              value={field.value}
+              onChange={(value) => {
+                field.onChange(value);
+                setValue('aadharUrl', '');
+              }}
+              onDocumentUpload={(url) => setValue('aadharUrl', url)}
+              documentUrl={watch('aadharUrl')}
+              onDocumentDelete={() => setValue('aadharUrl', '')}
+              error={errors.aadharNumber?.message}
+              placeholder="Enter 12-digit Aadhar number"
+              required
+              pattern="\d{12}"
+            />
           )}
         />
 
@@ -287,29 +303,21 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           control={register.control}
           name="panNumber"
           render={({ field }) => (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                PAN Number<span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <Input
-                  {...field}
-                  placeholder="Enter PAN number"
-                  className={panError || errors.panNumber ? "border-red-500" : ""}
-                />
-                {isCheckingPan && (
-                  <div className="absolute right-2 top-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-                  </div>
-                )}
-              </div>
-              {(errors.panNumber || panError) && (
-                <div className="text-red-500 text-xs flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  <span>{panError || errors.panNumber?.message}</span>
-                </div>
-              )}
-            </div>
+            <IdDocumentField
+              label="PAN Number"
+              value={field.value}
+              onChange={(value) => {
+                field.onChange(value);
+                setValue('panUrl', '');
+              }}
+              onDocumentUpload={(url) => setValue('panUrl', url)}
+              documentUrl={watch('panUrl')}
+              onDocumentDelete={() => setValue('panUrl', '')}
+              error={errors.panNumber?.message}
+              placeholder="Enter PAN number"
+              required
+              pattern="[A-Z]{5}[0-9]{4}[A-Z]"
+            />
           )}
         />
 
@@ -317,22 +325,20 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           control={register.control}
           name="uanNumber"
           render={({ field }) => (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                UAN Number
-              </label>
-              <Input
-                {...field}
-                placeholder="Enter 12-digit UAN number (optional)"
-                className={errors.uanNumber ? "border-red-500" : ""}
-              />
-              {errors.uanNumber && (
-                <div className="text-red-500 text-xs flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  <span>{errors.uanNumber.message}</span>
-                </div>
-              )}
-            </div>
+            <IdDocumentField
+              label="UAN Number"
+              value={field.value}
+              onChange={(value) => {
+                field.onChange(value);
+                setValue('uanUrl', '');
+              }}
+              onDocumentUpload={(url) => setValue('uanUrl', url)}
+              documentUrl={watch('uanUrl')}
+              onDocumentDelete={() => setValue('uanUrl', '')}
+              error={errors.uanNumber?.message}
+              placeholder="Enter 12-digit UAN number (optional)"
+              pattern="\d{12}"
+            />
           )}
         />
 
@@ -340,26 +346,23 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           control={register.control}
           name="esicNumber"
           render={({ field }) => (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                ESIC Number
-              </label>
-              <Input
-                {...field}
-                placeholder="Enter 17-digit ESIC number (optional)"
-                className={errors.esicNumber ? "border-red-500" : ""}
-              />
-              {errors.esicNumber && (
-                <div className="text-red-500 text-xs flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  <span>{errors.esicNumber.message}</span>
-                </div>
-              )}
-            </div>
+            <IdDocumentField
+              label="ESIC Number"
+              value={field.value}
+              onChange={(value) => {
+                field.onChange(value);
+                setValue('esicUrl', '');
+              }}
+              onDocumentUpload={(url) => setValue('esicUrl', url)}
+              documentUrl={watch('esicUrl')}
+              onDocumentDelete={() => setValue('esicUrl', '')}
+              error={errors.esicNumber?.message}
+              placeholder="Enter 17-digit ESIC number (optional)"
+              pattern="\d{17}"
+            />
           )}
         />
       </div>
     </div>
   );
 };
-
