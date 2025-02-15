@@ -13,11 +13,16 @@ export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = (
   const handleSameAsPresent = (checked: boolean) => {
     if (checked) {
       const presentAddress = form.getValues("presentAddress");
-      form.setValue("permanentAddress.addressLine1", presentAddress.addressLine1);
-      form.setValue("permanentAddress.country", presentAddress.country);
-      form.setValue("permanentAddress.state", presentAddress.state);
-      form.setValue("permanentAddress.city", presentAddress.city);
-      form.setValue("permanentAddress.zipCode", presentAddress.zipCode);
+      form.setValue("permanentAddress", { ...presentAddress }, { shouldValidate: true });
+    } else {
+      // Clear permanent address when unchecking
+      form.setValue("permanentAddress", {
+        addressLine1: "",
+        country: "",
+        state: "",
+        city: "",
+        zipCode: ""
+      }, { shouldValidate: true });
     }
   };
 
@@ -53,7 +58,7 @@ export const PermanentAddressSection: React.FC<PermanentAddressSectionProps> = (
         form={form} 
         prefix="permanentAddress" 
         disabled={form.watch("sameAsPresent")}
-        required={false}
+        required={!form.watch("sameAsPresent")}
       />
     </div>
   );

@@ -25,23 +25,32 @@ export const useEmployeeForm = () => {
   const { isCheckingEmail, emailError, setEmailError } = useEmailValidation(formData.personal?.email);
 
   const validateAddressData = (data: any) => {
-    if (!data.presentAddress || !data.permanentAddress) {
-      throw new Error("Missing address data");
+    if (!data.presentAddress) {
+      throw new Error("Present address is required");
     }
 
     const requiredFields = ['addressLine1', 'country', 'state', 'city', 'zipCode'];
     
-    // Validate present address
+    // Validate present address (always required)
     for (const field of requiredFields) {
       if (!data.presentAddress[field]) {
         throw new Error(`Present address: ${field} is required`);
       }
     }
 
-    // Validate permanent address
-    for (const field of requiredFields) {
-      if (!data.permanentAddress[field]) {
-        throw new Error(`Permanent address: ${field} is required`);
+    // If sameAsPresent is true, use present address as permanent address
+    if (data.sameAsPresent) {
+      data.permanentAddress = { ...data.presentAddress };
+    } else {
+      // Validate permanent address only if sameAsPresent is false
+      if (!data.permanentAddress) {
+        throw new Error("Permanent address is required");
+      }
+      
+      for (const field of requiredFields) {
+        if (!data.permanentAddress[field]) {
+          throw new Error(`Permanent address: ${field} is required`);
+        }
       }
     }
 
@@ -54,27 +63,23 @@ export const useEmployeeForm = () => {
       setIsSubmitting(true);
       try {
         if (completedData) {
+          console.log('Form data before validation:', completedData);
+          
           // Validate address data before submission
           validateAddressData(completedData);
 
-          // First save to backend
-          const savedEmployee = await personalInfoService.createPersonalInfo({
+          // If sameAsPresent is true, use present address for permanent address
+          const submissionData = {
             ...completedData,
-            presentAddress: {
-              addressLine1: completedData.presentAddress.addressLine1,
-              country: completedData.presentAddress.country,
-              state: completedData.presentAddress.state,
-              city: completedData.presentAddress.city,
-              zipCode: completedData.presentAddress.zipCode
-            },
-            permanentAddress: {
-              addressLine1: completedData.permanentAddress.addressLine1,
-              country: completedData.permanentAddress.country,
-              state: completedData.permanentAddress.state,
-              city: completedData.permanentAddress.city,
-              zipCode: completedData.permanentAddress.zipCode
-            }
-          });
+            permanentAddress: completedData.sameAsPresent 
+              ? { ...completedData.presentAddress }
+              : completedData.permanentAddress
+          };
+
+          console.log('Data being sent to backend:', submissionData);
+
+          // First save to backend
+          const savedEmployee = await personalInfoService.createPersonalInfo(submissionData);
 
           if (!savedEmployee) {
             throw new Error("Failed to save personal details");
@@ -82,7 +87,7 @@ export const useEmployeeForm = () => {
 
           // Then update form state with the saved data
           const personalData: PersonalDetailsData = {
-            ...completedData,
+            ...submissionData,
             id: savedEmployee.id
           };
           

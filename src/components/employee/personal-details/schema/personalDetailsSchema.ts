@@ -1,6 +1,14 @@
 
 import * as z from "zod";
 
+const addressSchema = z.object({
+  addressLine1: z.string().min(1, "Address is required"),
+  country: z.string().min(1, "Country is required"),
+  state: z.string().min(1, "State is required"),
+  city: z.string().min(1, "City is required"),
+  zipCode: z.string().min(1, "ZIP code is required")
+});
+
 export const personalDetailsSchema = z.object({
   profilePictureUrl: z.string().optional(),
   employeeId: z.string().min(1, "Employee ID is required"),
@@ -12,20 +20,8 @@ export const personalDetailsSchema = z.object({
   gender: z.string().min(1, "Gender is required"),
   bloodGroup: z.string().min(1, "Blood group is required"),
   maritalStatus: z.string().min(1, "Marital status is required"),
-  presentAddress: z.object({
-    addressLine1: z.string().min(1, "Address is required"),
-    country: z.string().min(1, "Country is required"),
-    state: z.string().min(1, "State is required"),
-    city: z.string().min(1, "City is required"),
-    zipCode: z.string().min(1, "ZIP code is required")
-  }),
-  permanentAddress: z.object({
-    addressLine1: z.string().min(1, "Address is required"),
-    country: z.string().min(1, "Country is required"),
-    state: z.string().min(1, "State is required"),
-    city: z.string().min(1, "City is required"),
-    zipCode: z.string().min(1, "ZIP code is required")
-  }),
+  presentAddress: addressSchema,
+  permanentAddress: addressSchema,
   sameAsPresent: z.boolean().optional()
 });
 
