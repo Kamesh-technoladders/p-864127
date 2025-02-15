@@ -39,7 +39,7 @@ export const useEmployeeForm = () => {
           // Then update form state with the saved data
           const personalData: PersonalDetailsData = {
             ...completedData,
-            id: savedEmployee.id // Keep the id from backend
+            id: savedEmployee.id // Add the id from backend
           };
           
           updateFormData("personal", personalData);

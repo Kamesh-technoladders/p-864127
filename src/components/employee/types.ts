@@ -20,7 +20,9 @@ export type {
 
 export interface Experience extends EmployeeExperience {}
 
-export interface PersonalDetailsData extends PersonalInfo {}
+export interface PersonalDetailsData extends PersonalInfo {
+  id?: string; // Make id optional since it won't exist when creating new records
+}
 
 export interface FormComponentProps<T = any> {
   onComplete: (completed: boolean, data?: T) => void;
