@@ -21,7 +21,16 @@ export type {
 export interface Experience extends EmployeeExperience {}
 
 export interface PersonalDetailsData extends PersonalInfo {
-  id?: string; // Make id optional since it won't exist when creating new records
+  id?: string;
+  sameAsPresent?: boolean;
+  aadharNumber: string;
+  aadharUrl?: string;
+  panNumber: string;
+  panUrl?: string;
+  uanNumber?: string;
+  uanUrl?: string;
+  esicNumber?: string;
+  esicUrl?: string;
 }
 
 export interface FormComponentProps<T = any> {

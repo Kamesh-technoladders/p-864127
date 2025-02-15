@@ -194,5 +194,66 @@ export const personalInfoService = {
       console.error('Error in createPersonalInfo:', error);
       throw new Error(error.message || 'Failed to create employee information');
     }
+  },
+
+  async updatePersonalInfo(employeeId: string, personalInfo: Partial<PersonalInfo>) {
+    try {
+      const { error: employeeError } = await supabase
+        .from('employees')
+        .update({
+          first_name: personalInfo.firstName,
+          last_name: personalInfo.lastName,
+          email: personalInfo.email,
+          phone: personalInfo.phone,
+          date_of_birth: personalInfo.dateOfBirth,
+          gender: personalInfo.gender,
+          blood_group: personalInfo.bloodGroup,
+          marital_status: personalInfo.maritalStatus,
+          aadhar_number: personalInfo.aadharNumber,
+          pan_number: personalInfo.panNumber,
+          uan_number: personalInfo.uanNumber,
+          esic_number: personalInfo.esicNumber
+        })
+        .eq('id', employeeId);
+
+      if (employeeError) throw employeeError;
+
+      if (personalInfo.presentAddress) {
+        const { error: addressError } = await supabase
+          .from('employee_addresses')
+          .upsert({
+            employee_id: employeeId,
+            type: 'present',
+            address_line1: personalInfo.presentAddress.addressLine1,
+            country: personalInfo.presentAddress.country,
+            state: personalInfo.presentAddress.state,
+            city: personalInfo.presentAddress.city,
+            zip_code: personalInfo.presentAddress.zipCode
+          });
+
+        if (addressError) throw addressError;
+      }
+
+      if (personalInfo.permanentAddress) {
+        const { error: addressError } = await supabase
+          .from('employee_addresses')
+          .upsert({
+            employee_id: employeeId,
+            type: 'permanent',
+            address_line1: personalInfo.permanentAddress.addressLine1,
+            country: personalInfo.permanentAddress.country,
+            state: personalInfo.permanentAddress.state,
+            city: personalInfo.permanentAddress.city,
+            zip_code: personalInfo.permanentAddress.zipCode
+          });
+
+        if (addressError) throw addressError;
+      }
+
+      return true;
+    } catch (error: any) {
+      console.error('Error updating personal info:', error);
+      throw new Error(error.message || 'Failed to update personal information');
+    }
   }
 };

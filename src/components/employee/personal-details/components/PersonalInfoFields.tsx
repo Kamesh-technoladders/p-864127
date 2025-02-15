@@ -27,10 +27,11 @@ export const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({ form }) 
               Date of Birth<span className="text-red-500">*</span>
             </label>
             <Input
-              {...field}
               type="date"
               max={new Date().toISOString().split('T')[0]}
               className={errors.dateOfBirth ? "border-red-500" : ""}
+              value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : ''}
+              onChange={(e) => field.onChange(new Date(e.target.value))}
             />
             {errors.dateOfBirth && (
               <div className="text-red-500 text-xs flex items-center gap-1">
