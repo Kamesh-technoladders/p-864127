@@ -23,14 +23,8 @@ export interface Experience extends EmployeeExperience {}
 export interface PersonalDetailsData extends PersonalInfo {
   id?: string;
   sameAsPresent?: boolean;
-  aadharNumber: string;
-  aadharUrl?: string;
-  panNumber: string;
-  panUrl?: string;
-  uanNumber?: string;
-  uanUrl?: string;
-  esicNumber?: string;
-  esicUrl?: string;
+  // Remove redundant declarations since they're inherited from PersonalInfo:
+  // aadharNumber, panNumber, etc.
 }
 
 export interface FormComponentProps<T = any> {
