@@ -20,11 +20,16 @@ export type {
 
 export interface Experience extends EmployeeExperience {}
 
-export interface PersonalDetailsData extends PersonalInfo {
+// Extend PersonalInfo but explicitly define URL fields
+export interface PersonalDetailsData extends Omit<PersonalInfo, 'documents'> {
   id?: string;
   sameAsPresent?: boolean;
-  // Remove redundant declarations since they're inherited from PersonalInfo:
-  // aadharNumber, panNumber, etc.
+  profilePictureUrl?: string;
+  aadharUrl?: string;
+  panUrl?: string;
+  uanUrl?: string;
+  esicUrl?: string;
+  documents?: EmployeeDocument[];
 }
 
 export interface FormComponentProps<T = any> {
