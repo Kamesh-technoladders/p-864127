@@ -11,6 +11,7 @@ const addressSchema = z.object({
 
 export const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as const;
 export const MARITAL_STATUS = ['married', 'unmarried'] as const;
+export const GENDER = ['male', 'female', 'other'] as const;
 
 export const personalDetailsSchema = z.object({
   profilePictureUrl: z.string().optional(),
@@ -22,6 +23,9 @@ export const personalDetailsSchema = z.object({
   dateOfBirth: z.date().max(new Date(), "Date of birth cannot be in the future"),
   bloodGroup: z.enum(BLOOD_GROUPS, {
     required_error: "Blood group is required"
+  }),
+  gender: z.enum(GENDER, {
+    required_error: "Gender is required"
   }),
   maritalStatus: z.enum(MARITAL_STATUS, {
     required_error: "Marital status is required"
