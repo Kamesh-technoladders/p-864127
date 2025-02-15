@@ -422,6 +422,7 @@ export type Database = {
       }
       employees: {
         Row: {
+          aadhar_number: string | null
           blood_group: string | null
           created_at: string | null
           date_of_birth: string | null
@@ -431,20 +432,24 @@ export type Database = {
           employee_id: string
           employment_start_date: string | null
           employment_status: string | null
+          esic_number: string | null
           family_details: Json[] | null
           first_name: string
           gender: string | null
           id: string
           last_name: string
           marital_status: string | null
+          pan_number: string | null
           permanent_address: Json | null
           phone: string | null
           position: string | null
           present_address: Json | null
           profile_picture_url: string | null
+          uan_number: string | null
           updated_at: string | null
         }
         Insert: {
+          aadhar_number?: string | null
           blood_group?: string | null
           created_at?: string | null
           date_of_birth?: string | null
@@ -454,20 +459,24 @@ export type Database = {
           employee_id: string
           employment_start_date?: string | null
           employment_status?: string | null
+          esic_number?: string | null
           family_details?: Json[] | null
           first_name: string
           gender?: string | null
           id?: string
           last_name: string
           marital_status?: string | null
+          pan_number?: string | null
           permanent_address?: Json | null
           phone?: string | null
           position?: string | null
           present_address?: Json | null
           profile_picture_url?: string | null
+          uan_number?: string | null
           updated_at?: string | null
         }
         Update: {
+          aadhar_number?: string | null
           blood_group?: string | null
           created_at?: string | null
           date_of_birth?: string | null
@@ -477,17 +486,20 @@ export type Database = {
           employee_id?: string
           employment_start_date?: string | null
           employment_status?: string | null
+          esic_number?: string | null
           family_details?: Json[] | null
           first_name?: string
           gender?: string | null
           id?: string
           last_name?: string
           marital_status?: string | null
+          pan_number?: string | null
           permanent_address?: Json | null
           phone?: string | null
           position?: string | null
           present_address?: Json | null
           profile_picture_url?: string | null
+          uan_number?: string | null
           updated_at?: string | null
         }
         Relationships: []

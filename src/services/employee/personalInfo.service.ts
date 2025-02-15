@@ -33,12 +33,72 @@ export const personalInfoService = {
     return !!data;
   },
 
+  async checkPhoneExists(phone: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('phone', phone)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error checking phone:', error);
+      throw new Error('Failed to check phone');
+    }
+
+    return !!data;
+  },
+
+  async checkAadharExists(aadharNumber: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('aadhar_number', aadharNumber)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error checking Aadhar:', error);
+      throw new Error('Failed to check Aadhar number');
+    }
+
+    return !!data;
+  },
+
+  async checkPanExists(panNumber: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('pan_number', panNumber)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error checking PAN:', error);
+      throw new Error('Failed to check PAN number');
+    }
+
+    return !!data;
+  },
+
   async createPersonalInfo(personalInfo: PersonalInfo) {
     try {
-      // Check if email already exists
+      // Check if required unique fields already exist
       const emailExists = await this.checkEmailExists(personalInfo.email);
       if (emailExists) {
         throw new Error(`Email ${personalInfo.email} is already registered`);
+      }
+
+      const phoneExists = await this.checkPhoneExists(personalInfo.phone);
+      if (phoneExists) {
+        throw new Error(`Phone number ${personalInfo.phone} is already registered`);
+      }
+
+      const aadharExists = await this.checkAadharExists(personalInfo.aadharNumber);
+      if (aadharExists) {
+        throw new Error(`Aadhar number ${personalInfo.aadharNumber} is already registered`);
+      }
+
+      const panExists = await this.checkPanExists(personalInfo.panNumber);
+      if (panExists) {
+        throw new Error(`PAN number ${personalInfo.panNumber} is already registered`);
       }
 
       console.log('Creating employee with data:', personalInfo);
@@ -52,13 +112,13 @@ export const personalInfoService = {
         zipCode: personalInfo.presentAddress.zipCode
       };
 
-      const permanentAddressJson = {
+      const permanentAddressJson = personalInfo.permanentAddress ? {
         addressLine1: personalInfo.permanentAddress.addressLine1,
         country: personalInfo.permanentAddress.country,
         state: personalInfo.permanentAddress.state,
         city: personalInfo.permanentAddress.city,
         zipCode: personalInfo.permanentAddress.zipCode
-      };
+      } : null;
 
       // Map the personalInfo fields to match database column names
       const employeeData = {
@@ -71,9 +131,14 @@ export const personalInfoService = {
         gender: personalInfo.gender,
         blood_group: personalInfo.bloodGroup,
         marital_status: personalInfo.maritalStatus,
+        aadhar_number: personalInfo.aadharNumber,
+        pan_number: personalInfo.panNumber,
+        uan_number: personalInfo.uanNumber,
+        esic_number: personalInfo.esicNumber,
         employment_start_date: new Date().toISOString(),
         present_address: presentAddressJson,
-        permanent_address: permanentAddressJson
+        permanent_address: permanentAddressJson,
+        profile_picture_url: personalInfo.profilePictureUrl
       };
 
       const { data: employee, error: employeeError } = await supabase
@@ -99,8 +164,12 @@ export const personalInfoService = {
           state: personalInfo.presentAddress.state,
           city: personalInfo.presentAddress.city,
           zip_code: personalInfo.presentAddress.zipCode
-        },
-        {
+        }
+      ];
+
+      // Add permanent address if it exists
+      if (personalInfo.permanentAddress) {
+        addresses.push({
           employee_id: employee.id,
           type: 'permanent',
           address_line1: personalInfo.permanentAddress.addressLine1,
@@ -108,8 +177,8 @@ export const personalInfoService = {
           state: personalInfo.permanentAddress.state,
           city: personalInfo.permanentAddress.city,
           zip_code: personalInfo.permanentAddress.zipCode
-        }
-      ];
+        });
+      }
 
       const { error: addressError } = await supabase
         .from('employee_addresses')
@@ -124,83 +193,6 @@ export const personalInfoService = {
     } catch (error: any) {
       console.error('Error in createPersonalInfo:', error);
       throw new Error(error.message || 'Failed to create employee information');
-    }
-  },
-
-  async updatePersonalInfo(employeeId: string, personalInfo: Partial<PersonalInfo>) {
-    try {
-      const updateData: any = {
-        first_name: personalInfo.firstName,
-        last_name: personalInfo.lastName,
-        email: personalInfo.email,
-        phone: personalInfo.phone,
-        date_of_birth: personalInfo.dateOfBirth,
-        gender: personalInfo.gender,
-        blood_group: personalInfo.bloodGroup,
-        marital_status: personalInfo.maritalStatus
-      };
-
-      if (personalInfo.presentAddress) {
-        updateData.present_address = {
-          addressLine1: personalInfo.presentAddress.addressLine1,
-          country: personalInfo.presentAddress.country,
-          state: personalInfo.presentAddress.state,
-          city: personalInfo.presentAddress.city,
-          zipCode: personalInfo.presentAddress.zipCode
-        };
-      }
-
-      if (personalInfo.permanentAddress) {
-        updateData.permanent_address = {
-          addressLine1: personalInfo.permanentAddress.addressLine1,
-          country: personalInfo.permanentAddress.country,
-          state: personalInfo.permanentAddress.state,
-          city: personalInfo.permanentAddress.city,
-          zipCode: personalInfo.permanentAddress.zipCode
-        };
-      }
-
-      const { error: employeeError } = await supabase
-        .from('employees')
-        .update(updateData)
-        .eq('id', employeeId);
-
-      if (employeeError) throw employeeError;
-
-      if (personalInfo.presentAddress) {
-        const { error: presentAddressError } = await supabase
-          .from('employee_addresses')
-          .update({
-            address_line1: personalInfo.presentAddress.addressLine1,
-            country: personalInfo.presentAddress.country,
-            state: personalInfo.presentAddress.state,
-            city: personalInfo.presentAddress.city,
-            zip_code: personalInfo.presentAddress.zipCode
-          })
-          .eq('employee_id', employeeId)
-          .eq('type', 'present');
-
-        if (presentAddressError) throw presentAddressError;
-      }
-
-      if (personalInfo.permanentAddress) {
-        const { error: permanentAddressError } = await supabase
-          .from('employee_addresses')
-          .update({
-            address_line1: personalInfo.permanentAddress.addressLine1,
-            country: personalInfo.permanentAddress.country,
-            state: personalInfo.permanentAddress.state,
-            city: personalInfo.permanentAddress.city,
-            zip_code: personalInfo.permanentAddress.zipCode
-          })
-          .eq('employee_id', employeeId)
-          .eq('type', 'permanent');
-
-        if (permanentAddressError) throw permanentAddressError;
-      }
-    } catch (error: any) {
-      console.error('Error in updatePersonalInfo:', error);
-      throw new Error(error.message || 'Failed to update employee information');
     }
   }
 };
