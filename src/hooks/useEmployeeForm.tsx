@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { employeeService } from "@/services/employee/employee.service";
@@ -54,6 +55,7 @@ export const useEmployeeForm = () => {
           esicNumber: completedData.esicNumber || '',
           presentAddress: completedData.presentAddress,
           permanentAddress: completedData.permanentAddress,
+          // Ensure documents is always provided as a non-optional array
           documents: completedData.documents || [],
           emergencyContacts: completedData.emergencyContacts || [],
           familyDetails: completedData.familyDetails || []
@@ -65,6 +67,7 @@ export const useEmployeeForm = () => {
           throw new Error("Failed to save personal details");
         }
 
+        // Create the PersonalDetailsData object with proper typing
         const personalData: PersonalDetailsData = {
           ...submissionData,
           id: savedEmployee.id,
@@ -72,7 +75,8 @@ export const useEmployeeForm = () => {
           panUrl: completedData.panUrl,
           uanUrl: completedData.uanUrl,
           esicUrl: completedData.esicUrl,
-          profilePictureUrl: completedData.profilePictureUrl
+          profilePictureUrl: completedData.profilePictureUrl,
+          documents: submissionData.documents // Ensure documents is passed through
         };
         
         updateFormData("personal", personalData);
