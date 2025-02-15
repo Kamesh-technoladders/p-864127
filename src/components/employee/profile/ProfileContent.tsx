@@ -35,7 +35,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
   calculateYearsOfExperience,
   totalExperience
 }) => {
-  const personalData = {
+  const personalData: PersonalDetailsData = {
     employeeId: employeeData.employeeId,
     firstName: employeeData.firstName,
     lastName: employeeData.lastName,
@@ -61,7 +61,15 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
     },
     emergencyContacts: employeeData.emergencyContacts || [],
     familyDetails: employeeData.familyDetails || [],
-    documents: employeeData.documents || []
+    documents: employeeData.documents || [],
+    aadharNumber: employeeData.aadharNumber || '',
+    panNumber: employeeData.panNumber || '',
+    uanNumber: employeeData.uanNumber,
+    esicNumber: employeeData.esicNumber,
+    aadharUrl: employeeData.aadharUrl,
+    panUrl: employeeData.panUrl,
+    uanUrl: employeeData.uanUrl,
+    esicUrl: employeeData.esicUrl
   };
 
   return (

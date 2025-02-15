@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { employeeService } from "@/services/employee/employee.service";
@@ -25,7 +24,6 @@ export const useEmployeeForm = () => {
   const { isCheckingEmail, emailError, setEmailError } = useEmailValidation(formData.personal?.email);
 
   const handleSaveAndNext = async (completedData?: any) => {
-    // For personal details tab
     if (activeTab === "personal") {
       setIsSubmitting(true);
       try {
@@ -34,35 +32,12 @@ export const useEmployeeForm = () => {
           return;
         }
 
-        console.log('Raw form data:', completedData);
-
-        // Validate that required address data exists
-        if (!completedData.presentAddress) {
-          toast.error("Present address is required");
+        // Ensure required fields are present
+        if (!completedData.aadharNumber || !completedData.panNumber) {
+          toast.error("Aadhar number and PAN number are required");
           return;
         }
 
-        // Create a clean copy of the present address
-        const presentAddress = {
-          addressLine1: completedData.presentAddress.addressLine1 || '',
-          country: completedData.presentAddress.country || '',
-          state: completedData.presentAddress.state || '',
-          city: completedData.presentAddress.city || '',
-          zipCode: completedData.presentAddress.zipCode || ''
-        };
-
-        // For permanent address, use present address if sameAsPresent is true
-        const permanentAddress = completedData.sameAsPresent
-          ? { ...presentAddress }
-          : {
-              addressLine1: completedData.permanentAddress?.addressLine1 || '',
-              country: completedData.permanentAddress?.country || '',
-              state: completedData.permanentAddress?.state || '',
-              city: completedData.permanentAddress?.city || '',
-              zipCode: completedData.permanentAddress?.zipCode || ''
-            };
-
-        // Create the submission data object with all required fields
         const submissionData = {
           employeeId: completedData.employeeId,
           firstName: completedData.firstName,
@@ -73,28 +48,31 @@ export const useEmployeeForm = () => {
           gender: completedData.gender,
           bloodGroup: completedData.bloodGroup,
           maritalStatus: completedData.maritalStatus,
-          presentAddress,
-          permanentAddress,
+          aadharNumber: completedData.aadharNumber,
+          panNumber: completedData.panNumber,
+          uanNumber: completedData.uanNumber || '',
+          esicNumber: completedData.esicNumber || '',
+          presentAddress: completedData.presentAddress,
+          permanentAddress: completedData.permanentAddress,
           documents: completedData.documents || [],
           emergencyContacts: completedData.emergencyContacts || [],
           familyDetails: completedData.familyDetails || []
         };
 
-        console.log('Structured data for submission:', submissionData);
-
-        // Save to backend
         const savedEmployee = await personalInfoService.createPersonalInfo(submissionData);
 
         if (!savedEmployee) {
           throw new Error("Failed to save personal details");
         }
 
-        console.log('Data saved successfully:', savedEmployee);
-
-        // Update form state with the saved data
         const personalData: PersonalDetailsData = {
           ...submissionData,
-          id: savedEmployee.id
+          id: savedEmployee.id,
+          aadharUrl: completedData.aadharUrl,
+          panUrl: completedData.panUrl,
+          uanUrl: completedData.uanUrl,
+          esicUrl: completedData.esicUrl,
+          profilePictureUrl: completedData.profilePictureUrl
         };
         
         updateFormData("personal", personalData);
@@ -111,7 +89,6 @@ export const useEmployeeForm = () => {
       return;
     }
 
-    // For education tab, move to bank after saving
     if (activeTab === "education") {
       if (!formData.personal?.id) {
         toast.error("Please complete personal details first");
@@ -139,7 +116,6 @@ export const useEmployeeForm = () => {
       return;
     }
 
-    // For final submission (bank details tab)
     if (activeTab === "bank") {
       if (!formData.personal?.id || !formData.education) {
         toast.error("Please complete all required sections before submitting");
