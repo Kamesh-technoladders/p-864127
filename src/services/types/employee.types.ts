@@ -1,4 +1,3 @@
-
 export interface Document {
   documentType: 'aadhar' | 'uan' | 'pan' | 'esic';
   documentNumber: string;
@@ -77,9 +76,13 @@ export interface EmployeeBasicInfo {
 export interface PersonalInfo extends EmployeeBasicInfo {
   employeeId: string;
   aadharNumber: string;
+  aadharUrl?: string;
   panNumber: string;
+  panUrl?: string;
   uanNumber?: string;
+  uanUrl?: string;
   esicNumber?: string;
+  esicUrl?: string;
   presentAddress: Address;
   permanentAddress?: Address;
   emergencyContacts: EmergencyContact[];
