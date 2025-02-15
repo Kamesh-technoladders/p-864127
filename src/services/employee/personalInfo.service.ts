@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { PersonalInfo } from "../types/employee.types";
 
@@ -42,22 +43,25 @@ export const personalInfoService = {
 
       console.log('Creating employee with data:', personalInfo);
 
+      // Map the personalInfo fields to match database column names
+      const employeeData = {
+        employee_id: personalInfo.employeeId,
+        first_name: personalInfo.firstName,
+        last_name: personalInfo.lastName,
+        email: personalInfo.email,
+        phone: personalInfo.phone,
+        date_of_birth: personalInfo.dateOfBirth,
+        gender: personalInfo.gender,
+        blood_group: personalInfo.bloodGroup,
+        marital_status: personalInfo.maritalStatus,
+        employment_start_date: new Date().toISOString(),
+        present_address: personalInfo.presentAddress,
+        permanent_address: personalInfo.permanentAddress
+      };
+
       const { data: employee, error: employeeError } = await supabase
         .from('employees')
-        .insert({
-          employee_id: personalInfo.employeeId,
-          first_name: personalInfo.firstName,
-          last_name: personalInfo.lastName,
-          email: personalInfo.email,
-          phone: personalInfo.phone,
-          date_of_birth: personalInfo.dateOfBirth,
-          gender: personalInfo.gender,
-          blood_group: personalInfo.bloodGroup,
-          marital_status: personalInfo.maritalStatus,
-          employment_start_date: new Date().toISOString(),
-          present_address: personalInfo.presentAddress,
-          permanent_address: personalInfo.permanentAddress
-        })
+        .insert(employeeData)
         .select()
         .single();
 
@@ -68,7 +72,7 @@ export const personalInfoService = {
 
       console.log('Employee created successfully:', employee);
 
-      // Insert addresses
+      // Insert addresses with properly named fields
       const addresses = [
         {
           employee_id: employee.id,
