@@ -1,7 +1,7 @@
 
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { EmployeeData, PersonalInfo } from "@/services/types/employee.types";
+import { EmployeeData, PersonalInfo, EmployeeBasicInfo, EmployeeDetailsResponse } from "@/services/types/employee.types";
 import { employeeDataService } from "@/services/employee/employeeDataService";
 import { employeeAddressService } from "@/services/employee/employeeAddressService";
 import { employeeContactService } from "@/services/employee/employeeContactService";
@@ -37,7 +37,11 @@ export const useEmployeeData = (employeeId: string | undefined) => {
         aadharNumber: employeeDetails.aadhar_number || '',
         panNumber: employeeDetails.pan_number || '',
         aadharUrl: employeeDetails.aadhar_url || '',
-        panUrl: employeeDetails.pan_url || ''
+        panUrl: employeeDetails.pan_url || '',
+        uanNumber: employeeDetails.uan_number || '',
+        uanUrl: employeeDetails.uan_url || '',
+        esicNumber: employeeDetails.esic_number || '',
+        esicUrl: employeeDetails.esic_url || ''
       };
 
       console.log('Transformed employee data:', transformedData);
@@ -95,7 +99,15 @@ export const useEmployeeData = (employeeId: string | undefined) => {
             permanentAddress: data.permanentAddress,
             emergencyContacts: data.emergencyContacts || [],
             familyDetails: data.familyDetails || [],
-            documents: data.documents || []
+            documents: data.documents || [],
+            aadharNumber: data.aadharNumber,
+            panNumber: data.panNumber,
+            aadharUrl: data.aadharUrl,
+            panUrl: data.panUrl,
+            uanNumber: data.uanNumber,
+            uanUrl: data.uanUrl,
+            esicNumber: data.esicNumber,
+            esicUrl: data.esicUrl
           };
 
           await Promise.all([

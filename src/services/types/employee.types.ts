@@ -1,3 +1,4 @@
+
 export interface Document {
   documentType: 'aadhar' | 'uan' | 'pan' | 'esic';
   documentNumber: string;
@@ -64,13 +65,13 @@ export interface EmployeeBasicInfo {
   firstName: string;
   lastName: string;
   email: string;
+  department?: string;
+  position?: string;
   phone?: string;
   dateOfBirth?: string;
   gender?: string;
   bloodGroup?: string;
   maritalStatus?: string;
-  department?: string;
-  position?: string;
 }
 
 export interface PersonalInfo extends EmployeeBasicInfo {
@@ -89,19 +90,6 @@ export interface PersonalInfo extends EmployeeBasicInfo {
   familyDetails: FamilyMember[];
   documents: Document[];
   profilePictureUrl?: string;
-}
-
-export interface EmployeeData {
-  id: string;
-  employeeId: string;
-  personal: PersonalInfo;
-  education: Education | null;
-  experience: Experience[];
-  bank: BankDetails | null;
-  department: string | null;
-  position: string | null;
-  employmentStatus: string | null;
-  documents: Document[];
 }
 
 export interface EmployeeDetailsResponse {
@@ -125,5 +113,26 @@ export interface EmployeeDetailsResponse {
   emergency_contacts?: EmergencyContact[];
   family_details?: FamilyMember[];
   experience?: Experience[];
+  documents: Document[];
+  aadhar_number?: string;
+  aadhar_url?: string;
+  pan_number?: string;
+  pan_url?: string;
+  uan_number?: string;
+  uan_url?: string;
+  esic_number?: string;
+  esic_url?: string;
+}
+
+export interface EmployeeData {
+  id: string;
+  employeeId: string;
+  personal: PersonalInfo;
+  education: Education | null;
+  experience: Experience[];
+  bank: BankDetails | null;
+  department: string | null;
+  position: string | null;
+  employmentStatus: string | null;
   documents: Document[];
 }
