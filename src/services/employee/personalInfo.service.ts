@@ -43,6 +43,23 @@ export const personalInfoService = {
 
       console.log('Creating employee with data:', personalInfo);
 
+      // Format address objects as plain JSON objects
+      const presentAddressJson = {
+        addressLine1: personalInfo.presentAddress.addressLine1,
+        country: personalInfo.presentAddress.country,
+        state: personalInfo.presentAddress.state,
+        city: personalInfo.presentAddress.city,
+        zipCode: personalInfo.presentAddress.zipCode
+      };
+
+      const permanentAddressJson = {
+        addressLine1: personalInfo.permanentAddress.addressLine1,
+        country: personalInfo.permanentAddress.country,
+        state: personalInfo.permanentAddress.state,
+        city: personalInfo.permanentAddress.city,
+        zipCode: personalInfo.permanentAddress.zipCode
+      };
+
       // Map the personalInfo fields to match database column names
       const employeeData = {
         employee_id: personalInfo.employeeId,
@@ -55,8 +72,8 @@ export const personalInfoService = {
         blood_group: personalInfo.bloodGroup,
         marital_status: personalInfo.maritalStatus,
         employment_start_date: new Date().toISOString(),
-        present_address: personalInfo.presentAddress,
-        permanent_address: personalInfo.permanentAddress
+        present_address: presentAddressJson,
+        permanent_address: permanentAddressJson
       };
 
       const { data: employee, error: employeeError } = await supabase
