@@ -5,9 +5,11 @@ import { PersonalInfoFields } from "./components/PersonalInfoFields";
 import { DocumentationSection } from "./components/DocumentationSection";
 import { ProfilePictureUpload } from "./ProfilePictureUpload";
 import { Document } from "@/services/types/employee.types";
+import { UseFormReturn } from "react-hook-form";
+import { PersonalDetailsFormSchema } from "./schema/personalDetailsSchema";
 
 interface BasicInfoSectionProps {
-  register: any;
+  register: UseFormReturn<PersonalDetailsFormSchema>;
   errors: any;
   isCheckingEmail?: boolean;
   emailError?: string | null;
@@ -18,6 +20,8 @@ interface BasicInfoSectionProps {
   profilePictureUrl?: string;
   documents: Document[];
   onDocumentsChange: (documents: Document[]) => void;
+  setValue: UseFormReturn<PersonalDetailsFormSchema>['setValue'];
+  watch: UseFormReturn<PersonalDetailsFormSchema>['watch'];
 }
 
 export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
@@ -31,6 +35,8 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   profilePictureUrl,
   documents,
   onDocumentsChange,
+  setValue,
+  watch
 }) => {
   return (
     <div className="space-y-8">
