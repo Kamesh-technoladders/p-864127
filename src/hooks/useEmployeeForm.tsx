@@ -23,12 +23,74 @@ export const useEmployeeForm = () => {
 
   const { isCheckingEmail, emailError, setEmailError } = useEmailValidation(formData.personal?.email);
 
+  const validatePersonalDetails = (data: any): boolean => {
+    // Check basic required fields
+    if (!data.employeeId?.trim()) {
+      toast.error("Employee ID is required");
+      return false;
+    }
+    if (!data.firstName?.trim()) {
+      toast.error("First name is required");
+      return false;
+    }
+    if (!data.lastName?.trim()) {
+      toast.error("Last name is required");
+      return false;
+    }
+    if (!data.email?.trim()) {
+      toast.error("Email is required");
+      return false;
+    }
+    if (!data.phone?.trim()) {
+      toast.error("Phone number is required");
+      return false;
+    }
+    if (!data.dateOfBirth) {
+      toast.error("Date of birth is required");
+      return false;
+    }
+    if (!data.gender) {
+      toast.error("Gender is required");
+      return false;
+    }
+    if (!data.bloodGroup) {
+      toast.error("Blood group is required");
+      return false;
+    }
+    if (!data.maritalStatus) {
+      toast.error("Marital status is required");
+      return false;
+    }
+    if (!data.aadharNumber?.trim()) {
+      toast.error("Aadhar number is required");
+      return false;
+    }
+    if (!data.panNumber?.trim()) {
+      toast.error("PAN number is required");
+      return false;
+    }
+
+    // Validate present address
+    if (!data.presentAddress?.addressLine1?.trim()) {
+      toast.error("Present address line is required");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSaveAndNext = async (completedData?: any) => {
     if (activeTab === "personal") {
       setIsSubmitting(true);
       try {
         if (!completedData) {
           toast.error("Please complete all required fields");
+          return;
+        }
+
+        // Validate all required fields before proceeding
+        if (!validatePersonalDetails(completedData)) {
+          setIsSubmitting(false);
           return;
         }
 
@@ -46,8 +108,20 @@ export const useEmployeeForm = () => {
           panNumber: completedData.panNumber,
           uanNumber: completedData.uanNumber || '',
           esicNumber: completedData.esicNumber || '',
-          presentAddress: completedData.presentAddress,
-          permanentAddress: completedData.permanentAddress,
+          presentAddress: {
+            addressLine1: completedData.presentAddress?.addressLine1 || '',
+            country: completedData.presentAddress?.country || '',
+            state: completedData.presentAddress?.state || '',
+            city: completedData.presentAddress?.city || '',
+            zipCode: completedData.presentAddress?.zipCode || ''
+          },
+          permanentAddress: completedData.permanentAddress ? {
+            addressLine1: completedData.permanentAddress.addressLine1 || '',
+            country: completedData.permanentAddress.country || '',
+            state: completedData.permanentAddress.state || '',
+            city: completedData.permanentAddress.city || '',
+            zipCode: completedData.permanentAddress.zipCode || ''
+          } : undefined,
           documents: completedData.documents || [],
           emergencyContacts: completedData.emergencyContacts || [],
           familyDetails: completedData.familyDetails || []
