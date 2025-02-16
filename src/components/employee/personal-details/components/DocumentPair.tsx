@@ -4,7 +4,7 @@ import { Document } from "@/services/types/employee.types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { FileText, Loader2, Pencil, Trash2 } from "lucide-react";
+import { FileText, Loader2, Replace, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -129,7 +129,7 @@ export const DocumentPair: React.FC<DocumentPairProps> = ({
         {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-4">
         <Input
           value={currentDocument?.documentNumber || ''}
           onChange={(e) => updateDocumentNumber(documentType, e.target.value)}
@@ -138,41 +138,53 @@ export const DocumentPair: React.FC<DocumentPairProps> = ({
           className="flex-1"
         />
 
-        <div className="relative flex-shrink-0 group">
-          <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
-            {currentDocument?.documentUrl ? (
-              <>
-                <FileText className="h-5 w-5 text-gray-400" />
-                <div className="absolute inset-0 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                  <label className="cursor-pointer p-1.5 rounded-full hover:bg-white/20 transition-colors">
-                    <Pencil className="h-3.5 w-3.5 text-white" />
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleUpload(file);
-                      }}
-                      disabled={isUploading}
-                    />
-                  </label>
-                  <button
-                    onClick={() => setShowDeleteDialog(true)}
-                    className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
+        <div className="w-[200px] relative">
+          {currentDocument?.documentUrl ? (
+            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg w-full group hover:bg-gray-100 transition-colors">
+              <FileText className="h-5 w-5 text-gray-500" />
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className="text-xs font-medium truncate">
+                  {currentDocument.fileName || 'Document'}
+                </span>
+                <span className="text-xs text-gray-500">
+                  {currentDocument.documentType.toUpperCase()}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="cursor-pointer p-1.5 rounded-full hover:bg-gray-200 transition-colors">
+                  <Replace className="h-4 w-4 text-gray-500" />
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleUpload(file);
+                    }}
                     disabled={isUploading}
-                  >
-                    <Trash2 className="h-3.5 w-3.5 text-white" />
-                  </button>
+                  />
+                </label>
+                <button
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="p-1.5 hover:bg-gray-200 rounded-full transition-colors"
+                  disabled={isUploading}
+                >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
+              <label className="w-full h-full flex items-center justify-between p-2 cursor-pointer">
+                <div className="flex items-center gap-2">
+                  {isUploading ? (
+                    <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
+                  ) : (
+                    <FileText className="h-5 w-5 text-gray-400" />
+                  )}
+                  <span className="text-xs text-gray-600">Upload {label}</span>
                 </div>
-              </>
-            ) : (
-              <label className="w-full h-full flex items-center justify-center cursor-pointer">
-                {isUploading ? (
-                  <Loader2 className="h-4 w-4 text-gray-400 animate-spin" />
-                ) : (
-                  <FileText className="h-4 w-4 text-gray-400" />
-                )}
+                <span className="text-[rgba(225,1,2,1)] text-xs font-semibold">+ Upload</span>
                 <input
                   type="file"
                   className="hidden"
@@ -184,22 +196,19 @@ export const DocumentPair: React.FC<DocumentPairProps> = ({
                   disabled={isUploading}
                 />
               </label>
-            )}
-          </div>
+            </div>
+          )}
 
           {isUploading && (
-            <div className="absolute -bottom-1 left-0 right-0">
+            <div className="mt-2">
               <Progress value={uploadProgress} className="h-1" />
+              <div className="text-xs text-gray-500 text-right mt-1">
+                {uploadProgress}%
+              </div>
             </div>
           )}
         </div>
       </div>
-
-      {currentDocument?.fileName && !isUploading && (
-        <div className="text-xs text-gray-500">
-          {currentDocument.fileName}
-        </div>
-      )}
 
       <AlertDialog open={showReplaceDialog} onOpenChange={setShowReplaceDialog}>
         <AlertDialogContent>
