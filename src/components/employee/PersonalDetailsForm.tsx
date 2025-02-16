@@ -144,6 +144,8 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
             form.setValue("profilePictureUrl", "");
             return Promise.resolve();
           }}
+          documents={documents}
+          onDocumentsChange={setDocuments}
           setValue={form.setValue}
           watch={form.watch}
         />
