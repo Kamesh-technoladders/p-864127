@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { employeeService } from "@/services/employee/employee.service";
@@ -33,12 +32,6 @@ export const useEmployeeForm = () => {
           return;
         }
 
-        // Ensure required fields are present
-        if (!completedData.aadharNumber || !completedData.panNumber) {
-          toast.error("Aadhar number and PAN number are required");
-          return;
-        }
-
         const submissionData = {
           employeeId: completedData.employeeId,
           firstName: completedData.firstName,
@@ -55,7 +48,6 @@ export const useEmployeeForm = () => {
           esicNumber: completedData.esicNumber || '',
           presentAddress: completedData.presentAddress,
           permanentAddress: completedData.permanentAddress,
-          // Ensure documents is always provided as a non-optional array
           documents: completedData.documents || [],
           emergencyContacts: completedData.emergencyContacts || [],
           familyDetails: completedData.familyDetails || []
@@ -67,7 +59,6 @@ export const useEmployeeForm = () => {
           throw new Error("Failed to save personal details");
         }
 
-        // Create the PersonalDetailsData object with proper typing
         const personalData: PersonalDetailsData = {
           ...submissionData,
           id: savedEmployee.id,
@@ -76,7 +67,7 @@ export const useEmployeeForm = () => {
           uanUrl: completedData.uanUrl,
           esicUrl: completedData.esicUrl,
           profilePictureUrl: completedData.profilePictureUrl,
-          documents: submissionData.documents // Ensure documents is passed through
+          documents: submissionData.documents
         };
         
         updateFormData("personal", personalData);
@@ -102,7 +93,6 @@ export const useEmployeeForm = () => {
 
       if (completedData) {
         try {
-          // Save education details to backend
           await employeeService.updateEmployee(formData.personal.id, {
             education: completedData
           });
@@ -129,7 +119,6 @@ export const useEmployeeForm = () => {
       setIsSubmitting(true);
       try {
         if (completedData) {
-          // Update bank details in backend
           await employeeService.updateEmployee(formData.personal.id, {
             bank: completedData
           });
