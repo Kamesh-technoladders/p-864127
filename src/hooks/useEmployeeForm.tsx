@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { employeeService } from "@/services/employee/employee.service";
@@ -24,24 +25,33 @@ export const useEmployeeForm = () => {
   const { isCheckingEmail, emailError, setEmailError } = useEmailValidation(formData.personal?.email);
 
   const validatePersonalDetails = (data: any): boolean => {
-    // Check basic required fields
-    if (!data.employeeId?.trim()) {
+    // Check if data exists and is not empty
+    if (!data) {
+      toast.error("Form data is missing");
+      return false;
+    }
+
+    // Validate employeeId - only if it's not already present in formData
+    const existingEmployeeId = formData.personal?.employeeId;
+    if (!existingEmployeeId && !data.employeeId) {
       toast.error("Employee ID is required");
       return false;
     }
-    if (!data.firstName?.trim()) {
+
+    // Validate other required fields
+    if (!data.firstName) {
       toast.error("First name is required");
       return false;
     }
-    if (!data.lastName?.trim()) {
+    if (!data.lastName) {
       toast.error("Last name is required");
       return false;
     }
-    if (!data.email?.trim()) {
+    if (!data.email) {
       toast.error("Email is required");
       return false;
     }
-    if (!data.phone?.trim()) {
+    if (!data.phone) {
       toast.error("Phone number is required");
       return false;
     }
@@ -61,17 +71,17 @@ export const useEmployeeForm = () => {
       toast.error("Marital status is required");
       return false;
     }
-    if (!data.aadharNumber?.trim()) {
+    if (!data.aadharNumber) {
       toast.error("Aadhar number is required");
       return false;
     }
-    if (!data.panNumber?.trim()) {
+    if (!data.panNumber) {
       toast.error("PAN number is required");
       return false;
     }
 
-    // Validate present address
-    if (!data.presentAddress?.addressLine1?.trim()) {
+    // Validate present address - check if object exists first
+    if (!data.presentAddress || !data.presentAddress.addressLine1) {
       toast.error("Present address line is required");
       return false;
     }
@@ -95,7 +105,7 @@ export const useEmployeeForm = () => {
         }
 
         const submissionData = {
-          employeeId: completedData.employeeId,
+          employeeId: completedData.employeeId || formData.personal?.employeeId,
           firstName: completedData.firstName,
           lastName: completedData.lastName,
           email: completedData.email,
