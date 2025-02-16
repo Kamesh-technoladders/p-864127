@@ -25,7 +25,9 @@ export const useFormInitialization = (initialData: any) => {
       );
 
       // Initialize documents
-      setDocuments(initialData.documents || []);
+      if (initialData.documents) {
+        setDocuments(initialData.documents);
+      }
     }
   }, [initialData]);
 

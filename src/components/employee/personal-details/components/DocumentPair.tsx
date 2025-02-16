@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Document } from "@/services/types/employee.types";
 import { Input } from "@/components/ui/input";
@@ -31,7 +30,7 @@ interface DocumentPairProps {
 
 export const DocumentPair: React.FC<DocumentPairProps> = ({
   documentType,
-  documents,
+  documents = [],
   label,
   required,
   placeholder,
@@ -46,7 +45,7 @@ export const DocumentPair: React.FC<DocumentPairProps> = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   
-  const currentDocument = documents.find(doc => doc.documentType === documentType);
+  const currentDocument = documents?.find(doc => doc.documentType === documentType);
 
   const handleUpload = async (file: File) => {
     // Validate file type
