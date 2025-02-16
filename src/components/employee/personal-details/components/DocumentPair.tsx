@@ -1,9 +1,10 @@
+
 import React, { useState } from "react";
 import { Document } from "@/services/types/employee.types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { FileText, Loader2, Replace, Trash2 } from "lucide-react";
+import { FileText, Loader2, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -122,58 +123,55 @@ export const DocumentPair: React.FC<DocumentPairProps> = ({
   };
 
   return (
-    <div className="flex items-start gap-6">
-      <div className="flex-1">
-        <Label className="mb-2 block">
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </Label>
+    <div className="space-y-2">
+      <Label>
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </Label>
+      
+      <div className="flex items-center gap-4">
         <Input
           value={currentDocument?.documentNumber || ''}
           onChange={(e) => updateDocumentNumber(documentType, e.target.value)}
           placeholder={placeholder}
           pattern={pattern}
+          className="flex-1"
         />
-      </div>
 
-      <div className="flex-shrink-0">
-        <div className="relative group">
-          {currentDocument?.documentUrl ? (
-            <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-              <FileText className="h-8 w-8 text-gray-400" />
-              <div className="absolute inset-0 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                <label className="cursor-pointer p-2 rounded-full hover:bg-white/20 transition-colors">
-                  <Replace className="h-5 w-5 text-white" />
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleUpload(file);
-                    }}
+        <div className="relative flex-shrink-0 group">
+          <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
+            {currentDocument?.documentUrl ? (
+              <>
+                <FileText className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-0 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                  <label className="cursor-pointer p-1.5 rounded-full hover:bg-white/20 transition-colors">
+                    <Pencil className="h-3.5 w-3.5 text-white" />
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleUpload(file);
+                      }}
+                      disabled={isUploading}
+                    />
+                  </label>
+                  <button
+                    onClick={() => setShowDeleteDialog(true)}
+                    className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
                     disabled={isUploading}
-                  />
-                </label>
-                <button
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="p-2 rounded-full hover:bg-white/20 transition-colors"
-                  disabled={isUploading}
-                >
-                  <Trash2 className="h-5 w-5 text-white" />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
-              <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-white" />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <label className="w-full h-full flex items-center justify-center cursor-pointer">
                 {isUploading ? (
-                  <Loader2 className="h-6 w-6 text-gray-400 animate-spin" />
+                  <Loader2 className="h-4 w-4 text-gray-400 animate-spin" />
                 ) : (
-                  <>
-                    <FileText className="h-6 w-6 text-gray-400 mb-2" />
-                    <span className="text-xs text-gray-500">Upload {label}</span>
-                  </>
+                  <FileText className="h-4 w-4 text-gray-400" />
                 )}
                 <input
                   type="file"
@@ -186,25 +184,22 @@ export const DocumentPair: React.FC<DocumentPairProps> = ({
                   disabled={isUploading}
                 />
               </label>
-            </div>
-          )}
+            )}
+          </div>
 
           {isUploading && (
-            <div className="mt-2">
+            <div className="absolute -bottom-1 left-0 right-0">
               <Progress value={uploadProgress} className="h-1" />
-              <div className="text-xs text-gray-500 text-right mt-1">
-                {uploadProgress}%
-              </div>
             </div>
           )}
         </div>
-
-        {currentDocument?.fileName && !isUploading && (
-          <div className="mt-2 text-xs text-gray-600 text-center max-w-[96px] truncate">
-            {currentDocument.fileName}
-          </div>
-        )}
       </div>
+
+      {currentDocument?.fileName && !isUploading && (
+        <div className="text-xs text-gray-500">
+          {currentDocument.fileName}
+        </div>
+      )}
 
       <AlertDialog open={showReplaceDialog} onOpenChange={setShowReplaceDialog}>
         <AlertDialogContent>
