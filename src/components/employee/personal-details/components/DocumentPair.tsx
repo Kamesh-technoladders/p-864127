@@ -129,16 +129,16 @@ export const DocumentPair: React.FC<DocumentPairProps> = ({
         {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
       
-      <div className="flex items-start gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <Input
           value={currentDocument?.documentNumber || ''}
           onChange={(e) => updateDocumentNumber(documentType, e.target.value)}
           placeholder={placeholder}
           pattern={pattern}
-          className="flex-1"
+          className="w-full"
         />
 
-        <div className="w-[200px] relative">
+        <div className="relative">
           {currentDocument?.documentUrl ? (
             <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg w-full group hover:bg-gray-100 transition-colors">
               <FileText className="h-5 w-5 text-gray-500" />
