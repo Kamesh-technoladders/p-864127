@@ -48,6 +48,7 @@ export const DocumentPair: React.FC<DocumentPairProps> = ({
     documentType,
     onUpload,
     onDelete,
+    currentDocument,
   });
 
   return (

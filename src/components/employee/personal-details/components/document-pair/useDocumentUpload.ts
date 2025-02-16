@@ -8,6 +8,7 @@ interface UseDocumentUploadProps {
   documentType: Document['documentType'];
   onUpload: (type: Document['documentType'], file: File) => Promise<void>;
   onDelete: (type: Document['documentType']) => Promise<void>;
+  currentDocument?: Document;
 }
 
 export const useDocumentUpload = ({
@@ -15,6 +16,7 @@ export const useDocumentUpload = ({
   documentType,
   onUpload,
   onDelete,
+  currentDocument,
 }: UseDocumentUploadProps) => {
   const [showReplaceDialog, setShowReplaceDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -35,8 +37,12 @@ export const useDocumentUpload = ({
       return;
     }
 
-    setPendingFile(file);
-    setShowReplaceDialog(true);
+    if (currentDocument?.documentUrl) {
+      setPendingFile(file);
+      setShowReplaceDialog(true);
+    } else {
+      await processUpload(file);
+    }
   };
 
   const processUpload = async (file: File) => {

@@ -3,10 +3,10 @@ import * as z from "zod";
 
 const addressSchema = z.object({
   addressLine1: z.string().min(1, "Address line is required"),
-  country: z.string().min(1, "Country is required"),
-  state: z.string().min(1, "State is required"),
-  city: z.string().min(1, "City is required"),
-  zipCode: z.string().min(1, "ZIP code is required")
+  country: z.string().optional().default(""),
+  state: z.string().optional().default(""),
+  city: z.string().optional().default(""),
+  zipCode: z.string().optional().default("")
 });
 
 export const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as const;
