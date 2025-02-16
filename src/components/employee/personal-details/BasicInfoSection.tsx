@@ -2,8 +2,9 @@
 import React from "react";
 import { BasicDetailsFields } from "./components/BasicDetailsFields";
 import { PersonalInfoFields } from "./components/PersonalInfoFields";
-import { DocumentFields } from "./components/DocumentFields";
+import { DocumentationSection } from "./components/DocumentationSection";
 import { ProfilePictureUpload } from "./ProfilePictureUpload";
+import { Document } from "@/services/types/employee.types";
 
 interface BasicInfoSectionProps {
   register: any;
@@ -15,8 +16,8 @@ interface BasicInfoSectionProps {
   onProfilePictureChange?: (url: string) => void;
   onProfilePictureDelete?: () => Promise<void>;
   profilePictureUrl?: string;
-  setValue: (name: string, value: any) => void;
-  watch: (name: string) => any;
+  documents: Document[];
+  onDocumentsChange: (documents: Document[]) => void;
 }
 
 export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
@@ -28,39 +29,41 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   onProfilePictureChange,
   onProfilePictureDelete,
   profilePictureUrl,
-  setValue,
-  watch,
+  documents,
+  onDocumentsChange,
 }) => {
   return (
-    <div className="space-y-4">
-      <div className="text-[rgba(48,64,159,1)] font-bold">Personal Info</div>
-      <div className="text-[rgba(80,80,80,1)] text-xs mb-4">
-        Fill in your personal details below.
+    <div className="space-y-8">
+      <div>
+        <div className="text-[rgba(48,64,159,1)] font-bold">Personal Info</div>
+        <div className="text-[rgba(80,80,80,1)] text-xs mb-4">
+          Fill in your personal details below.
+        </div>
+
+        <div className="mb-6">
+          <ProfilePictureUpload
+            value={profilePictureUrl}
+            onChange={(url) => onProfilePictureChange?.(url)}
+            onDelete={onProfilePictureDelete}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <BasicDetailsFields
+            form={register}
+            isCheckingEmail={isCheckingEmail}
+            emailError={emailError}
+            isCheckingPhone={isCheckingPhone}
+            phoneError={phoneError}
+          />
+          <PersonalInfoFields form={register} />
+        </div>
       </div>
 
-      <div className="mb-6">
-        <ProfilePictureUpload
-          value={profilePictureUrl}
-          onChange={(url) => onProfilePictureChange?.(url)}
-          onDelete={onProfilePictureDelete}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <BasicDetailsFields
-          form={register}
-          isCheckingEmail={isCheckingEmail}
-          emailError={emailError}
-          isCheckingPhone={isCheckingPhone}
-          phoneError={phoneError}
-        />
-        <PersonalInfoFields form={register} />
-        <DocumentFields
-          form={register}
-          setValue={setValue}
-          watch={watch}
-        />
-      </div>
+      <DocumentationSection
+        documents={documents}
+        onDocumentsChange={onDocumentsChange}
+      />
     </div>
   );
 };
