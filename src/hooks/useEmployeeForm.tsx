@@ -3,133 +3,43 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { employeeService } from "@/services/employee/employee.service";
 import { useEmailValidation } from "./form/useEmailValidation";
-import { useFormState } from "./form/useFormState";
+import { useFormStateMachine } from "./form/useFormStateMachine";
 import { PersonalDetailsData } from "@/components/employee/types";
 import { EmployeeData } from "@/services/types/employee.types";
 import { personalInfoService } from "@/services/employee/personalInfo.service";
+import { validatePersonalDetails, validateEducation, validateBankDetails } from "@/utils/formValidation";
 
 export const useEmployeeForm = () => {
   const [isFormCompleted, setIsFormCompleted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
+    formState,
+    setFormState,
     activeTab,
     formProgress,
     formData,
     updateSectionProgress,
     updateFormData,
-    handleTabChange,
-    setActiveTab
-  } = useFormState();
+    setActiveTab,
+    clearError
+  } = useFormStateMachine();
 
   const { isCheckingEmail, emailError, setEmailError } = useEmailValidation(formData.personal?.email);
 
-  const validatePersonalDetails = (data: PersonalDetailsData): boolean => {
-    // Log the data structure for debugging
-    console.log('Validating personal details:', data);
-
-    if (!data) {
-      toast.error("Form data is missing");
-      return false;
+  const handleTabChange = (tabId: string) => {
+    const currentTabKey = activeTab as keyof typeof formProgress;
+    if (!formProgress[currentTabKey]) {
+      toast.error("Please save the current section before proceeding");
+      return;
     }
-
-    // Validate employeeId
-    if (!data.employeeId?.trim()) {
-      toast.error("Employee ID is required");
-      return false;
-    }
-
-    // Validate basic personal information
-    if (!data.firstName?.trim()) {
-      toast.error("First name is required");
-      return false;
-    }
-
-    if (!data.lastName?.trim()) {
-      toast.error("Last name is required");
-      return false;
-    }
-
-    if (!data.email?.trim()) {
-      toast.error("Email is required");
-      return false;
-    }
-
-    if (!data.phone?.trim()) {
-      toast.error("Phone number is required");
-      return false;
-    }
-
-    if (!data.dateOfBirth) {
-      toast.error("Date of birth is required");
-      return false;
-    }
-
-    if (!data.gender) {
-      toast.error("Gender is required");
-      return false;
-    }
-
-    if (!data.bloodGroup) {
-      toast.error("Blood group is required");
-      return false;
-    }
-
-    if (!data.maritalStatus) {
-      toast.error("Marital status is required");
-      return false;
-    }
-
-    // Validate document numbers
-    if (!data.aadharNumber?.trim()) {
-      toast.error("Aadhar number is required");
-      return false;
-    }
-
-    if (!data.panNumber?.trim()) {
-      toast.error("PAN number is required");
-      return false;
-    }
-
-    // Validate present address - check all required fields
-    if (!data.presentAddress) {
-      toast.error("Present address is required");
-      return false;
-    }
-
-    const { addressLine1, country, state, city, zipCode } = data.presentAddress;
-
-    if (!addressLine1?.trim()) {
-      toast.error("Present address line is required");
-      return false;
-    }
-
-    if (!country?.trim()) {
-      toast.error("Present address country is required");
-      return false;
-    }
-
-    if (!state?.trim()) {
-      toast.error("Present address state is required");
-      return false;
-    }
-
-    if (!city?.trim()) {
-      toast.error("Present address city is required");
-      return false;
-    }
-
-    if (!zipCode?.trim()) {
-      toast.error("Present address ZIP code is required");
-      return false;
-    }
-
-    return true;
+    setActiveTab(tabId);
   };
 
   const handleSaveAndNext = async (completedData?: any) => {
     if (activeTab === "personal") {
       setIsSubmitting(true);
+      setFormState('VALIDATING');
       try {
         if (!completedData) {
           toast.error("Please complete all required fields");
@@ -138,12 +48,13 @@ export const useEmployeeForm = () => {
 
         console.log('Form submission data:', completedData);
 
-        // Validate all required fields before proceeding
         if (!validatePersonalDetails(completedData)) {
+          setFormState('ERROR');
           setIsSubmitting(false);
           return;
         }
 
+        setFormState('SUBMITTING');
         const submissionData = {
           employeeId: completedData.employeeId,
           firstName: completedData.firstName,
@@ -158,20 +69,8 @@ export const useEmployeeForm = () => {
           panNumber: completedData.panNumber,
           uanNumber: completedData.uanNumber || '',
           esicNumber: completedData.esicNumber || '',
-          presentAddress: {
-            addressLine1: completedData.presentAddress.addressLine1,
-            country: completedData.presentAddress.country,
-            state: completedData.presentAddress.state,
-            city: completedData.presentAddress.city,
-            zipCode: completedData.presentAddress.zipCode
-          },
-          permanentAddress: completedData.permanentAddress ? {
-            addressLine1: completedData.permanentAddress.addressLine1,
-            country: completedData.permanentAddress.country,
-            state: completedData.permanentAddress.state,
-            city: completedData.permanentAddress.city,
-            zipCode: completedData.permanentAddress.zipCode
-          } : undefined,
+          presentAddress: completedData.presentAddress,
+          permanentAddress: completedData.permanentAddress,
           documents: completedData.documents || [],
           emergencyContacts: completedData.emergencyContacts || [],
           familyDetails: completedData.familyDetails || []
@@ -197,11 +96,13 @@ export const useEmployeeForm = () => {
         updateFormData("personal", personalData);
         updateSectionProgress("personal", true);
         setActiveTab("education");
+        setFormState('SUCCESS');
         toast.success("Personal details saved successfully!");
       } catch (error: any) {
         console.error('Error saving personal details:', error);
         toast.error(error.message || "Failed to save personal details. Please try again.");
         updateSectionProgress("personal", false);
+        setFormState('ERROR');
       } finally {
         setIsSubmitting(false);
       }
@@ -215,8 +116,15 @@ export const useEmployeeForm = () => {
         return;
       }
 
+      setFormState('VALIDATING');
       if (completedData) {
         try {
+          if (!validateEducation(completedData)) {
+            setFormState('ERROR');
+            return;
+          }
+
+          setFormState('SUBMITTING');
           await employeeService.updateEmployee(formData.personal.id, {
             education: completedData
           });
@@ -224,11 +132,13 @@ export const useEmployeeForm = () => {
           updateFormData("education", completedData);
           updateSectionProgress("education", true);
           setActiveTab("bank");
+          setFormState('SUCCESS');
           toast.success("Education details saved successfully!");
         } catch (error: any) {
           console.error('Error saving education details:', error);
           toast.error(error.message || "Failed to save education details. Please try again.");
           updateSectionProgress("education", false);
+          setFormState('ERROR');
         }
       }
       return;
@@ -241,8 +151,16 @@ export const useEmployeeForm = () => {
       }
 
       setIsSubmitting(true);
+      setFormState('VALIDATING');
       try {
         if (completedData) {
+          if (!validateBankDetails(completedData)) {
+            setFormState('ERROR');
+            setIsSubmitting(false);
+            return;
+          }
+
+          setFormState('SUBMITTING');
           await employeeService.updateEmployee(formData.personal.id, {
             bank: completedData
           });
@@ -263,6 +181,7 @@ export const useEmployeeForm = () => {
           };
 
           await employeeService.updateEmployee(formData.personal.id, employeeData);
+          setFormState('SUCCESS');
           toast.success("Employee information saved successfully!");
           setIsFormCompleted(true);
           window.location.reload();
@@ -270,6 +189,7 @@ export const useEmployeeForm = () => {
       } catch (error: any) {
         console.error('Error saving employee data:', error);
         toast.error(error.message || "Failed to save employee information. Please try again.");
+        setFormState('ERROR');
       } finally {
         setIsSubmitting(false);
       }
@@ -285,10 +205,11 @@ export const useEmployeeForm = () => {
     isSubmitting,
     isCheckingEmail,
     emailError,
+    formState,
     updateSectionProgress,
     updateFormData,
     handleTabChange,
     handleSaveAndNext,
+    clearError,
   };
 };
-
