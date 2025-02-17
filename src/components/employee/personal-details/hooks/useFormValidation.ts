@@ -1,14 +1,29 @@
 
 import { EmergencyContact, FamilyMember } from "../../types";
+import { PersonalDetailsFormSchema } from "../schema/personalDetailsSchema";
 
 export const useFormValidation = () => {
   const validateForm = (
+    formData: PersonalDetailsFormSchema,
     emergencyContacts: EmergencyContact[],
     familyDetails: FamilyMember[],
     setEmergencyContacts: React.Dispatch<React.SetStateAction<EmergencyContact[]>>,
     setFamilyDetails: React.Dispatch<React.SetStateAction<FamilyMember[]>>
   ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];
+
+    // Validate base form fields
+    if (!formData.employeeId?.trim()) {
+      errors.push("Employee ID is required");
+    }
+
+    if (!formData.firstName?.trim()) {
+      errors.push("First name is required");
+    }
+
+    if (!formData.lastName?.trim()) {
+      errors.push("Last name is required");
+    }
 
     // Validate emergency contacts
     const hasValidEmergencyContact = emergencyContacts.some(

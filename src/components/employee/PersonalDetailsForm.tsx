@@ -68,6 +68,7 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     console.log('Form data before validation:', data);
     
     const validation = validateForm(
+      data,
       emergencyContacts,
       familyDetails,
       setEmergencyContacts,
