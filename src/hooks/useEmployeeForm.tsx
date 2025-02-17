@@ -24,65 +24,103 @@ export const useEmployeeForm = () => {
 
   const { isCheckingEmail, emailError, setEmailError } = useEmailValidation(formData.personal?.email);
 
-  const validatePersonalDetails = (data: any): boolean => {
-    // Check if data exists and is not empty
+  const validatePersonalDetails = (data: PersonalDetailsData): boolean => {
+    // Log the data structure for debugging
+    console.log('Validating personal details:', data);
+
     if (!data) {
       toast.error("Form data is missing");
       return false;
     }
 
-    // Validate employeeId - only if it's not already present in formData
-    const existingEmployeeId = formData.personal?.employeeId;
-    if (!existingEmployeeId && !data.employeeId) {
+    // Validate employeeId
+    if (!data.employeeId?.trim()) {
       toast.error("Employee ID is required");
       return false;
     }
 
-    // Validate other required fields
-    if (!data.firstName) {
+    // Validate basic personal information
+    if (!data.firstName?.trim()) {
       toast.error("First name is required");
       return false;
     }
-    if (!data.lastName) {
+
+    if (!data.lastName?.trim()) {
       toast.error("Last name is required");
       return false;
     }
-    if (!data.email) {
+
+    if (!data.email?.trim()) {
       toast.error("Email is required");
       return false;
     }
-    if (!data.phone) {
+
+    if (!data.phone?.trim()) {
       toast.error("Phone number is required");
       return false;
     }
+
     if (!data.dateOfBirth) {
       toast.error("Date of birth is required");
       return false;
     }
+
     if (!data.gender) {
       toast.error("Gender is required");
       return false;
     }
+
     if (!data.bloodGroup) {
       toast.error("Blood group is required");
       return false;
     }
+
     if (!data.maritalStatus) {
       toast.error("Marital status is required");
       return false;
     }
-    if (!data.aadharNumber) {
+
+    // Validate document numbers
+    if (!data.aadharNumber?.trim()) {
       toast.error("Aadhar number is required");
       return false;
     }
-    if (!data.panNumber) {
+
+    if (!data.panNumber?.trim()) {
       toast.error("PAN number is required");
       return false;
     }
 
-    // Validate present address - check if object exists first
-    if (!data.presentAddress || !data.presentAddress.addressLine1) {
+    // Validate present address - check all required fields
+    if (!data.presentAddress) {
+      toast.error("Present address is required");
+      return false;
+    }
+
+    const { addressLine1, country, state, city, zipCode } = data.presentAddress;
+
+    if (!addressLine1?.trim()) {
       toast.error("Present address line is required");
+      return false;
+    }
+
+    if (!country?.trim()) {
+      toast.error("Present address country is required");
+      return false;
+    }
+
+    if (!state?.trim()) {
+      toast.error("Present address state is required");
+      return false;
+    }
+
+    if (!city?.trim()) {
+      toast.error("Present address city is required");
+      return false;
+    }
+
+    if (!zipCode?.trim()) {
+      toast.error("Present address ZIP code is required");
       return false;
     }
 
@@ -98,6 +136,8 @@ export const useEmployeeForm = () => {
           return;
         }
 
+        console.log('Form submission data:', completedData);
+
         // Validate all required fields before proceeding
         if (!validatePersonalDetails(completedData)) {
           setIsSubmitting(false);
@@ -105,7 +145,7 @@ export const useEmployeeForm = () => {
         }
 
         const submissionData = {
-          employeeId: completedData.employeeId || formData.personal?.employeeId,
+          employeeId: completedData.employeeId,
           firstName: completedData.firstName,
           lastName: completedData.lastName,
           email: completedData.email,
@@ -119,18 +159,18 @@ export const useEmployeeForm = () => {
           uanNumber: completedData.uanNumber || '',
           esicNumber: completedData.esicNumber || '',
           presentAddress: {
-            addressLine1: completedData.presentAddress?.addressLine1 || '',
-            country: completedData.presentAddress?.country || '',
-            state: completedData.presentAddress?.state || '',
-            city: completedData.presentAddress?.city || '',
-            zipCode: completedData.presentAddress?.zipCode || ''
+            addressLine1: completedData.presentAddress.addressLine1,
+            country: completedData.presentAddress.country,
+            state: completedData.presentAddress.state,
+            city: completedData.presentAddress.city,
+            zipCode: completedData.presentAddress.zipCode
           },
           permanentAddress: completedData.permanentAddress ? {
-            addressLine1: completedData.permanentAddress.addressLine1 || '',
-            country: completedData.permanentAddress.country || '',
-            state: completedData.permanentAddress.state || '',
-            city: completedData.permanentAddress.city || '',
-            zipCode: completedData.permanentAddress.zipCode || ''
+            addressLine1: completedData.permanentAddress.addressLine1,
+            country: completedData.permanentAddress.country,
+            state: completedData.permanentAddress.state,
+            city: completedData.permanentAddress.city,
+            zipCode: completedData.permanentAddress.zipCode
           } : undefined,
           documents: completedData.documents || [],
           emergencyContacts: completedData.emergencyContacts || [],
@@ -251,3 +291,4 @@ export const useEmployeeForm = () => {
     handleSaveAndNext,
   };
 };
+

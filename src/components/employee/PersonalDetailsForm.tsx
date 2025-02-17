@@ -65,6 +65,8 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   });
 
   const handleSubmit = form.handleSubmit((data) => {
+    console.log('Form data before validation:', data);
+    
     const isValid = validateForm(emergencyContacts, familyDetails, setEmergencyContacts, setFamilyDetails);
     
     if (!isValid) {
@@ -87,6 +89,19 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
         member.occupation.trim() !== "" && 
         member.phone.trim() !== ""
     );
+
+    // Ensure all required fields are present in the form data
+    if (!data.employeeId?.trim()) {
+      toast.error("Employee ID is required");
+      onComplete(false);
+      return;
+    }
+
+    if (!data.presentAddress?.addressLine1?.trim()) {
+      toast.error("Present address line is required");
+      onComplete(false);
+      return;
+    }
 
     const formData = {
       employeeId: data.employeeId,
