@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { uploadDocument } from "@/utils/uploadDocument";
+import { cn } from "@/lib/utils";
 
 interface IdDocumentFieldProps {
   label: string;
