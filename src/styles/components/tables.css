@@ -5,11 +5,11 @@
 }
 
 .table-modern th {
-  @apply px-1 py-0.5 text-left text-[10px] font-semibold text-brand-primary bg-white border-b;
+  @apply px-0.5 py-0.5 text-left text-[10px] font-semibold text-brand-primary bg-white border-b;
 }
 
 .table-modern td {
-  @apply px-1 py-0.5 text-[10px] text-brand-secondary border-b;
+  @apply px-0.5 py-0.5 text-[10px] text-brand-secondary border-b;
 }
 
 .table-modern tr:hover {

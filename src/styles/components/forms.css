@@ -3,11 +3,11 @@
 .input-modern {
   @apply px-1 py-0.5 rounded border border-gray-200 
          focus:border-brand-accent focus:ring-1 focus:ring-brand-accent 
-         text-[10px] h-5 max-w-[200px];
+         text-[10px] h-5 max-w-[100px];
 }
 
 .button-modern {
-  @apply px-1 py-0.5 rounded text-[10px] font-medium transition-colors h-5 max-w-[120px];
+  @apply px-1 py-0.5 rounded text-[10px] font-medium transition-colors h-4 max-w-[80px];
 }
 
 .button-primary {

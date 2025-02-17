@@ -36,7 +36,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         type={type}
         {...register(id)}
         className={cn(
-          "mt-0.5 h-5 max-w-[200px] border-[#E4E4E4] rounded text-[10px] placeholder:text-[10px]",
+          "mt-0.5 h-5 max-w-[100px] border-[#E4E4E4] rounded text-[10px] placeholder:text-[10px]",
           "hover:border-[#30409F]/50 focus:ring-1 focus:ring-[#30409F]/20",
           error && "border-[#DD0101] hover:border-[#DD0101]/80 focus:ring-[#DD0101]/20",
           className
