@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,23 +31,22 @@
   }
   
   body {
-    @apply bg-gradient-main text-brand-primary font-sans text-[11px];
+    @apply bg-gradient-main text-brand-primary font-sans text-[10px];
   }
 
   h1 {
-    @apply text-sm font-semibold;
-  }
-
-  h2 {
     @apply text-xs font-semibold;
   }
 
-  h3 {
+  h2 {
     @apply text-[11px] font-semibold;
   }
 
+  h3 {
+    @apply text-[10px] font-semibold;
+  }
+
   label {
-    @apply text-[10px] font-medium;
+    @apply text-[9px] font-medium;
   }
 }
-
