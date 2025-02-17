@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -67,10 +66,16 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   const handleSubmit = form.handleSubmit((data) => {
     console.log('Form data before validation:', data);
     
-    const isValid = validateForm(emergencyContacts, familyDetails, setEmergencyContacts, setFamilyDetails);
+    const validation = validateForm(
+      data,
+      emergencyContacts,
+      familyDetails,
+      setEmergencyContacts,
+      setFamilyDetails
+    );
     
-    if (!isValid) {
-      toast.error("Please add at least one emergency contact and one family member");
+    if (!validation.isValid) {
+      validation.errors.forEach(error => toast.error(error));
       onComplete(false);
       return;
     }
@@ -90,54 +95,41 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
         member.phone.trim() !== ""
     );
 
-    // Ensure all required fields are present in the form data
-    if (!data.employeeId?.trim()) {
-      toast.error("Employee ID is required");
-      onComplete(false);
-      return;
-    }
-
-    if (!data.presentAddress?.addressLine1?.trim()) {
-      toast.error("Present address line is required");
-      onComplete(false);
-      return;
-    }
-
     const formData = {
-      employeeId: data.employeeId,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phone: data.phone,
+      employeeId: data.employeeId.trim(),
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      email: data.email.trim(),
+      phone: data.phone.trim(),
       dateOfBirth: data.dateOfBirth?.toISOString(),
       gender: data.gender,
       bloodGroup: data.bloodGroup,
       maritalStatus: data.maritalStatus,
-      aadharNumber: data.aadharNumber,
+      aadharNumber: data.aadharNumber.trim(),
       aadharUrl: data.aadharUrl,
-      panNumber: data.panNumber,
+      panNumber: data.panNumber.trim(),
       panUrl: data.panUrl,
-      uanNumber: data.uanNumber,
+      uanNumber: data.uanNumber.trim(),
       uanUrl: data.uanUrl,
-      esicNumber: data.esicNumber,
+      esicNumber: data.esicNumber.trim(),
       esicUrl: data.esicUrl,
       emergencyContacts: validEmergencyContacts,
       familyDetails: validFamilyDetails,
       documents,
       profilePictureUrl: data.profilePictureUrl,
       presentAddress: {
-        addressLine1: data.presentAddress.addressLine1,
-        country: data.presentAddress.country,
-        state: data.presentAddress.state,
-        city: data.presentAddress.city,
-        zipCode: data.presentAddress.zipCode
+        addressLine1: data.presentAddress.addressLine1.trim(),
+        country: data.presentAddress.country.trim(),
+        state: data.presentAddress.state.trim(),
+        city: data.presentAddress.city.trim(),
+        zipCode: data.presentAddress.zipCode.trim()
       },
       permanentAddress: data.permanentAddress ? {
-        addressLine1: data.permanentAddress.addressLine1,
-        country: data.permanentAddress.country,
-        state: data.permanentAddress.state,
-        city: data.permanentAddress.city,
-        zipCode: data.permanentAddress.zipCode
+        addressLine1: data.permanentAddress.addressLine1.trim(),
+        country: data.permanentAddress.country.trim(),
+        state: data.permanentAddress.state.trim(),
+        city: data.permanentAddress.city.trim(),
+        zipCode: data.permanentAddress.zipCode.trim()
       } : undefined
     };
 
