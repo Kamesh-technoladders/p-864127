@@ -1,22 +1,32 @@
 
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { EmployeeData, PersonalInfo, EmployeeBasicInfo, EmployeeDetailsResponse } from "@/services/types/employee.types";
+import { EmployeeData, PersonalInfo, EmployeeBasicInfo } from "@/services/types/employee.types";
 import { employeeDataService } from "@/services/employee/employeeDataService";
 import { employeeAddressService } from "@/services/employee/employeeAddressService";
 import { employeeContactService } from "@/services/employee/employeeContactService";
 import { employeeFamilyService } from "@/services/employee/employeeFamilyService";
 import { transformEmployeeData } from "@/utils/transforms/employeeTransforms";
-import { supabase } from "@/integrations/supabase/client";
 
 export const useEmployeeData = (employeeId: string | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
   const [employeeData, setEmployeeData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Validate UUID format
+  const isValidUUID = (uuid: string): boolean => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  };
+
   const fetchEmployeeData = useCallback(async () => {
     if (!employeeId) {
       setError("No employee ID provided");
+      return;
+    }
+
+    if (!isValidUUID(employeeId)) {
+      setError("Invalid employee ID format");
       return;
     }
 
@@ -65,6 +75,11 @@ export const useEmployeeData = (employeeId: string | undefined) => {
     async (section: string, data: any) => {
       if (!employeeId) {
         toast.error("No employee ID provided");
+        return;
+      }
+
+      if (!isValidUUID(employeeId)) {
+        toast.error("Invalid employee ID format");
         return;
       }
 

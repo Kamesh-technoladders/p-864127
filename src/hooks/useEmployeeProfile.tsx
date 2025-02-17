@@ -12,7 +12,10 @@ export const useEmployeeProfile = (id: string | undefined) => {
   const [totalExperience, setTotalExperience] = useState("0.0 years");
 
   const calculateTotalExperience = useCallback(async () => {
-    if (!id) return;
+    if (!id || !isValidUUID(id)) {
+      console.log('Invalid or missing employee ID for experience calculation');
+      return;
+    }
 
     try {
       // Fetch experiences directly from the database
@@ -63,9 +66,18 @@ export const useEmployeeProfile = (id: string | undefined) => {
     }
   }, [id]);
 
+  // Validate UUID format
+  const isValidUUID = (uuid: string): boolean => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  };
+
   // Subscribe to experience changes
   useEffect(() => {
-    if (!id) return;
+    if (!id || !isValidUUID(id)) {
+      console.log('Invalid or missing employee ID for subscription');
+      return;
+    }
 
     calculateTotalExperience();
 
@@ -102,6 +114,11 @@ export const useEmployeeProfile = (id: string | undefined) => {
   };
 
   const handleUpdateEmployment = async (data: any) => {
+    if (!id || !isValidUUID(id)) {
+      toast.error("Invalid employee ID");
+      return;
+    }
+
     try {
       await updateEmployee("employment", data);
       await fetchEmployeeData();
@@ -115,6 +132,11 @@ export const useEmployeeProfile = (id: string | undefined) => {
   };
 
   const handleUpdatePersonal = async (data: any) => {
+    if (!id || !isValidUUID(id)) {
+      toast.error("Invalid employee ID");
+      return;
+    }
+
     try {
       await updateEmployee("personal", data);
       await fetchEmployeeData();
