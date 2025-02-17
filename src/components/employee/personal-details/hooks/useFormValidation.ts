@@ -7,7 +7,10 @@ export const useFormValidation = () => {
     familyDetails: FamilyMember[],
     setEmergencyContacts: React.Dispatch<React.SetStateAction<EmergencyContact[]>>,
     setFamilyDetails: React.Dispatch<React.SetStateAction<FamilyMember[]>>
-  ) => {
+  ): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+
+    // Validate emergency contacts
     const hasValidEmergencyContact = emergencyContacts.some(
       contact => 
         contact.name.trim() !== "" && 
@@ -15,6 +18,11 @@ export const useFormValidation = () => {
         contact.phone.trim() !== ""
     );
 
+    if (!hasValidEmergencyContact) {
+      errors.push("At least one emergency contact is required");
+    }
+
+    // Validate family members
     const hasValidFamilyMember = familyDetails.some(
       member => 
         member.name.trim() !== "" && 
@@ -23,7 +31,11 @@ export const useFormValidation = () => {
         member.phone.trim() !== ""
     );
 
-    // Filter out incomplete entries
+    if (!hasValidFamilyMember) {
+      errors.push("At least one family member is required");
+    }
+
+    // Clean up incomplete entries
     if (!hasValidEmergencyContact) {
       setEmergencyContacts(prevContacts => 
         prevContacts.filter(contact => 
@@ -45,8 +57,10 @@ export const useFormValidation = () => {
       );
     }
 
-    // Return validation result
-    return hasValidEmergencyContact && hasValidFamilyMember;
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
   };
 
   return { validateForm };

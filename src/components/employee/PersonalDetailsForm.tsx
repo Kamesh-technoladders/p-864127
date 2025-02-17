@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -67,7 +68,6 @@ export const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     console.log('Form data before validation:', data);
     
     const validation = validateForm(
-      data,
       emergencyContacts,
       familyDetails,
       setEmergencyContacts,
