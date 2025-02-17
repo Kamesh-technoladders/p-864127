@@ -1,26 +1,26 @@
 
 /* Card Layouts */
 .card-compact {
-  @apply p-2 space-y-1.5;
+  @apply p-3 space-y-1;
 }
 
 /* Modals */
 .modal-header {
-  @apply text-sm font-semibold mb-2;
+  @apply text-xs font-semibold mb-1.5;
 }
 
 .modal-content {
-  @apply space-y-2;
+  @apply space-y-1.5;
 }
 
 /* Navigation */
 .nav-link {
-  @apply text-xs py-1 px-1.5;
+  @apply text-[11px] py-0.5 px-1;
 }
 
 /* Lists */
 .list-item-compact {
-  @apply py-1 px-1.5;
+  @apply py-0.5 px-1;
 }
 
 /* Icons */
@@ -30,7 +30,7 @@
 
 /* Tooltips */
 .tooltip-compact {
-  @apply text-[10px] py-0.5 px-1.5;
+  @apply text-[10px] py-0.5 px-1;
 }
 
 /* Breadcrumbs */
@@ -40,12 +40,12 @@
 
 /* Tabs */
 .tab-compact {
-  @apply text-xs py-1 px-2;
+  @apply text-[11px] py-0.5 px-1.5;
 }
 
 /* Badges */
 .badge-compact {
-  @apply text-[10px] px-1.5 py-0.5;
+  @apply text-[10px] px-1 py-0.5;
 }
 
 /* Input Groups */
@@ -55,10 +55,11 @@
 
 /* Dropdown Menus */
 .dropdown-item-compact {
-  @apply text-xs py-1 px-2;
+  @apply text-[11px] py-0.5 px-1.5;
 }
 
 /* Section Headers */
 .section-header-compact {
-  @apply text-xs font-semibold mb-1.5;
+  @apply text-[11px] font-semibold mb-1;
 }
+

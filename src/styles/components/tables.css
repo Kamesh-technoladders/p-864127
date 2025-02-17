@@ -5,11 +5,11 @@
 }
 
 .table-modern th {
-  @apply px-2 py-1.5 text-left text-[11px] font-semibold text-brand-primary bg-white border-b;
+  @apply px-1.5 py-1 text-left text-[11px] font-semibold text-brand-primary bg-white border-b;
 }
 
 .table-modern td {
-  @apply px-2 py-1.5 text-[11px] text-brand-secondary border-b;
+  @apply px-1.5 py-1 text-[11px] text-brand-secondary border-b;
 }
 
 .table-modern tr:hover {
@@ -20,6 +20,7 @@
 @media (max-width: 640px) {
   .table-modern th,
   .table-modern td {
-    @apply px-1.5 py-1 text-[10px];
+    @apply px-1 py-0.5 text-[10px];
   }
 }
+

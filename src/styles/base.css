@@ -32,22 +32,23 @@
   }
   
   body {
-    @apply bg-gradient-main text-brand-primary font-sans text-xs;
+    @apply bg-gradient-main text-brand-primary font-sans text-[11px];
   }
 
   h1 {
-    @apply text-base font-semibold;
-  }
-
-  h2 {
     @apply text-sm font-semibold;
   }
 
-  h3 {
+  h2 {
     @apply text-xs font-semibold;
+  }
+
+  h3 {
+    @apply text-[11px] font-semibold;
   }
 
   label {
     @apply text-[10px] font-medium;
   }
 }
+
